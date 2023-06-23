@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        font-family: "Roboto", system-ui, sans-serif;
+        @apply text-slate-800;
+    }
+
+    input {
+        @apply rounded-2xl px-3 py-2;
+        @apply border-gray-200;
+        @apply border-2;
+    }
+
+    label {
+        @apply text-gray-600;
+    }
+
+    button {
+        @apply bg-violet-700 rounded-2xl text-white p-3;
+    }
+}
+
+.single-message-current-user {
+    border-radius: 2rem 2rem .5rem 2rem;
+}
+
+.single-message {
+    border-radius: 2rem 2rem 2rem .5rem;
+}
