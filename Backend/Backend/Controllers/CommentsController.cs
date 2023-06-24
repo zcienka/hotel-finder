@@ -84,7 +84,7 @@ namespace Backend.Controllers
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
+            return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
         }
 
         [HttpDelete("{id}")]

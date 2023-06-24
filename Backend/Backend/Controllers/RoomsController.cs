@@ -84,7 +84,7 @@ namespace Backend.Controllers
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRoom", new { id = room.Id }, room);
+            return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
         }
 
         [HttpDelete("{id}")]

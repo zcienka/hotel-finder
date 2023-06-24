@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
@@ -19,21 +20,22 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<HotelDto>>> GetHotels([FromQuery] string search = null)
+        [Authorize]
+        public async Task<ActionResult<List<HotelDto>>> GetHotels([FromQuery] string city = null)
         {
             if (_context.Hotels == null)
             {
                 return NotFound("No hotels found");
             }
 
-            if (string.IsNullOrEmpty(search))
+            if (string.IsNullOrEmpty(city))
             {
                 var hotels = await _context.Hotels.ToListAsync();
                 return Ok(hotels.Select(hotel => _mapper.Map<HotelDto>(hotel)));
             }
             else
             {
-                var searchResult = _context.Hotels.Where(q => q.Name.Contains(search));
+                var searchResult = _context.Hotels.Where(q => q.City.Contains(city));
                 return Ok(searchResult.Select(hotel => _mapper.Map<HotelDto>(hotel)));
             }
         }
@@ -57,6 +59,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutHotel(int id, Hotel hotel)
         {
             if (id != hotel.Id)
@@ -86,6 +89,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostHotel(HotelDto hotelDto)
         {
             if (_context.Hotels == null)
@@ -102,6 +106,7 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteHotel(int id)
         {
             var hotel = await _context.Hotels.FindAsync(id);

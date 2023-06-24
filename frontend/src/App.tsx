@@ -1,9 +1,14 @@
 import React from 'react';
+import {LoginRegister} from "./pages/LoginRegister";
+import {Route, Routes} from "react-router-dom";
+import HomePage from "./pages/HomePage";
 
 function App() {
     return (
-        <div>
-        </div>
+        <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/l" element={<LoginRegister/>}/>
+        </Routes>
     );
 }
 

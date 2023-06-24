@@ -22,11 +22,3 @@
         @apply bg-violet-700 rounded-2xl text-white p-3;
     }
 }
-
-.single-message-current-user {
-    border-radius: 2rem 2rem .5rem 2rem;
-}
-
-.single-message {
-    border-radius: 2rem 2rem 2rem .5rem;
-}
