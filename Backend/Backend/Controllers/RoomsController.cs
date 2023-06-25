@@ -20,19 +20,27 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+        public async Task<ActionResult<ApiResult<Room>>> GetRooms([FromQuery] PagingQuery query)
         {
-            return await _context.Rooms.ToListAsync();
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var rooms =  _context.Rooms.ToList();
+
+            return await ApiResult<Room>.CreateAsync(
+                rooms,
+                offsetInt,
+                limitInt,
+                "/rooms"
+            );
         }
 
         [HttpGet("hotel/{id}")]
         public async Task<ActionResult<List<Room>>> GetRoomsInHotel(int id)
-        {
-            if (_context.Hotels == null)
-            {
-                return NotFound("No hotels found");
-            }
-
+        {   
             var hotel = _context.Hotels.FirstOrDefault(h => h.Id == id);
 
             if (hotel == null)
@@ -49,7 +57,7 @@ namespace Backend.Controllers
                 .Where(r => r.HotelId == id)
                 .ToList();
             
-            if (rooms == null)
+            if (rooms.Count == 0)
             {
                 return NotFound("No rooms registered in a given hotel");
             }

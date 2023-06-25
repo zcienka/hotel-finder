@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Backend.Controllers
 {
@@ -21,24 +23,42 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<HotelDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<HotelDto>>> GetHotels([FromQuery] string city = null)
+        public async Task<ActionResult<ApiResult<HotelDto>>> GetHotels([FromQuery] PagingQuery query, [FromQuery] string city = null)
         {
             if (_context.Hotels.IsNullOrEmpty())
             {
                 return NotFound("No hotels found");
             }
 
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
             if (string.IsNullOrEmpty(city))
             {
                 var hotels = await _context.Hotels.ToListAsync();
-                return Ok(hotels.Select(hotel => _mapper.Map<HotelDto>(hotel)));
+                var hotelDtos = hotels.Select(hotel => _mapper.Map<HotelDto>(hotel)).ToList();
+
+                return Ok(await ApiResult<HotelDto>.CreateAsync(
+                    hotelDtos,
+                    offsetInt,
+                    limitInt,
+                    "/hotels"
+                ));
             }
             else
             {
-                var searchResult = _context.Hotels.Where(q => q.City.Contains(city));
-                return Ok(searchResult.Select(hotel => _mapper.Map<HotelDto>(hotel)));
+                var searchResult = _context.Hotels.Where(x => x.City.ToLower().Contains(city.ToLower())).ToList();
+                var hotelDtos = searchResult.Select(hotel => _mapper.Map<HotelDto>(hotel)).ToList();
+
+                return Ok(await ApiResult<HotelDto>.CreateAsync(
+                    hotelDtos,
+                    offsetInt,
+                    limitInt,
+                    "/hotels"
+                ));
             }
         }
 
@@ -96,7 +116,7 @@ namespace Backend.Controllers
         {
             if (_context.Hotels.IsNullOrEmpty())
             {
-                return Problem("Entity set 'ApplicationDbContext.Hotels' is null.");
+                return Problem("No hotels found");
             }
             var hotel = _mapper.Map<Hotel>(hotelDto);
 

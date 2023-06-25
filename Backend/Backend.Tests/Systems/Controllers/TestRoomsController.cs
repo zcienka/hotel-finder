@@ -1,28 +1,21 @@
 ﻿using AutoMapper;
 using Backend.Controllers;
 using Backend.Models;
-using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using NuGet.Protocol.Core.Types;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Security.Claims;
+using Backend.Tests.Systems;
 
 namespace Backend.Tests.Controllers
 {
     public class TestRoomsController
     {
-        public readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public TestRoomsController()
         {
-            _mapper = A.Fake<IMapper>();
+            _mapper = Mock.Of<IMapper>();
         }
-
 
         [Fact]
         public async Task GetRoomsInHotel_WhenHotelExistsButNoRooms_ReturnsNotFound()
@@ -33,16 +26,18 @@ namespace Backend.Tests.Controllers
             {
                 new Hotel
                 {
-                    Id = hotelId, Name = "Hotel 1", Description = "Description 1", Address = "Address 1",
-                    City = "City 1", PhoneNumber = "123456789", Stars = 3
+                    Id = hotelId,
+                    Name = "Hotel 1",
+                    Description = "Description 1",
+                    Address = "Address 1",
+                    City = "City 1",
+                    PhoneNumber = "123456789",
+                    Stars = 3
                 }
             }.AsQueryable();
 
             var mockSet = new Mock<DbSet<Hotel>>();
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.Provider).Returns(hotels.Provider);
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.Expression).Returns(hotels.Expression);
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.ElementType).Returns(hotels.ElementType);
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.GetEnumerator()).Returns(() => hotels.GetEnumerator());
+            mockSet.SetupIQueryable(hotels);
 
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.SetupGet(m => m.Hotels).Returns(mockSet.Object);
@@ -67,8 +62,13 @@ namespace Backend.Tests.Controllers
             {
                 new Hotel
                 {
-                    Id = hotelId, Name = "Hotel 1", Description = "Description 1", Address = "Address 1",
-                    City = "City 1", PhoneNumber = "123456789", Stars = 3
+                    Id = hotelId,
+                    Name = "Hotel 1",
+                    Description = "Description 1",
+                    Address = "Address 1",
+                    City = "City 1",
+                    PhoneNumber = "123456789",
+                    Stars = 3
                 }
             }.AsQueryable();
 
@@ -103,21 +103,15 @@ namespace Backend.Tests.Controllers
                 },
             }.AsQueryable();
 
-            var mockSet = new Mock<DbSet<Hotel>>();
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.Provider).Returns(hotels.Provider);
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.Expression).Returns(hotels.Expression);
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.ElementType).Returns(hotels.ElementType);
-            mockSet.As<IQueryable<Hotel>>().Setup(m => m.GetEnumerator()).Returns(() => hotels.GetEnumerator());
-
             var mockContext = new Mock<ApplicationDbContext>();
+
+            var mockSet = new Mock<DbSet<Hotel>>();
+            mockSet.SetupIQueryable(hotels);
             mockContext.SetupGet(m => m.Hotels).Returns(mockSet.Object);
 
-            var roomSet = new Mock<DbSet<Room>>();
-            roomSet.As<IQueryable<Room>>().Setup(m => m.Provider).Returns(rooms.Provider);
-            roomSet.As<IQueryable<Room>>().Setup(m => m.Expression).Returns(rooms.Expression);
-            roomSet.As<IQueryable<Room>>().Setup(m => m.ElementType).Returns(rooms.ElementType);
-            roomSet.As<IQueryable<Room>>().Setup(m => m.GetEnumerator()).Returns(() => rooms.GetEnumerator());
 
+            var roomSet = new Mock<DbSet<Room>>();
+            roomSet.SetupIQueryable(rooms);
             mockContext.SetupGet(m => m.Rooms).Returns(roomSet.Object);
 
             var roomsController = new RoomsController(mockContext.Object, _mapper);

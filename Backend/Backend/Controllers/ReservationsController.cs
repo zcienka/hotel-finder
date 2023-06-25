@@ -19,32 +19,46 @@ namespace Backend.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
+        [Authorize]
+        public async Task<ActionResult<ApiResult<ReservationDto>>> GetReservations([FromQuery] PagingQuery query)
         {
             if (_context.Reservations == null)
             {
                 return NotFound();
             }
 
-            return await _context.Reservations.ToListAsync();
-        }
-
-        [Authorize]
-        [HttpGet("user/{id}")]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetUserReservations()
-        {
-            if (_context.Reservations == null)
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
             {
                 return NotFound();
             }
 
-            return await _context.Reservations.ToListAsync();
+            var reservations = await _context.Reservations.ToListAsync();
+            var reservationsDtos = reservations.Select(reservation => _mapper.Map<ReservationDto>(reservation)).ToList();
+
+            return Ok(await ApiResult<ReservationDto>.CreateAsync(
+                reservationsDtos,
+                offsetInt,
+                limitInt,
+                "/reservations"
+            ));
         }
 
-        [Authorize]
+        // [HttpGet("user/{id}")]
+        // [Authorize]
+        // public async Task<ActionResult<IEnumerable<Reservation>>> GetUserReservations()
+        // {
+        //     if (_context.Reservations == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //
+        //     return await _context.Reservations.ToListAsync();
+        // }
+
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Reservation>> GetReservation(int id)
         {
             if (_context.Reservations == null)
@@ -62,8 +76,8 @@ namespace Backend.Controllers
             return reservation;
         }
 
-        [Authorize]
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutReservation(int id, Reservation reservation)
         {
             if (id != reservation.Id)
@@ -92,8 +106,8 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Reservation>> PostReservation(Reservation reservation)
         {
             if (_context.Reservations == null)
@@ -107,8 +121,8 @@ namespace Backend.Controllers
             return CreatedAtAction("GetReservation", new { id = reservation.Id }, reservation);
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteReservation(int id)
         {
             if (_context.Reservations == null)
@@ -123,6 +137,7 @@ namespace Backend.Controllers
             }
 
             _context.Reservations.Remove(reservation);
+
             await _context.SaveChangesAsync();
 
             return NoContent();

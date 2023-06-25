@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
+using System.Xml;
 
 namespace Backend.Controllers
 {
@@ -19,14 +20,28 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
+        public async Task<ActionResult<ApiResult<CommentDto>>> GetComments([FromQuery] PagingQuery query)
         {
             if (_context.Comments == null)
             {
                 return NotFound();
             }
 
-            return await _context.Comments.ToListAsync();
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var comments = await _context.Comments.ToListAsync();
+            var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
+
+            return Ok(await ApiResult<CommentDto>.CreateAsync(
+                commentDtos,
+                offsetInt,
+                limitInt,
+                "/comments"
+            ));
         }
 
         [HttpGet("{id}")]
@@ -41,10 +56,31 @@ namespace Backend.Controllers
 
             if (comment == null)
             {
-                return NotFound();
+                return NotFound("No comment with a given id found.");
             }
 
             return comment;
+        }
+
+        [HttpGet("hotel/{hotelId}")]
+        public async Task<ActionResult<ApiResult<CommentDto>>> GetCommentsByHotel(int hotelId, [FromQuery] PagingQuery query)
+        {
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var comments = _context.Comments.Where(q => q.HotelId == hotelId).ToList();
+
+            var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
+
+            return Ok(await ApiResult<CommentDto>.CreateAsync(
+                commentDtos,
+                offsetInt,
+                limitInt,
+                "/comments/hotel"
+            ));
         }
 
         [HttpPut("{id}")]
@@ -81,7 +117,7 @@ namespace Backend.Controllers
         {
             if (_context.Comments == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Comments'  is null.");
+                return Problem("No comments found");
             }
 
             _context.Comments.Add(comment);
@@ -93,11 +129,6 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            if (_context.Comments == null)
-            {
-                return NotFound();
-            }
-
             var comment = await _context.Comments.FindAsync(id);
             if (comment == null)
             {
