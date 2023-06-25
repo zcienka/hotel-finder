@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Controllers
 {
@@ -20,10 +21,11 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<HotelDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<HotelDto>>> GetHotels([FromQuery] string city = null)
         {
-            if (_context.Hotels == null)
+            if (_context.Hotels.IsNullOrEmpty())
             {
                 return NotFound("No hotels found");
             }
@@ -92,7 +94,7 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> PostHotel(HotelDto hotelDto)
         {
-            if (_context.Hotels == null)
+            if (_context.Hotels.IsNullOrEmpty())
             {
                 return Problem("Entity set 'ApplicationDbContext.Hotels' is null.");
             }
@@ -121,6 +123,7 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [Authorize]
         private bool HotelExists(int id)
         {
             return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();

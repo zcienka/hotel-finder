@@ -2,11 +2,18 @@
 
 A full-stack application built with React and ASP.NET Core API that allows users to reserve hotels in a given city.
 
+## Features
+- User authorization using OAuth
+- Searching and browsing hotels in a specific city
+- Viewing detailed hotel information
+- Making hotel reservations
+- Managing user profile and booking history
+
 ## Technologies Used
 
 ### Backend
 
-- ASP.NET Core Web API
+- ASP.NET Core 7
 - C#
 - Entity Framework Core
 - xUnit

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
+using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Controllers
 {
@@ -9,31 +11,55 @@ namespace Backend.Controllers
     public class RoomsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public RoomsController(ApplicationDbContext context)
+        public RoomsController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
         {
-            if (_context.Rooms == null)
+            return await _context.Rooms.ToListAsync();
+        }
+
+        [HttpGet("hotel/{id}")]
+        public async Task<ActionResult<List<Room>>> GetRoomsInHotel(int id)
+        {
+            if (_context.Hotels == null)
             {
-                return NotFound();
+                return NotFound("No hotels found");
             }
 
-            return await _context.Rooms.ToListAsync();
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == id);
+
+            if (hotel == null)
+            {
+                return NotFound("Hotel with given id does not exist");
+            }
+
+            if (_context.Rooms == null)
+            {
+                return NotFound("No rooms found");
+            }
+
+            var rooms = _context.Rooms
+                .Where(r => r.HotelId == id)
+                .ToList();
+            
+            if (rooms == null)
+            {
+                return NotFound("No rooms registered in a given hotel");
+            }
+
+            return Ok(rooms.ToList());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Room>> GetRoom(int id)
         {
-            if (_context.Rooms == null)
-            {
-                return NotFound();
-            }
-
             var room = await _context.Rooms.FindAsync(id);
 
             if (room == null)
@@ -76,11 +102,6 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Room>> PostRoom(Room room)
         {
-            if (_context.Rooms == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Rooms'  is null.");
-            }
-
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 
@@ -90,11 +111,6 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-            if (_context.Rooms == null)
-            {
-                return NotFound();
-            }
-
             var room = await _context.Rooms.FindAsync(id);
             if (room == null)
             {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Backend.Controllers;
 using Backend.Models;
 using FakeItEasy;
@@ -23,7 +18,7 @@ namespace Backend.Tests.Systems.Controllers
                 .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
             _context = new ApplicationDbContext(options);
             _mapper = A.Fake<IMapper>();
-            var _sut = new HotelsController(_context, _mapper);
+            var _sut = new CommentsController(_context, _mapper);
         }
     }
 }
