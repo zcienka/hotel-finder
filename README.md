@@ -8,11 +8,11 @@ A full-stack application built with React and ASP.NET Core API that allows users
 - Viewing detailed hotel information
 - Making hotel reservations
 - Managing user profile and booking history
+- Pagination
 
 ## Technologies Used
 
 ### Backend
-
 - ASP.NET Core 7
 - C#
 - Entity Framework Core

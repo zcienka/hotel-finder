@@ -46,7 +46,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("user/{id}")]
-        // [Authorize]
+        [Authorize]
         public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, int userId)
         {
             if (_context.Reservations.ToList().Count == 0)
@@ -128,19 +128,39 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationDto reservationDto)
         {
-            if (_context.Reservations.ToList().Count == 0)
-            {
-                return NotFound("No reservations found");
-            }
-
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationDto.RoomId);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationDto.HotelId);
 
             if (hotel == null)
             {
                 return NotFound("Hotel not found");
+            }
+
+            // var room = await _context.Rooms.FirstOrDefaultAsync(room => room.Id == reservationDto.RoomId);
+            var room = _context.Rooms.FirstOrDefault(h => h.HotelId == reservationDto.HotelId);
+            // var rooms = _context.Rooms
+                // .Where(r => r.HotelId == reservationDto.HotelId)
+                // .ToList();
+            // var room = _context.Rooms.Where(q => q.Id == reservationDto.RoomId).ToList();
+
+
+            if (room == null || room.HotelId != reservationDto.HotelId)
+            {
+                return NotFound("Room not found");
+            }
+
+            var reservations =  _context.Reservations.ToList();
+
+            bool isReservationConflict = reservations.Any(r =>
+                r.RoomId == reservationDto.RoomId && r.HotelId == reservationDto.HotelId &&
+                !(reservationDto.CheckOutDate <= r.CheckInDate || reservationDto.CheckInDate >= r.CheckOutDate)
+            );
+
+            if (isReservationConflict)
+            {
+                return BadRequest("Reservation conflicts with existing reservations");
             }
 
             var reservation = _mapper.Map<Reservation>(reservationDto);

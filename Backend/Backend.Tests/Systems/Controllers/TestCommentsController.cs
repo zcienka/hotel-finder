@@ -128,7 +128,6 @@ namespace Backend.Tests.Systems.Controllers
             var mockCommentSet = new Mock<DbSet<Comment>>();
 
             mockHotelSet.SetupIQueryable(hotels);
-
             mockCommentSet.SetupIQueryable(comments);
 
             mockContext.SetupGet(m => m.Hotels).Returns(mockHotelSet.Object);

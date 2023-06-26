@@ -29,19 +29,19 @@ namespace Backend.Tests.Systems
                 .RuleFor(r => r.Capacity, f => f.Random.Int(1, 10))
                 .RuleFor(r => r.Name, f => f.Company.CompanyName())
                 .RuleFor(r => r.Description, f => f.Lorem.Sentence())
-                .RuleFor(r => r.Price, f => f.Random.Decimal(50, 500))
+                .RuleFor(r => r.Price, f => f.Random.Int(50, 500))
                 .RuleFor(r => r.HotelId, hotelId);
 
             return roomFaker.Generate();
         }
-        public static Room GenerateRoom(int hotelId)
+        public static Room GenerateRoom(int roomId, int hotelId)
         {
             var roomFaker = new Faker<Room>()
-                .RuleFor(r => r.Id, f => f.Random.Int(1, 100))
+                .RuleFor(r => r.Id, roomId)
                 .RuleFor(r => r.Capacity, f => f.Random.Int(1, 10))
-                .RuleFor(r => r.Name, f => f.Company.CompanyName())
+                .RuleFor(r => r.Name, f => f.Lorem.Sentence())
                 .RuleFor(r => r.Description, f => f.Lorem.Sentence())
-                .RuleFor(r => r.Price, f => f.Random.Decimal(50, 500))
+                .RuleFor(r => r.Price, f => f.Random.Int(50, 500))
                 .RuleFor(r => r.HotelId, hotelId);
 
             return roomFaker.Generate();
@@ -59,6 +59,45 @@ namespace Backend.Tests.Systems
                 .RuleFor(h => h.Stars, f => f.Random.Int(1, 5));
 
             return hotelFaker.Generate();
+        }
+
+
+        public static ReservationDto GenerateReservationDto(int hotelId, int roomId)
+        {
+            var reservationDto = new Faker<ReservationDto>()
+                .RuleFor(r => r.CheckInDate, f => f.Date.Future())
+                .RuleFor(r => r.CheckOutDate, f => f.Date.Future())
+                .RuleFor(r => r.HotelId, f => hotelId)
+                .RuleFor(r => r.RoomId, f => roomId)
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100))
+                .Generate();
+
+            return reservationDto;
+        }
+
+        public static Reservation GenerateReservation(int reservationId, int hotelId, int roomId)
+        {
+            var reservation = new Faker<Reservation>()
+                .RuleFor(r => r.Id, reservationId)
+                .RuleFor(r => r.CheckInDate, f => f.Date.Future())
+                .RuleFor(r => r.CheckOutDate, f => f.Date.Future())
+                .RuleFor(r => r.HotelId, f => hotelId)
+                .RuleFor(r => r.RoomId, roomId)
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100))
+                .Generate();
+
+            return reservation;
+        }
+
+        public static Comment GenerateComment(int commentId, int userId, int hotelId)
+        {
+            var commentFaker = new Faker<Comment>()
+                .RuleFor(c => c.Id, f => commentId)
+                .RuleFor(c => c.Description, f => f.Lorem.Sentence())
+                .RuleFor(c => c.UserId, f => userId)
+                .RuleFor(c => c.HotelId, f => hotelId);
+
+            return commentFaker.Generate();
         }
     }
 }

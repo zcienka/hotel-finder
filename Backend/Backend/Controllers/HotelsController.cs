@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Backend.Controllers
 {
@@ -23,7 +20,8 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResult<HotelDto>>> GetHotels([FromQuery] PagingQuery query, [FromQuery] string city = null)
+        public async Task<ActionResult<ApiResult<HotelDto>>> GetHotels([FromQuery] PagingQuery query,
+            [FromQuery] string city = null)
         {
             if (_context.Hotels.ToList().Count == 0)
             {
@@ -111,7 +109,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> PostHotel(HotelDto hotelDto)
         {
             var hotel = _mapper.Map<Hotel>(hotelDto);
@@ -127,10 +125,31 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteHotel(int id)
         {
-            var hotel = await _context.Hotels.FindAsync(id);
+            var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id == id);
             if (hotel == null)
             {
                 return NotFound("Hotel with a given id does not exist.");
+            }
+
+            var comments = _context.Comments.Where(comment => comment.HotelId == id);
+            
+            if (comments.Any())
+            {
+                _context.Comments.RemoveRange(comments);
+            }
+
+            var reservations = _context.Reservations.Where(reservation => reservation.HotelId == id);
+
+            if (reservations.Any())
+            {
+                _context.Reservations.RemoveRange(reservations);
+            }
+
+            var rooms = _context.Rooms.Where(room => room.HotelId == id);
+
+            if (rooms.Any())
+            {
+                _context.Rooms.RemoveRange(rooms);
             }
 
             _context.Hotels.Remove(hotel);

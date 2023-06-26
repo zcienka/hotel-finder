@@ -5,7 +5,6 @@ namespace Backend.Models
 {
     public class Reservation
     {
-        [Key]
         public int Id { get; set; }
         public required DateTime CheckInDate { get; set; }
         public required DateTime CheckOutDate { get; set; }
