@@ -17,7 +17,7 @@ namespace Backend.Models
         public virtual DbSet<Hotel> Hotels { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Reservation> Reservations { get; set; }
-        public override DbSet<User> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

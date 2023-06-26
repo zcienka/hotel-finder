@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Backend.Controllers
 {
@@ -22,9 +23,9 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResult<CommentDto>>> GetComments([FromQuery] PagingQuery query)
         {
-            if (_context.Comments == null)
+            if (_context.Comments.ToList().Count == 0)
             {
-                return NotFound();
+                return NotFound("No comments found");
             }
 
             if (!int.TryParse(query.Limit, out int limitInt)
@@ -47,9 +48,9 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Comment>> GetComment(int id)
         {
-            if (_context.Comments == null)
+            if (_context.Comments.ToList().Count == 0)
             {
-                return NotFound();
+                return NotFound("No comments found");
             }
 
             var comment = await _context.Comments.FindAsync(id);
@@ -86,6 +87,13 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComment(int id, Comment comment)
         {
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == comment.HotelId);
+
+            if (hotel == null)
+            {
+                return NotFound("Hotel not found");
+            }
+
             if (id != comment.Id)
             {
                 return BadRequest();
@@ -113,17 +121,21 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(Comment comment)
+        public async Task<ActionResult<Comment>> PostComment(CommentDto commentDto)
         {
-            if (_context.Comments == null)
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == commentDto.HotelId);
+
+            if (hotel == null)
             {
-                return Problem("No comments found");
+                return NotFound("Hotel not found");
             }
+
+            var comment = _mapper.Map<Comment>(commentDto);
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
+            return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, commentDto);
         }
 
         [HttpDelete("{id}")]

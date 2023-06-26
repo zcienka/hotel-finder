@@ -22,6 +22,12 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResult<Room>>> GetRooms([FromQuery] PagingQuery query)
         {
+
+            if (_context.Rooms.ToList().Count == 0)
+            {
+                return NotFound("No rooms found");
+            }
+
             if (!int.TryParse(query.Limit, out int limitInt)
                 || !int.TryParse(query.Offset, out int offsetInt))
             {
@@ -48,7 +54,7 @@ namespace Backend.Controllers
                 return NotFound("Hotel with given id does not exist");
             }
 
-            if (_context.Rooms == null)
+            if (_context.Rooms.ToList().Count == 0)
             {
                 return NotFound("No rooms found");
             }
@@ -86,6 +92,13 @@ namespace Backend.Controllers
                 return BadRequest();
             }
 
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == room.HotelId);
+
+            if (hotel == null)
+            {
+                return NotFound("Hotel not found");
+            }
+
             _context.Entry(room).State = EntityState.Modified;
 
             try
@@ -108,8 +121,16 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Room>> PostRoom(Room room)
+        public async Task<ActionResult<Room>> PostRoom(RoomDto roomDto)
         {
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == roomDto.HotelId);
+
+            if (hotel == null)
+            {
+                return NotFound("Hotel not found");
+            }
+
+            var room = _mapper.Map<Room>(roomDto);
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 

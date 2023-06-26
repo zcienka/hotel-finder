@@ -9,6 +9,15 @@ namespace Backend.Profiles
         {
             CreateMap<Hotel, HotelDto>();
             CreateMap<HotelDto, Hotel>();
+
+            CreateMap<Comment, CommentDto>();
+            CreateMap<CommentDto, Comment>();
+
+            CreateMap<Room, RoomDto>();
+            CreateMap<RoomDto, Room>();
+
+            CreateMap<Reservation, ReservationDto>();
+            CreateMap<ReservationDto, Reservation>();
         }
     }
 }

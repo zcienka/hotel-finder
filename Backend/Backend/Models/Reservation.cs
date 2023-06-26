@@ -1,12 +1,17 @@
-﻿namespace Backend.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Backend.Models
 {
     public class Reservation
     {
+        [Key]
         public int Id { get; set; }
         public required DateTime CheckInDate { get; set; }
         public required DateTime CheckOutDate { get; set; }
         public required int HotelId { get; set; }
-        public required List<Room> RoomsList { get; set; }
-        public required int UserEmail { get; set; }
+        public required int RoomId { get; set; }
+        public required int UserId { get; set; }
+
     }
 }

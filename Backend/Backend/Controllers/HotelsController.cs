@@ -25,7 +25,7 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResult<HotelDto>>> GetHotels([FromQuery] PagingQuery query, [FromQuery] string city = null)
         {
-            if (_context.Hotels.IsNullOrEmpty())
+            if (_context.Hotels.ToList().Count == 0)
             {
                 return NotFound("No hotels found");
             }
@@ -65,7 +65,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Hotel>> GetHotel(int id)
         {
-            if (_context.Hotels == null)
+            if (_context.Hotels.ToList().Count == 0)
             {
                 return NotFound("No hotels found");
             }
@@ -111,13 +111,9 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> PostHotel(HotelDto hotelDto)
         {
-            if (_context.Hotels.IsNullOrEmpty())
-            {
-                return Problem("No hotels found");
-            }
             var hotel = _mapper.Map<Hotel>(hotelDto);
 
             _context.Hotels.Add(hotel);

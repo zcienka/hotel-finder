@@ -23,9 +23,9 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<ActionResult<ApiResult<ReservationDto>>> GetReservations([FromQuery] PagingQuery query)
         {
-            if (_context.Reservations == null)
+            if (_context.Reservations.ToList().Count == 0)
             {
-                return NotFound();
+                return NotFound("No reservations found");
             }
 
             if (!int.TryParse(query.Limit, out int limitInt)
@@ -45,25 +45,39 @@ namespace Backend.Controllers
             ));
         }
 
-        // [HttpGet("user/{id}")]
+        [HttpGet("user/{id}")]
         // [Authorize]
-        // public async Task<ActionResult<IEnumerable<Reservation>>> GetUserReservations()
-        // {
-        //     if (_context.Reservations == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //
-        //     return await _context.Reservations.ToListAsync();
-        // }
+        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, int userId)
+        {
+            if (_context.Reservations.ToList().Count == 0)
+            {
+                return NotFound("No reservations found");
+            }
+
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var reservations = _context.Reservations.Where(r => r.UserId == userId).ToList();
+            var reservationDtos = reservations.Select(r => _mapper.Map<ReservationDto>(r)).ToList();
+
+            return Ok(await ApiResult<ReservationDto>.CreateAsync(
+                reservationDtos,
+                offsetInt,
+                limitInt,
+                "/user"
+            ));
+        }
 
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Reservation>> GetReservation(int id)
         {
-            if (_context.Reservations == null)
+            if (_context.Reservations.ToList().Count == 0)
             {
-                return NotFound();
+                return NotFound("No reservations found");
             }
 
             var reservation = await _context.Reservations.FindAsync(id);
@@ -83,6 +97,13 @@ namespace Backend.Controllers
             if (id != reservation.Id)
             {
                 return BadRequest();
+            }
+
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservation.RoomId);
+
+            if (hotel == null)
+            {
+                return NotFound("Hotel not found");
             }
 
             _context.Entry(reservation).State = EntityState.Modified;
@@ -108,13 +129,21 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Reservation>> PostReservation(Reservation reservation)
+        public async Task<ActionResult<Reservation>> PostReservation(ReservationDto reservationDto)
         {
-            if (_context.Reservations == null)
+            if (_context.Reservations.ToList().Count == 0)
             {
-                return Problem("No reservations found.");
+                return NotFound("No reservations found");
             }
 
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationDto.RoomId);
+
+            if (hotel == null)
+            {
+                return NotFound("Hotel not found");
+            }
+
+            var reservation = _mapper.Map<Reservation>(reservationDto);
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
@@ -125,9 +154,9 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteReservation(int id)
         {
-            if (_context.Reservations == null)
+            if (_context.Reservations.ToList().Count == 0)
             {
-                return NotFound();
+                return NotFound("No reservations found");
             }
 
             var reservation = await _context.Reservations.FindAsync(id);

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Backend.Tests.Systems;
+using FakeItEasy;
 
 namespace Backend.Tests.Controllers
 {
@@ -14,7 +15,7 @@ namespace Backend.Tests.Controllers
 
         public TestRoomsController()
         {
-            _mapper = Mock.Of<IMapper>();
+            _mapper = A.Fake<IMapper>();
         }
 
         [Fact]
@@ -24,23 +25,19 @@ namespace Backend.Tests.Controllers
             int hotelId = 1;
             var hotels = new List<Hotel>
             {
-                new Hotel
-                {
-                    Id = hotelId,
-                    Name = "Hotel 1",
-                    Description = "Description 1",
-                    Address = "Address 1",
-                    City = "City 1",
-                    PhoneNumber = "123456789",
-                    Stars = 3
-                }
+                DataGenerator.GenerateHotel(hotelId)
             }.AsQueryable();
+            var rooms = new List<Room>().AsQueryable();
 
-            var mockSet = new Mock<DbSet<Hotel>>();
-            mockSet.SetupIQueryable(hotels);
+            var mockHotelSet = new Mock<DbSet<Hotel>>();
+            mockHotelSet.SetupIQueryable(hotels);
+
+            var mockRoomSet = new Mock<DbSet<Room>>();
+            mockRoomSet.SetupIQueryable(rooms);
 
             var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.SetupGet(m => m.Hotels).Returns(mockSet.Object);
+            mockContext.SetupGet(m => m.Hotels).Returns(mockHotelSet.Object);
+            mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
 
             var roomsController = new RoomsController(mockContext.Object, _mapper);
 
@@ -58,19 +55,8 @@ namespace Backend.Tests.Controllers
         {
             // Arrange
             int hotelId = 1;
-            var hotels = new List<Hotel>
-            {
-                new Hotel
-                {
-                    Id = hotelId,
-                    Name = "Hotel 1",
-                    Description = "Description 1",
-                    Address = "Address 1",
-                    City = "City 1",
-                    PhoneNumber = "123456789",
-                    Stars = 3
-                }
-            }.AsQueryable();
+            var hotels = new List<Hotel> { DataGenerator.GenerateHotel(hotelId) }
+                .AsQueryable();
 
             var rooms = new List<Room>
             {
@@ -105,14 +91,13 @@ namespace Backend.Tests.Controllers
 
             var mockContext = new Mock<ApplicationDbContext>();
 
-            var mockSet = new Mock<DbSet<Hotel>>();
-            mockSet.SetupIQueryable(hotels);
-            mockContext.SetupGet(m => m.Hotels).Returns(mockSet.Object);
+            var mockHotelSet = new Mock<DbSet<Hotel>>();
+            mockHotelSet.SetupIQueryable(hotels);
+            mockContext.SetupGet(m => m.Hotels).Returns(mockHotelSet.Object);
 
-
-            var roomSet = new Mock<DbSet<Room>>();
-            roomSet.SetupIQueryable(rooms);
-            mockContext.SetupGet(m => m.Rooms).Returns(roomSet.Object);
+            var mockRoomSet = new Mock<DbSet<Room>>();
+            mockRoomSet.SetupIQueryable(rooms);
+            mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
 
             var roomsController = new RoomsController(mockContext.Object, _mapper);
 
@@ -127,6 +112,45 @@ namespace Backend.Tests.Controllers
             Assert.Equal(1, returnedRooms[0].Id);
             Assert.Equal(2, returnedRooms[1].Id);
             Assert.Equal(3, returnedRooms[2].Id);
+        }
+
+        [Fact]
+        public async Task PostRoom_WhenHotelExists_ReturnsCreatedResponse()
+        {
+            // Arrange
+            int hotelId = 1;
+            var hotels = new List<Hotel>
+            {
+                DataGenerator.GenerateHotel(hotelId)
+            }.AsQueryable();
+            var roomDto = new RoomDto
+            {
+                Capacity = 2,
+                Name = "",
+                Description = "",
+                Price = 100,
+                HotelId = hotelId
+            };
+
+            var rooms = new List<Room>().AsQueryable();
+
+            var mockContext = new Mock<ApplicationDbContext>();
+
+            var mockHotelSet = new Mock<DbSet<Hotel>>();
+            mockHotelSet.SetupIQueryable(hotels);
+            mockContext.SetupGet(m => m.Hotels).Returns(mockHotelSet.Object);
+
+            var mockRoomSet = new Mock<DbSet<Room>>();
+            mockRoomSet.SetupIQueryable(rooms);
+            mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
+
+            var roomsController = new RoomsController(mockContext.Object, _mapper);
+
+            // Act
+            var result = await roomsController.PostRoom(roomDto);
+
+            // Assert
+            Assert.IsType<CreatedAtActionResult>(result.Result);
         }
     }
 }

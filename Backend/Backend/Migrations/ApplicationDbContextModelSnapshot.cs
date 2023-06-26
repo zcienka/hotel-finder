@@ -99,15 +99,10 @@ namespace Backend.Migrations
                     b.Property<int>("HotelId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserEmail")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
                 });
@@ -352,13 +347,6 @@ namespace Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Models.Reservation", b =>
-                {
-                    b.HasOne("Backend.Models.User", null)
-                        .WithMany("Reservations")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Backend.Models.Room", b =>
                 {
                     b.HasOne("Backend.Models.Reservation", null)
@@ -420,11 +408,6 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Reservation", b =>
                 {
                     b.Navigation("RoomsList");
-                });
-
-            modelBuilder.Entity("Backend.Models.User", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }
