@@ -141,7 +141,8 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = _context.Comments.FirstOrDefault(comment => comment.Id == id);
+
             if (comment == null)
             {
                 return NotFound();

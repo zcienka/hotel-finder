@@ -140,13 +140,22 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-            var room = await _context.Rooms.FindAsync(id);
+            var room = _context.Rooms.FirstOrDefault(room => room.Id == id);
+
             if (room == null)
             {
                 return NotFound();
             }
 
             _context.Rooms.Remove(room);
+
+            var reservation = _context.Reservations.FirstOrDefault(h => h.RoomId == id);
+
+            if (reservation != null)
+            {
+                _context.Reservations.Remove(reservation);
+            }
+
             await _context.SaveChangesAsync();
 
             return NoContent();

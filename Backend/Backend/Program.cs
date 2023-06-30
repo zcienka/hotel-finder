@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using AutoMapper;
+using Azure.Core;
 using Backend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

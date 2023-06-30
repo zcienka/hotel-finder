@@ -211,5 +211,60 @@ namespace Backend.Tests.Systems.Controllers
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
         }
+
+        [Fact]
+        public async Task PostReservation_WhenReservationDoesConflict_ReturnsBadRequest()
+        {
+            // Arrange
+            int hotelId = 1;
+            int roomId = 2;
+
+            var reservationDto = new ReservationDto
+            {
+                HotelId = hotelId,
+                UserId = 1,
+                RoomId = roomId,
+                CheckInDate = new DateTime(2023, 6, 1),
+                CheckOutDate = new DateTime(2023, 6, 5)
+            };
+
+            var existingReservation = new Reservation
+            {
+                HotelId = hotelId,
+                UserId = 1,
+                RoomId = roomId,
+                CheckInDate = new DateTime(2023, 6, 4),
+                CheckOutDate = new DateTime(2023, 6, 8)
+            };
+
+            var mockContext = new Mock<ApplicationDbContext>();
+
+            var mockReservationSet = new Mock<DbSet<Reservation>>();
+            var mockHotelSet = new Mock<DbSet<Hotel>>();
+            var mockRoomSet = new Mock<DbSet<Room>>();
+
+            var hotel = DataGenerator.GenerateHotel(hotelId);
+            var room = DataGenerator.GenerateRoom(roomId, hotelId);
+
+            var hotels = new List<Hotel> { hotel }.AsQueryable();
+            var reservations = new List<Reservation> { existingReservation }.AsQueryable();
+            var rooms = new List<Room> { room }.AsQueryable();
+
+            mockReservationSet.SetupIQueryable(reservations);
+            mockHotelSet.SetupIQueryable(hotels);
+            mockRoomSet.SetupIQueryable(rooms);
+
+            mockContext.Setup(c => c.Reservations).Returns(mockReservationSet.Object);
+            mockContext.Setup(c => c.Hotels).Returns(mockHotelSet.Object);
+            mockContext.Setup(c => c.Rooms).Returns(mockRoomSet.Object);
+
+            var reservationController = new ReservationsController(mockContext.Object, _mapper);
+
+            // Act
+            var result = await reservationController.PostReservation(reservationDto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230626023207_InitialMigration")]
+    [Migration("20230630092618_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -40,9 +40,8 @@ namespace Backend.Migrations
                     b.Property<int>("HotelId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("UserEmail")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -102,6 +101,9 @@ namespace Backend.Migrations
                     b.Property<int>("HotelId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("RoomId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -132,15 +134,10 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ReservationId")
-                        .HasColumnType("integer");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ReservationId");
 
                     b.ToTable("Rooms");
                 });
@@ -350,13 +347,6 @@ namespace Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Models.Room", b =>
-                {
-                    b.HasOne("Backend.Models.Reservation", null)
-                        .WithMany("RoomsList")
-                        .HasForeignKey("ReservationId");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -406,11 +396,6 @@ namespace Backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Backend.Models.Reservation", b =>
-                {
-                    b.Navigation("RoomsList");
                 });
 #pragma warning restore 612, 618
         }

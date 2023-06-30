@@ -50,7 +50,7 @@ namespace Backend.Tests.Systems
         public static Hotel GenerateHotel(int hotelId)
         {
             var hotelFaker = new Faker<Hotel>()
-                .RuleFor(h => h.Id, f => hotelId)
+                .RuleFor(h => h.Id, hotelId)
                 .RuleFor(h => h.Name, f => f.Company.CompanyName())
                 .RuleFor(h => h.Description, f => f.Lorem.Sentence())
                 .RuleFor(h => h.Address, f => f.Address.StreetAddress())

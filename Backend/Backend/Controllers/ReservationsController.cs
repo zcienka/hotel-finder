@@ -138,13 +138,7 @@ namespace Backend.Controllers
                 return NotFound("Hotel not found");
             }
 
-            // var room = await _context.Rooms.FirstOrDefaultAsync(room => room.Id == reservationDto.RoomId);
             var room = _context.Rooms.FirstOrDefault(h => h.HotelId == reservationDto.HotelId);
-            // var rooms = _context.Rooms
-                // .Where(r => r.HotelId == reservationDto.HotelId)
-                // .ToList();
-            // var room = _context.Rooms.Where(q => q.Id == reservationDto.RoomId).ToList();
-
 
             if (room == null || room.HotelId != reservationDto.HotelId)
             {
@@ -179,7 +173,8 @@ namespace Backend.Controllers
                 return NotFound("No reservations found");
             }
 
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = _context.Reservations.FirstOrDefault(reservation => reservation.Id == id);
+
             if (reservation == null)
             {
                 return NotFound();

@@ -152,5 +152,40 @@ namespace Backend.Tests.Controllers
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
         }
+
+        [Fact]
+        public async Task DeleteRoom_WhenRoomExistsWithReservation_DeletesRoomAndReservation()
+        {
+            // Arrange
+            int roomId = 1;
+            int reservationId = 2;
+            int hotelId = 3;
+
+            var room = DataGenerator.GenerateRoom(roomId, hotelId);
+            var reservation = DataGenerator.GenerateReservation(reservationId, hotelId, roomId);
+
+            var rooms = new List<Room> { room }.AsQueryable();
+            var reservations = new List<Reservation> { reservation }.AsQueryable();
+
+            var mockContext = new Mock<ApplicationDbContext>();
+
+            var mockRoomSet = new Mock<DbSet<Room>>();
+            mockRoomSet.SetupIQueryable(rooms);
+            mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
+
+            var mockReservationSet = new Mock<DbSet<Reservation>>();
+            mockReservationSet.SetupIQueryable(reservations);
+            mockContext.SetupGet(m => m.Reservations).Returns(mockReservationSet.Object);
+
+            var roomsController = new RoomsController(mockContext.Object, _mapper);
+
+            // Act
+            var result = await roomsController.DeleteRoom(roomId);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+            Assert.Null(await mockContext.Object.Rooms.FindAsync(roomId));
+            Assert.Null(await mockContext.Object.Reservations.FindAsync(reservationId));
+        }
     }
 }

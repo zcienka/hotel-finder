@@ -34,9 +34,10 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
+            var hotels = await _context.Hotels.ToListAsync();
+
             if (string.IsNullOrEmpty(city))
             {
-                var hotels = await _context.Hotels.ToListAsync();
                 var hotelDtos = hotels.Select(hotel => _mapper.Map<HotelDto>(hotel)).ToList();
 
                 return Ok(await ApiResult<HotelDto>.CreateAsync(
@@ -48,7 +49,7 @@ namespace Backend.Controllers
             }
             else
             {
-                var searchResult = _context.Hotels.Where(x => x.City.ToLower().Contains(city.ToLower())).ToList();
+                var searchResult = hotels.Where(x => x.City.ToLower().Contains(city.ToLower())).ToList();
                 var hotelDtos = searchResult.Select(hotel => _mapper.Map<HotelDto>(hotel)).ToList();
 
                 return Ok(await ApiResult<HotelDto>.CreateAsync(
@@ -109,7 +110,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> PostHotel(HotelDto hotelDto)
         {
             var hotel = _mapper.Map<Hotel>(hotelDto);
@@ -126,6 +127,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> DeleteHotel(int id)
         {
             var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id == id);
+
             if (hotel == null)
             {
                 return NotFound("Hotel with a given id does not exist.");
@@ -163,5 +165,7 @@ namespace Backend.Controllers
         {
             return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+            
+ 
     }
 }
