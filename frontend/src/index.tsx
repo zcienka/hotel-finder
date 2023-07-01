@@ -12,21 +12,21 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-    <Provider store={store}>
-        <Auth0Provider
-            domain={process.env.AUTH0_DOMAIN as string}
-            clientId={process.env.AUTH0_CLIENT_ID as string}
-            cacheLocation='localstorage'
-            authorizationParams={{
-                audience: process.env.AUTH0_AUDIENCE as string,
-                redirect_uri: process.env.AUTH0_REDIRECT_URI as string
-            }}
-        >
-            <React.StrictMode>
-                <BrowserRouter>
+    <React.StrictMode>
+        <Provider store={store}>
+            <BrowserRouter>
+                <Auth0Provider
+                    domain={process.env.REACT_APP_AUTH0_DOMAIN as string}
+                    clientId={process.env.REACT_APP_AUTH0_CLIENT_ID as string}
+                    cacheLocation='localstorage'
+                    authorizationParams={{
+                        audience: process.env.REACT_APP_AUTH0_AUDIENCE as string,
+                        redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI as string
+                    }}
+                >
                     <App/>
-                </BrowserRouter>
-            </React.StrictMode>
-        </Auth0Provider>
-    </Provider>
+                </Auth0Provider>
+            </BrowserRouter>
+        </Provider>
+    </React.StrictMode>
 );

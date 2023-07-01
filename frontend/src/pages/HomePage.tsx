@@ -1,9 +1,13 @@
-import React, {useEffect, useState} from 'react'
-import {useAuth0} from '@auth0/auth0-react'
-import {useGetHotelsQuery} from '../services/hotelApi'
+import SearchBar from "../components/SearchBar";
+import Navbar from "../components/Navbar";
+import {useAuth0} from "@auth0/auth0-react";
+import {useEffect, useState} from "react";
+import {useGetHotelsQuery} from "../services/hotelApi";
+import Loading from "../components/Loading";
+import {Hotels} from "../components/Hotels";
 
-function HomePage() {
-    const {loginWithRedirect, user, isAuthenticated, getAccessTokenSilently} = useAuth0()
+export const HomePage = () => {
+    const {getAccessTokenSilently, loginWithRedirect} = useAuth0()
     const [accessToken, setAccessToken] = useState<string | ''>('')
 
     const {
@@ -16,34 +20,29 @@ function HomePage() {
     })
 
     const getAccessToken = async () => {
-        const accessToken = await getAccessTokenSilently()
-        setAccessToken(accessToken)
+        try {
+            const token = await getAccessTokenSilently();
+            setAccessToken(token)
+        } catch (e: any) {
+            throw e;
+        }
     }
+    console.log({getHotelData})
 
     useEffect(() => {
         getAccessToken()
     }, [getAccessToken])
 
-
-    if (isGetHotelFetching) {
-        return <div>Fetching...</div>
-    }
-    if (isGetHotelError) {
-        return <div>Error</div>
-    }
-    if (isGetHotelSuccess) {
-        const hotels = getHotelData!.map((hotel) => {
-            return <div>
-                {hotel.name}
+    if (getHotelData === undefined) {
+        return <Loading/>
+    } else {
+        return <div className="bg-gradient-to-b from-custom-blue-900 to-custom-blue-700 h-screen">
+            <Navbar/>
+            <div className="flex flex-col items-center">
+                <p className="text-4xl font-bold">Search for hotels</p>
+                <SearchBar/>
+                <Hotels hotels={getHotelData.results}/>
             </div>
-        })
-
-        return (
-            <div>
-                {hotels}
-            </div>
-        )
+        </div>
     }
 }
-
-export default HomePage

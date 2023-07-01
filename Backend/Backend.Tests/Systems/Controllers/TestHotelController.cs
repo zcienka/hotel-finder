@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-
 namespace Backend.Tests.Systems.Controllers;
 
 public class TestHotelController
@@ -22,8 +21,6 @@ public class TestHotelController
     public async Task DeleteHotel_WhenCommentsExist_RemovesComments()
     {
         // Arrange
-
-
         var mockContext = new Mock<ApplicationDbContext>();
 
         var mockHotelSet = new Mock<DbSet<Hotel>>();
@@ -123,11 +120,9 @@ public class TestHotelController
     public async Task DeleteHotel_WhenCommentsExist_RemovesRooms()
     {
         // Arrange
-        int userId = 2;
-        int commentId = 3;
-    
+
         var mockContext = new Mock<ApplicationDbContext>();
-    
+
         var mockHotelSet = new Mock<DbSet<Hotel>>();
         var mockCommentSet = new Mock<DbSet<Comment>>();
         var mockReservationSet = new Mock<DbSet<Reservation>>();
@@ -147,22 +142,22 @@ public class TestHotelController
             DataGenerator.GenerateRoom(hotel1Id),
             DataGenerator.GenerateRoom(hotel2Id)
         }.AsQueryable();
-    
+
         mockHotelSet.SetupIQueryable(hotels);
         mockCommentSet.SetupIQueryable(comments);
         mockReservationSet.SetupIQueryable(reservations);
         mockRoomSet.SetupIQueryable(rooms);
-    
+
         mockContext.Setup(c => c.Hotels).Returns(mockHotelSet.Object);
         mockContext.Setup(c => c.Comments).Returns(mockCommentSet.Object);
         mockContext.Setup(c => c.Reservations).Returns(mockReservationSet.Object);
         mockContext.Setup(c => c.Rooms).Returns(mockRoomSet.Object);
-    
+
         var hotelController = new HotelsController(mockContext.Object, _mapper);
-    
+
         // Act
         var result = await hotelController.DeleteHotel(hotel1Id);
-    
+
         // Assert
         Assert.IsType<NoContentResult>(result);
         mockRoomSet.Verify(x => x.RemoveRange(It.IsAny<IEnumerable<Room>>()));

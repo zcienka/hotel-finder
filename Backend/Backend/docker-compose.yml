@@ -23,7 +23,7 @@ services:
     networks:
       - dev
     volumes:
-      - ./images:/app/res
+      - ./images:/app/images
   db:
     image: postgres:latest
     container_name: db

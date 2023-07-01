@@ -73,7 +73,7 @@ namespace Backend.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Reservation>> GetReservation(int id)
+        public async Task<ActionResult<Reservation>> GetReservation(string id)
         {
             if (_context.Reservations.ToList().Count == 0)
             {
@@ -165,7 +165,7 @@ namespace Backend.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteReservation(int id)
+        public async Task<IActionResult> DeleteReservation(string id)
         {
             if (_context.Reservations.ToList().Count == 0)
             {

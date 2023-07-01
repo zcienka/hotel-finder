@@ -13,7 +13,12 @@ module.exports = {
             spacing: {
                 '128': '32rem',
                 '160': '40rem',
-            }
+            },
+            colors: {
+                'custom-blue-900': '#1F2229',
+                'custom-blue-800': '#262A33',
+                'custom-blue-700': '#2D313C',
+            },
         }
     },
     plugins: ["tailwindcss, autoprefixer", "flowbite/plugin"],

@@ -7,27 +7,27 @@ export const LoginRegister = () => {
     const getMessage = async () => {
         await loginWithRedirect()
 
-        const accessToken = await getAccessTokenSilently()
+        // const accessToken = await getAccessTokenSilently()
 
-        console.log({accessToken})
+        // console.log({accessToken})
     }
 
     return (
         <div className="content-layout">
-            <h1 id="page-title" className="content__title">
+            <h1 id="page-title">
                 Protected Page
             </h1>
-            <div className="content__body">
+            <div>
                 <p id="page-description">
             <span>
               This page retrieves a <strong>protected message</strong> from an
               external API.
             </span>
-                    <span>
+            <span>
               <strong>Only authenticated users can access this page.</strong>
             </span>
                 </p>
-                <button onClick={() => getMessage()}>adsdsa</button>
+                <button onClick={() => getMessage()}>message</button>
             </div>
         </div>
     );

@@ -4,4 +4,5 @@ export type Hotel = {
     address: string,
     city: string,
     phoneNumber: string,
+    image: string[],
 }

@@ -62,7 +62,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Hotel>> GetHotel(int id)
+        public async Task<ActionResult<Hotel>> GetHotel(string id)
         {
             if (_context.Hotels.ToList().Count == 0)
             {
@@ -126,7 +126,7 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteHotel(string id)
         {
-            var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id.Equals(id));
+            var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id == id);
 
             if (hotel == null)
             {
@@ -163,9 +163,7 @@ namespace Backend.Controllers
         [Authorize]
         private bool HotelExists(string id)
         {
-            return (_context.Hotels?.Any(e => e.Id.Equals(id))).GetValueOrDefault();
+            return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-            
- 
     }
 }
