@@ -4,10 +4,9 @@ namespace Backend.Models
 {
     public class Comment
     {
-        [Key]
-        public int Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public required string Description { get; set; }
-        public required int UserId { get; set; }
-        public required int HotelId { get; set; }
+        public required string UserId { get; set; }
+        public required string HotelId { get; set; }
     }
 }

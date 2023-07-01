@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="res\**" />
+    <Content Remove="res\**" />
+    <EmbeddedResource Remove="res\**" />
+    <None Remove="res\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Bogus" Version="34.0.2" />
@@ -32,10 +39,6 @@
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="res\hotels\1\" />
   </ItemGroup>
 
 </Project>

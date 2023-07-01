@@ -64,7 +64,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("hotel/{hotelId}")]
-        public async Task<ActionResult<ApiResult<CommentDto>>> GetCommentsByHotel(int hotelId, [FromQuery] PagingQuery query)
+        public async Task<ActionResult<ApiResult<CommentDto>>> GetCommentsByHotel(string hotelId, [FromQuery] PagingQuery query)
         {
             if (!int.TryParse(query.Limit, out int limitInt)
                 || !int.TryParse(query.Offset, out int offsetInt))
@@ -85,16 +85,16 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(int id, Comment comment)
+        public async Task<IActionResult> PutComment(string id, Comment comment)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == comment.HotelId);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(comment.HotelId));
 
             if (hotel == null)
             {
                 return NotFound("Hotel not found");
             }
 
-            if (id != comment.Id)
+            if (!id.Equals(comment.Id))
             {
                 return BadRequest();
             }
@@ -123,7 +123,7 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Comment>> PostComment(CommentDto commentDto)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == commentDto.HotelId);
+            var hotel = _context.Hotels.FirstOrDefault(h => commentDto.HotelId.Equals(h.Id));
 
             if (hotel == null)
             {
@@ -141,7 +141,7 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            var comment = _context.Comments.FirstOrDefault(comment => comment.Id == id);
+            var comment = _context.Comments.FirstOrDefault(comment => comment.Id.Equals(id));
 
             if (comment == null)
             {
@@ -154,9 +154,9 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        private bool CommentExists(int id)
+        private bool CommentExists(string id)
         {
-            return (_context.Comments?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Comments?.Any(e => e.Id.Equals(id))).GetValueOrDefault();
         }
     }
 }

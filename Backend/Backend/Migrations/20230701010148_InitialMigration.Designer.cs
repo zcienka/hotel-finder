@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230630092618_InitialMigration")]
+    [Migration("20230701010148_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -27,21 +27,20 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Comment", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("integer");
+                    b.Property<string>("HotelId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -50,11 +49,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Hotel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -86,11 +82,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Reservation", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CheckInDate")
                         .HasColumnType("timestamp with time zone");
@@ -98,14 +91,17 @@ namespace Backend.Migrations
                     b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("integer");
+                    b.Property<string>("HotelId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("integer");
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -114,11 +110,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Room", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
@@ -127,8 +120,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("integer");
+                    b.Property<string>("HotelId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()

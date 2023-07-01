@@ -22,7 +22,7 @@ namespace Backend.Profiles
             CreateMap<ReservationDto, Reservation>();
         }
 
-        private string GetHotelImages(int hotelId)
+        private string GetHotelImages(string hotelId)
         {
             var baseUri = "http://localhost:8088/api/v1";
 

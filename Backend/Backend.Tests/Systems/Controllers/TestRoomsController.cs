@@ -22,11 +22,9 @@ namespace Backend.Tests.Controllers
         public async Task GetRoomsInHotel_WhenHotelExistsButNoRooms_ReturnsNotFound()
         {
             // Arrange
-            int hotelId = 1;
-            var hotels = new List<Hotel>
-            {
-                DataGenerator.GenerateHotel(hotelId)
-            }.AsQueryable();
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+            var hotels = new List<Hotel> { hotel }.AsQueryable();
             var rooms = new List<Room>().AsQueryable();
 
             var mockHotelSet = new Mock<DbSet<Hotel>>();
@@ -54,40 +52,17 @@ namespace Backend.Tests.Controllers
         public async Task GetRoomsInHotel_WhenHotelExistsWithRooms_ReturnsRooms()
         {
             // Arrange
-            int hotelId = 1;
-            var hotels = new List<Hotel> { DataGenerator.GenerateHotel(hotelId) }
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+            var hotels = new List<Hotel> { hotel }
                 .AsQueryable();
 
             var rooms = new List<Room>
             {
-                new Room
-                {
-                    Id = 1,
-                    Capacity = 2,
-                    Name = "Standard Room",
-                    Description = "Cozy room with basic amenities",
-                    Price = 100,
-                    HotelId = hotelId
-                },
-                new Room
-                {
-                    Id = 2,
-                    Capacity = 4,
-                    Name = "Family Suite",
-                    Description = "Spacious suite suitable for families",
-                    Price = 200,
-                    HotelId = hotelId
-                },
-                new Room
-                {
-                    Id = 3,
-                    Capacity = 1,
-                    Name = "Single Room",
-                    Description = "Compact room for solo travelers",
-                    Price = 80,
-                    HotelId = hotelId
-                },
-            }.AsQueryable();
+              DataGenerator.GenerateRoom(hotelId),
+              DataGenerator.GenerateRoom(hotelId),
+              DataGenerator.GenerateRoom(hotelId),
+            };
 
             var mockContext = new Mock<ApplicationDbContext>();
 
@@ -96,7 +71,7 @@ namespace Backend.Tests.Controllers
             mockContext.SetupGet(m => m.Hotels).Returns(mockHotelSet.Object);
 
             var mockRoomSet = new Mock<DbSet<Room>>();
-            mockRoomSet.SetupIQueryable(rooms);
+            mockRoomSet.SetupIQueryable(rooms.AsQueryable());
             mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
 
             var roomsController = new RoomsController(mockContext.Object, _mapper);
@@ -109,20 +84,19 @@ namespace Backend.Tests.Controllers
             var okResult = (OkObjectResult)result.Result;
             var returnedRooms = (List<Room>)okResult.Value;
             Assert.Equal(3, returnedRooms.Count);
-            Assert.Equal(1, returnedRooms[0].Id);
-            Assert.Equal(2, returnedRooms[1].Id);
-            Assert.Equal(3, returnedRooms[2].Id);
+            Assert.Equal(rooms[0].Id, returnedRooms[0].Id);
+            Assert.Equal(rooms[1].Id, returnedRooms[1].Id);
+            Assert.Equal(rooms[2].Id, returnedRooms[2].Id);
         }
 
         [Fact]
         public async Task PostRoom_WhenHotelExists_ReturnsCreatedResponse()
         {
             // Arrange
-            int hotelId = 1;
-            var hotels = new List<Hotel>
-            {
-                DataGenerator.GenerateHotel(hotelId)
-            }.AsQueryable();
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+
+            var hotels = new List<Hotel> { hotel }.AsQueryable();
             var roomDto = new RoomDto
             {
                 Capacity = 2,
@@ -157,12 +131,17 @@ namespace Backend.Tests.Controllers
         public async Task DeleteRoom_WhenRoomExistsWithReservation_DeletesRoomAndReservation()
         {
             // Arrange
-            int roomId = 1;
-            int reservationId = 2;
-            int hotelId = 3;
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
 
-            var room = DataGenerator.GenerateRoom(roomId, hotelId);
-            var reservation = DataGenerator.GenerateReservation(reservationId, hotelId, roomId);
+            var room = DataGenerator.GenerateRoom(hotelId);
+
+            string roomId = room.Id;
+
+            var reservation = DataGenerator.GenerateReservation(hotelId, roomId);
+
+            string reservationId = reservation.Id;
+
 
             var rooms = new List<Room> { room }.AsQueryable();
             var reservations = new List<Reservation> { reservation }.AsQueryable();

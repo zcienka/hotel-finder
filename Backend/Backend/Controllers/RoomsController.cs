@@ -45,7 +45,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("hotel/{id}")]
-        public async Task<ActionResult<List<Room>>> GetRoomsInHotel(int id)
+        public async Task<ActionResult<List<Room>>> GetRoomsInHotel(string id)
         {   
             var hotel = _context.Hotels.FirstOrDefault(h => h.Id == id);
 
@@ -85,14 +85,14 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRoom(int id, Room room)
+        public async Task<IActionResult> PutRoom(string id, Room room)
         {
             if (id != room.Id)
             {
                 return BadRequest();
             }
 
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == room.HotelId);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(room.HotelId));
 
             if (hotel == null)
             {
@@ -123,7 +123,7 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Room>> PostRoom(RoomDto roomDto)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == roomDto.HotelId);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(roomDto.HotelId));
 
             if (hotel == null)
             {
@@ -138,9 +138,9 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRoom(int id)
+        public async Task<IActionResult> DeleteRoom(string id)
         {
-            var room = _context.Rooms.FirstOrDefault(room => room.Id == id);
+            var room = _context.Rooms.FirstOrDefault(room => room.Id.Equals(id));
 
             if (room == null)
             {
@@ -149,7 +149,7 @@ namespace Backend.Controllers
 
             _context.Rooms.Remove(room);
 
-            var reservation = _context.Reservations.FirstOrDefault(h => h.RoomId == id);
+            var reservation = _context.Reservations.FirstOrDefault(h => h.RoomId.Equals(id));
 
             if (reservation != null)
             {
@@ -161,7 +161,7 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        private bool RoomExists(int id)
+        private bool RoomExists(string id)
         {
             return (_context.Rooms?.Any(e => e.Id == id)).GetValueOrDefault();
         }

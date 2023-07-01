@@ -22,9 +22,7 @@ public class TestHotelController
     public async Task DeleteHotel_WhenCommentsExist_RemovesComments()
     {
         // Arrange
-        int hotelId = 1;
-        int userId = 2;
-        int commentId = 3;
+
 
         var mockContext = new Mock<ApplicationDbContext>();
 
@@ -32,12 +30,17 @@ public class TestHotelController
         var mockCommentSet = new Mock<DbSet<Comment>>();
         var mockReservationSet = new Mock<DbSet<Reservation>>();
         var mockRoomSet = new Mock<DbSet<Room>>();
+        var hotel = DataGenerator.GenerateHotel();
 
-        var hotels = new List<Hotel> { DataGenerator.GenerateHotel(hotelId) }.AsQueryable();
+        string hotelId = hotel.Id;
+        int userId = 2;
+        int commentId = 3;
+
+        var hotels = new List<Hotel> { hotel }.AsQueryable();
         var comments = new List<Comment>
         {
-            DataGenerator.GenerateComment(commentId, userId, hotelId),
-            DataGenerator.GenerateComment(commentId, userId, hotelId)
+            DataGenerator.GenerateComment("userId", hotelId),
+            DataGenerator.GenerateComment("userId", hotelId)
         }.AsQueryable();
 
         var reservations = new List<Reservation>().AsQueryable();
@@ -67,10 +70,8 @@ public class TestHotelController
     public async Task DeleteHotel_WhenCommentsExist_RemovesReservations()
     {
         // Arrange
-        int hotelId = 1;
         int userId = 2;
         int commentId = 3;
-        int roomId = 4;
 
         var mockContext = new Mock<ApplicationDbContext>();
 
@@ -78,20 +79,25 @@ public class TestHotelController
         var mockCommentSet = new Mock<DbSet<Comment>>();
         var mockReservationSet = new Mock<DbSet<Reservation>>();
         var mockRoomSet = new Mock<DbSet<Room>>();
+        var hotel = DataGenerator.GenerateHotel();
+        string hotelId = hotel.Id;
 
-        var hotels = new List<Hotel> { DataGenerator.GenerateHotel(hotelId) }.AsQueryable();
+        var hotels = new List<Hotel> { hotel }.AsQueryable();
         var comments = new List<Comment>
         {
-            DataGenerator.GenerateComment(commentId, userId, hotelId),
-            DataGenerator.GenerateComment(commentId, userId, hotelId)
+            DataGenerator.GenerateComment("userId", hotelId),
+            DataGenerator.GenerateComment("userId", hotelId)
         }.AsQueryable();
+
+        var room = DataGenerator.GenerateRoom(hotelId);
+        var rooms = new List<Room> { room }.AsQueryable();
+        string roomId = room.Id;
 
         var reservations = new List<Reservation>()
         {
-            DataGenerator.GenerateReservation(1, hotelId, roomId),
-            DataGenerator.GenerateReservation(2, hotelId, roomId)
+            DataGenerator.GenerateReservation(hotelId, roomId),
+            DataGenerator.GenerateReservation(hotelId, roomId)
         }.AsQueryable();
-        var rooms = new List<Room>().AsQueryable();
 
         mockHotelSet.SetupIQueryable(hotels);
         mockCommentSet.SetupIQueryable(comments);
@@ -117,7 +123,6 @@ public class TestHotelController
     public async Task DeleteHotel_WhenCommentsExist_RemovesRooms()
     {
         // Arrange
-        int hotelId = 1;
         int userId = 2;
         int commentId = 3;
     
@@ -127,14 +132,20 @@ public class TestHotelController
         var mockCommentSet = new Mock<DbSet<Comment>>();
         var mockReservationSet = new Mock<DbSet<Reservation>>();
         var mockRoomSet = new Mock<DbSet<Room>>();
-    
-        var hotels = new List<Hotel> { DataGenerator.GenerateHotel(hotelId) }.AsQueryable();
+
+        var hotel1 = DataGenerator.GenerateHotel();
+        var hotel2 = DataGenerator.GenerateHotel();
+
+        var hotels = new List<Hotel> { hotel1, hotel2 }.AsQueryable();
+        string hotel1Id = hotel1.Id;
+        string hotel2Id = hotel2.Id;
+
         var comments = new List<Comment>().AsQueryable();
         var reservations = new List<Reservation>().AsQueryable();
         var rooms = new List<Room>()
         {
-            DataGenerator.GenerateRoom(1, hotelId),
-            DataGenerator.GenerateRoom(2, hotelId)
+            DataGenerator.GenerateRoom(hotel1Id),
+            DataGenerator.GenerateRoom(hotel2Id)
         }.AsQueryable();
     
         mockHotelSet.SetupIQueryable(hotels);
@@ -150,7 +161,7 @@ public class TestHotelController
         var hotelController = new HotelsController(mockContext.Object, _mapper);
     
         // Act
-        var result = await hotelController.DeleteHotel(hotelId);
+        var result = await hotelController.DeleteHotel(hotel1Id);
     
         // Assert
         Assert.IsType<NoContentResult>(result);

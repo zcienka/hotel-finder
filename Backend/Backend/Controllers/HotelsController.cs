@@ -81,9 +81,9 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutHotel(int id, Hotel hotel)
+        public async Task<IActionResult> PutHotel(string id, Hotel hotel)
         {
-            if (id != hotel.Id)
+            if (id.Equals(hotel.Id))
             {
                 return BadRequest("Hotel with a given id does not exist.");
             }
@@ -124,9 +124,9 @@ namespace Backend.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteHotel(int id)
+        public async Task<IActionResult> DeleteHotel(string id)
         {
-            var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id == id);
+            var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id.Equals(id));
 
             if (hotel == null)
             {
@@ -161,9 +161,9 @@ namespace Backend.Controllers
         }
 
         [Authorize]
-        private bool HotelExists(int id)
+        private bool HotelExists(string id)
         {
-            return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Hotels?.Any(e => e.Id.Equals(id))).GetValueOrDefault();
         }
             
  

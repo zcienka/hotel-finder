@@ -21,27 +21,22 @@ namespace Backend.Tests.Systems.Controllers
         public async Task GetCommentsByHotel_ExistingHotelId_ReturnsOkResultWithComments()
         {
             // Arrange
-            int hotelId = 1;
-
-            var hotels = new List<Hotel>
-            {
-                DataGenerator.GenerateHotel(hotelId)
-            }.AsQueryable();
+            var hotel = DataGenerator.GenerateHotel();
+            var hotels = new List<Hotel> { hotel }.AsQueryable();
+            string hotelId = hotel.Id;
 
             var comments = new List<Comment>
             {
                 new Comment
                 {
-                    Id = 1,
                     Description = "",
-                    UserId = 1,
+                    UserId = "1",
                     HotelId = hotelId
                 },
                 new Comment
                 {
-                    Id = 2,
                     Description = "",
-                    UserId = 1,
+                    UserId = "1",
                     HotelId = hotelId
                 }
             }.AsQueryable();
@@ -74,12 +69,11 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostComment_NonExistentHotelId_ReturnsNotFound()
         {
             // Arrange
-            var hotelId = 100;
             var comment = new CommentDto
             {
                 Description = "",
                 UserEmail = "",
-                HotelId = hotelId
+                HotelId = "hotelId"
             };
             var comments = new List<Comment>().AsQueryable();
             var hotels = new List<Hotel>().AsQueryable();
@@ -108,11 +102,10 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostComment_ExistingHotel_ReturnsOk()
         {
             // Arrange
-            var hotelId = 100;
-            var hotels = new List<Hotel>
-            {
-                DataGenerator.GenerateHotel(hotelId)
-            }.AsQueryable();
+            var hotel = DataGenerator.GenerateHotel();
+            var hotels = new List<Hotel>{ hotel }.AsQueryable();
+
+            string hotelId = hotel.Id;
 
             var comment = new CommentDto
             {

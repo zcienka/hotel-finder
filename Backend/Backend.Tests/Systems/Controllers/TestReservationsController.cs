@@ -21,9 +21,10 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostReservation_WhenHotelDoesNotExist_ReturnsNotFoundResponse()
         {
             // Arrange
-            int roomId = 1;
-            int hotelId = 1;
-            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId);
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+
+            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, "roomId");
 
             var mockContext = new Mock<ApplicationDbContext>();
 
@@ -54,16 +55,15 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostReservation_WhenRoomDoesNotExist_ReturnsNotFoundResponse()
         {
             // Arrange
-            int hotelId = 1;
-            int roomId = 1;
-            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId);
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+
+            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, "roomId");
 
             var mockContext = new Mock<ApplicationDbContext>();
 
             var mockHotelSet = new Mock<DbSet<Hotel>>();
             var mockRoomSet = new Mock<DbSet<Room>>();
-
-            var hotel = DataGenerator.GenerateHotel(hotelId);
 
             var hotels = new List<Hotel> { hotel }.AsQueryable();
             var rooms = new List<Room> { }.AsQueryable();
@@ -90,8 +90,11 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostReservation_WhenHotelExists_ReturnsReservation()
         {
             // Arrange
-            int roomId = 1;
-            int hotelId = 2;
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+            var room = DataGenerator.GenerateRoom(hotelId);
+            string roomId = room.Id;
+
             var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId);
 
             var mockContext = new Mock<ApplicationDbContext>();
@@ -100,52 +103,26 @@ namespace Backend.Tests.Systems.Controllers
             var mockHotelSet = new Mock<DbSet<Hotel>>();
             var mockRoomSet = new Mock<DbSet<Room>>();
 
-            var hotel = DataGenerator.GenerateHotel(hotelId);
-            var room = DataGenerator.GenerateRoom(roomId, hotelId);
 
             var hotels = new List<Hotel> { hotel }.AsQueryable();
             var reservations = new List<Reservation>()
             {
-                DataGenerator.GenerateReservation(1, hotelId, roomId),
-                DataGenerator.GenerateReservation(2, hotelId, roomId)
+                DataGenerator.GenerateReservation(hotelId, roomId),
+                DataGenerator.GenerateReservation(hotelId, roomId)
             }.AsQueryable();
             var rooms = new List<Room>
             {
-                new Room
-                {
-                    Id = 1,
-                    Capacity = 2,
-                    Name = "Standard Room",
-                    Description = "Cozy room with basic amenities",
-                    Price = 100,
-                    HotelId = hotelId
-                },
-                new Room
-                {
-                    Id = 2,
-                    Capacity = 4,
-                    Name = "Family Suite",
-                    Description = "Spacious suite suitable for families",
-                    Price = 200,
-                    HotelId = hotelId
-                },
-                new Room
-                {
-                    Id = 3,
-                    Capacity = 1,
-                    Name = "Single Room",
-                    Description = "Compact room for solo travelers",
-                    Price = 80,
-                    HotelId = hotelId
-                },
+                DataGenerator.GenerateRoom(hotelId),
+                DataGenerator.GenerateRoom(hotelId),
+                DataGenerator.GenerateRoom(hotelId)
             }.AsQueryable();
 
             mockReservationSet.SetupIQueryable(reservations);
             mockHotelSet.SetupIQueryable(hotels);
+            mockRoomSet.SetupIQueryable(rooms);
 
             mockContext.SetupGet(e => e.Reservations).Returns(mockReservationSet.Object);
             mockContext.SetupGet(c => c.Hotels).Returns(mockHotelSet.Object);
-            mockRoomSet.SetupIQueryable(rooms);
             mockContext.SetupGet(c => c.Rooms).Returns(mockRoomSet.Object);
 
             var reservationsController = new ReservationsController(mockContext.Object, _mapper);
@@ -161,13 +138,15 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostReservation_WhenReservationDoesNotConflict_ReturnsCreated()
         {
             // Arrange
-            int hotelId = 1;
-            int roomId = 2;
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+            var room = DataGenerator.GenerateRoom(hotelId);
+            string roomId = room.Id;
 
             var reservationDto = new ReservationDto
             {
                 HotelId = hotelId,
-                UserId = 1,
+                UserId = "1",
                 RoomId = roomId,
                 CheckInDate = new DateTime(2023, 6, 1),
                 CheckOutDate = new DateTime(2023, 6, 5)
@@ -176,7 +155,7 @@ namespace Backend.Tests.Systems.Controllers
             var existingReservation = new Reservation
             {
                 HotelId = hotelId,
-                UserId = 1,
+                UserId = "1",
                 RoomId = roomId,
                 CheckInDate = new DateTime(2023, 6, 6),
                 CheckOutDate = new DateTime(2023, 6, 8)
@@ -187,9 +166,6 @@ namespace Backend.Tests.Systems.Controllers
             var mockReservationSet = new Mock<DbSet<Reservation>>();
             var mockHotelSet = new Mock<DbSet<Hotel>>();
             var mockRoomSet = new Mock<DbSet<Room>>();
-
-            var hotel = DataGenerator.GenerateHotel(hotelId);
-            var room = DataGenerator.GenerateRoom(roomId, hotelId);
 
             var hotels = new List<Hotel> { hotel }.AsQueryable();
             var reservations = new List<Reservation> { existingReservation }.AsQueryable();
@@ -216,13 +192,15 @@ namespace Backend.Tests.Systems.Controllers
         public async Task PostReservation_WhenReservationDoesConflict_ReturnsBadRequest()
         {
             // Arrange
-            int hotelId = 1;
-            int roomId = 2;
+            var hotel = DataGenerator.GenerateHotel();
+            string hotelId = hotel.Id;
+            var room = DataGenerator.GenerateRoom(hotelId);
+            string roomId = room.Id;
 
             var reservationDto = new ReservationDto
             {
                 HotelId = hotelId,
-                UserId = 1,
+                UserId = "1",
                 RoomId = roomId,
                 CheckInDate = new DateTime(2023, 6, 1),
                 CheckOutDate = new DateTime(2023, 6, 5)
@@ -231,7 +209,7 @@ namespace Backend.Tests.Systems.Controllers
             var existingReservation = new Reservation
             {
                 HotelId = hotelId,
-                UserId = 1,
+                UserId = "1",
                 RoomId = roomId,
                 CheckInDate = new DateTime(2023, 6, 4),
                 CheckOutDate = new DateTime(2023, 6, 8)
@@ -242,9 +220,6 @@ namespace Backend.Tests.Systems.Controllers
             var mockReservationSet = new Mock<DbSet<Reservation>>();
             var mockHotelSet = new Mock<DbSet<Hotel>>();
             var mockRoomSet = new Mock<DbSet<Room>>();
-
-            var hotel = DataGenerator.GenerateHotel(hotelId);
-            var room = DataGenerator.GenerateRoom(roomId, hotelId);
 
             var hotels = new List<Hotel> { hotel }.AsQueryable();
             var reservations = new List<Reservation> { existingReservation }.AsQueryable();

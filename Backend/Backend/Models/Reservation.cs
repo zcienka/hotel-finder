@@ -5,12 +5,12 @@ namespace Backend.Models
 {
     public class Reservation
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public required DateTime CheckInDate { get; set; }
         public required DateTime CheckOutDate { get; set; }
-        public required int HotelId { get; set; }
-        public required int RoomId { get; set; }
-        public required int UserId { get; set; }
+        public required string HotelId { get; set; }
+        public required string RoomId { get; set; }
+        public required string UserId { get; set; }
 
     }
 }

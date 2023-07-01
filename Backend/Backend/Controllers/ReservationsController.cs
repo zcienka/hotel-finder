@@ -47,7 +47,7 @@ namespace Backend.Controllers
 
         [HttpGet("user/{id}")]
         [Authorize]
-        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, int userId)
+        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, string userId)
         {
             if (_context.Reservations.ToList().Count == 0)
             {
@@ -56,7 +56,7 @@ namespace Backend.Controllers
 
             if (!int.TryParse(query.Limit, out int limitInt)
                 || !int.TryParse(query.Offset, out int offsetInt))
-            {
+            {   
                 return NotFound();
             }
 
@@ -92,14 +92,14 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutReservation(int id, Reservation reservation)
+        public async Task<IActionResult> PutReservation(string id, Reservation reservation)
         {
-            if (id != reservation.Id)
+            if (!id.Equals(reservation.Id))
             {
                 return BadRequest();
             }
 
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservation.RoomId);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(reservation.RoomId));
 
             if (hotel == null)
             {
@@ -151,7 +151,6 @@ namespace Backend.Controllers
                 r.RoomId == reservationDto.RoomId && r.HotelId == reservationDto.HotelId &&
                 !(reservationDto.CheckOutDate <= r.CheckInDate || reservationDto.CheckInDate >= r.CheckOutDate)
             );
-
             if (isReservationConflict)
             {
                 return BadRequest("Reservation conflicts with existing reservations");
@@ -161,7 +160,7 @@ namespace Backend.Controllers
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetReservation", new { id = reservation.Id }, reservation);
+            return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservation);
         }
 
         [HttpDelete("{id}")]
@@ -173,7 +172,7 @@ namespace Backend.Controllers
                 return NotFound("No reservations found");
             }
 
-            var reservation = _context.Reservations.FirstOrDefault(reservation => reservation.Id == id);
+            var reservation = _context.Reservations.FirstOrDefault(reservation => reservation.Id.Equals(id));
 
             if (reservation == null)
             {
@@ -187,9 +186,9 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        private bool ReservationExists(int id)
+        private bool ReservationExists(string id)
         {
-            return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Reservations?.Any(e => e.Id.Equals(id))).GetValueOrDefault();
         }
     }
 }
