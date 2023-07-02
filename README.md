@@ -24,3 +24,9 @@ A full-stack application built with React and ASP.NET Core API that allows users
 - TypeScript
 - Tailwind CSS
 - RTK Query
+
+## Screenshots
+
+<div style="text-align: center;">
+  <img src="./res/main-page.png" alt="Main page">
+</div>
