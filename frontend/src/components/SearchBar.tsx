@@ -1,5 +1,4 @@
 import {ReactComponent as Arrow} from "../icons/rightArrow.svg"
-import {ReactComponent as ChevronDown} from "../icons/chevronDown.svg"
 import {ReactComponent as CityIcon} from "../icons/city.svg"
 
 const SearchBar = () => {
@@ -10,7 +9,7 @@ const SearchBar = () => {
                 id="search" type="text" placeholder="Search"/>
             <div className="p-3">
                 <button
-                    className="rounded-full p-2 focus:outline-none w-10 h-10 flex items-center justify-center">
+                    className="rounded-full p-2 focus:outline-none w-10 h-10 flex items-center justify-center text-gray-300">
                     <Arrow/>
                 </button>
             </div>

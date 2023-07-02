@@ -25,10 +25,12 @@ namespace Backend.Profiles
         private List<string> GetHotelImages(string hotelId)
         {
             var baseUri = "http://localhost:8088";
+            var directoryPath = "./images";
+            var files = Directory.GetFiles(directoryPath, hotelId + "_*.jpg").ToList();
 
-            var filePath = baseUri + "/images/" + hotelId + ".jpg";
+            var allImageFilePaths = files.Select(file => Path.Combine(baseUri, file)).ToList();
 
-            return new List<string> { filePath };
+            return allImageFilePaths;
         }
     }
 }

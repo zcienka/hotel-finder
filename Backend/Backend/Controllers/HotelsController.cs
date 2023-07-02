@@ -62,7 +62,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Hotel>> GetHotel(string id)
+        public async Task<ActionResult<HotelResponse>> GetHotel(string id)
         {
             if (_context.Hotels.ToList().Count == 0)
             {
@@ -76,7 +76,9 @@ namespace Backend.Controllers
                 return NotFound("No hotel with a given id found");
             }
 
-            return hotel;
+            var hotelResponse = _mapper.Map<HotelResponse>(hotel);
+
+            return hotelResponse;
         }
 
         [HttpPut("{id}")]

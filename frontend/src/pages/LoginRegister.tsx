@@ -12,6 +12,8 @@ export const LoginRegister = () => {
         // console.log({accessToken})
     }
 
+
+
     return (
         <div className="content-layout">
             <h1 id="page-title">

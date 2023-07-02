@@ -5,10 +5,10 @@ const Navbar = () => {
     const {user, isAuthenticated} = useAuth0();
 
     return (
-        <div className="h-16 bg-custom-blue-700 flex px-8 justify-center">
+        <div className="h-16 bg-custom-blue-700 flex px-8 justify-center drop-shadow-lg">
             <div className="flex items-center w-160">
                 <h1 className="text-3xl font-bold text-white-900 w-full">
-                    Hotel<span className="text-orange-700">finder</span>
+                    Hotel<span className="text-teal-700">finder</span>
                 </h1>
                     {isAuthenticated && user ? (<div className="flex w-full justify-end">
                             <img className="h-10 rounded-full mr-2" src={user.picture} alt="User profile"/>
@@ -20,14 +20,6 @@ const Navbar = () => {
                         : (
                             <p className="text-white text-lg font-semibold">Please log in</p>)
                     }
-                {/*{isAuthenticated && (*/}
-                {/*    <button*/}
-                {/*        className="ml-2"*/}
-                {/*        onClick={() => logout()}*/}
-                {/*    >*/}
-                {/*        Logout*/}
-                {/*    </button>*/}
-                {/*)}*/}
             </div>
         </div>
     );

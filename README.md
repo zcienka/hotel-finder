@@ -2,6 +2,13 @@
 
 A full-stack application built with React and ASP.NET Core API that allows users to reserve hotels in a given city.
 
+## Screenshots
+<div style="text-align: center;">
+  <img src="./res/main-page.png" alt="Main page">
+</div>
+
+Image sources: [Unsplash](https://unsplash.com/)
+
 ## Features
 - User authorization using OAuth
 - Searching and browsing hotels in a specific city
@@ -25,8 +32,3 @@ A full-stack application built with React and ASP.NET Core API that allows users
 - Tailwind CSS
 - RTK Query
 
-## Screenshots
-
-<div style="text-align: center;">
-  <img src="./res/main-page.png" alt="Main page">
-</div>
