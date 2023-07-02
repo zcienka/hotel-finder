@@ -8,9 +8,9 @@ namespace Backend.Profiles
     {
         public AutoMapperProfile()
         {
-            CreateMap<Hotel, HotelDto>()
+            CreateMap<Hotel, HotelResponse>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetHotelImages(src.Id)));
-            CreateMap<HotelDto, Hotel>();
+            CreateMap<HotelResponse, Hotel>();
 
             CreateMap<Comment, CommentDto>();
             CreateMap<CommentDto, Comment>();

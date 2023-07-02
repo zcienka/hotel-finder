@@ -20,7 +20,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResult<HotelDto>>> GetHotels([FromQuery] PagingQuery query,
+        public async Task<ActionResult<ApiResult<HotelResponse>>> GetHotels([FromQuery] PagingQuery query,
             [FromQuery] string city = null)
         {
             if (_context.Hotels.ToList().Count == 0)
@@ -38,10 +38,10 @@ namespace Backend.Controllers
 
             if (string.IsNullOrEmpty(city))
             {
-                var hotelDtos = hotels.Select(hotel => _mapper.Map<HotelDto>(hotel)).ToList();
+                var hotelResponses = hotels.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
 
-                return Ok(await ApiResult<HotelDto>.CreateAsync(
-                    hotelDtos,
+                return Ok(await ApiResult<HotelResponse>.CreateAsync(
+                    hotelResponses,
                     offsetInt,
                     limitInt,
                     "/hotels"
@@ -50,10 +50,10 @@ namespace Backend.Controllers
             else
             {
                 var searchResult = hotels.Where(x => x.City.ToLower().Contains(city.ToLower())).ToList();
-                var hotelDtos = searchResult.Select(hotel => _mapper.Map<HotelDto>(hotel)).ToList();
+                var hotelResponses = searchResult.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
 
-                return Ok(await ApiResult<HotelDto>.CreateAsync(
-                    hotelDtos,
+                return Ok(await ApiResult<HotelResponse>.CreateAsync(
+                    hotelResponses,
                     offsetInt,
                     limitInt,
                     "/hotels"
@@ -111,9 +111,9 @@ namespace Backend.Controllers
 
         [HttpPost]
         // [Authorize]
-        public async Task<IActionResult> PostHotel(HotelDto hotelDto)
+        public async Task<IActionResult> PostHotel(HotelRequest hotelRequest)
         {
-            var hotel = _mapper.Map<Hotel>(hotelDto);
+            var hotel = _mapper.Map<Hotel>(hotelRequest);
 
             _context.Hotels.Add(hotel);
 

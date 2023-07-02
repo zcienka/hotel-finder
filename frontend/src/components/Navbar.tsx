@@ -5,7 +5,7 @@ const Navbar = () => {
     const {user, isAuthenticated, logout} = useAuth0();
 
     return (
-        <div className="h-16 bg-custom-blue-700 flex px-4 justify-end">
+        <div className="h-16 bg-custom-blue-700 flex px-8 justify-end">
             <div className="flex items-center">
                 {isAuthenticated && user && (
                     <img className="h-10 rounded-full mr-2" src={user.picture} alt="User profile"/>

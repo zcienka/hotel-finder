@@ -1,7 +1,8 @@
 ﻿namespace Backend.Models
 {
-    public class HotelDto
+    public class HotelResponse
     {
+        public required string Id { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required string Address { get; set; }
