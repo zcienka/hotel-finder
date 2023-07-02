@@ -1,53 +1,42 @@
+import {ReactComponent as Arrow} from "../icons/rightArrow.svg"
+import {ReactComponent as ChevronDown} from "../icons/chevronDown.svg"
+import {ReactComponent as CityIcon} from "../icons/city.svg"
+
 const SearchBar = () => {
     return <>
-        <div className="flex justify-center items-center bg-custom-blue-800 rounded-3xl w-1/2 drop-shadow-lg">
+        <div className="flex justify-center items-center bg-custom-blue-700 rounded-3xl w-160 drop-shadow-lg mb-3">
             <input
-                className="rounded-l-full w-full py-4 px-6 leading-tight focus:outline-none border-transparent bg-custom-blue-800"
+                className="rounded-l-full w-full py-4 px-6 leading-tight focus:outline-none border-transparent bg-custom-blue-700"
                 id="search" type="text" placeholder="Search"/>
             <div className="p-4">
                 <button
-                    className="bg-orange-600 text-white rounded-full p-2 hover:bg-orange-500 focus:outline-none w-12 h-12 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
-                         stroke="currentColor" className="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                    </svg>
+                    className="rounded-full p-2 focus:outline-none w-12 h-12 flex items-center justify-center">
+                    <Arrow/>
                 </button>
             </div>
         </div>
-        <div className="flex flex-row">
-            <div className="relative inline-block">
-                <input type="text" placeholder="City"
-                       className="block appearance-none w-full bg-custom-blue-700 px-4 py-2 pl-8 rounded-xl shadow leading-tight focus:outline-none focus:shadow-outline drop-shadow-lg">
-                </input>
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                         stroke="currentColor" className="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                    </svg>
+
+        <div className="flex flex-row mb-2">
+            <div className="flex justify-center items-center bg-custom-blue-700 rounded-xl shadow drop-shadow-lg h-12 mr-2">
+                <input
+                    className="w-full py-3 px-6 leading-tight focus:outline-none border-transparent rounded-xl bg-custom-blue-700"
+                    id="search" type="text" placeholder="City"/>
+                <div className="pr-4">
+                    <div className="rounded-xl focus:outline-none w-7 h-1 flex items-center justify-center">
+                        <CityIcon/>
+                    </div>
                 </div>
             </div>
 
-            <div className="relative inline-block">
-                <input type="date" placeholder="City"
+            <div className="flex justify-center mr-2 h-12 cursor-pointer">
+                <input type="date"
                        className="block appearance-none w-full bg-custom-blue-700 px-4 py-2 pl-8 rounded-xl shadow leading-tight focus:outline-none focus:shadow-outline drop-shadow-lg">
                 </input>
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                         stroke="currentColor" className="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                    </svg>
-                </div>
             </div>
-            <div className="relative inline-block">
-                <input type="date" placeholder="City"
+            <div className="flex justify-center h-12 cursor-pointer">
+                <input type="date"
                        className="block appearance-none w-full bg-custom-blue-700 px-4 py-2 pl-8 rounded-xl shadow leading-tight focus:outline-none focus:shadow-outline drop-shadow-lg">
                 </input>
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                         stroke="currentColor" className="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                    </svg>
-                </div>
             </div>
         </div>
     </>

@@ -12,13 +12,6 @@ export const hotelApi = createApi({
     reducerPath: 'hotelApi',
     baseQuery: baseQuery,
     endpoints: (builder) => ({
-        // getHotels: builder.query<Hotel[], string>({
-        //     query: () => ({
-        //         url: '/hotels',
-        //         method: 'GET',
-        //         headers: {authorization: `Bearer `},
-        //     }),
-        // })
         getHotels: builder.query<ApiList<Hotel>, string >({
             query: (accessToken: string) => ({
                 url: '/hotels',

@@ -5,11 +5,11 @@
 @layer base {
     html {
         font-family: "Inter", system-ui, sans-serif;
-        @apply text-slate-400;
+        @apply text-gray-300;
         @apply bg-custom-blue-900;
     }
 
     button {
-        @apply bg-violet-700 rounded-2xl text-white p-3;
+        @apply bg-orange-600 rounded-2xl text-white p-3 hover:bg-orange-500;
     }
 }

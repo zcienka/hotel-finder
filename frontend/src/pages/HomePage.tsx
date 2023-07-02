@@ -27,7 +27,6 @@ export const HomePage = () => {
             throw e;
         }
     }
-    console.log({getHotelData})
 
     useEffect(() => {
         getAccessToken()
@@ -36,12 +35,18 @@ export const HomePage = () => {
     if (getHotelData === undefined) {
         return <Loading/>
     } else {
-        return <div className="bg-gradient-to-b from-custom-blue-900 to-custom-blue-700 h-screen">
+        return <div className="custom-blue-900 h-screen">
             <Navbar/>
             <div className="flex flex-col items-center">
-                <p className="text-4xl font-bold">Search for hotels</p>
-                <SearchBar/>
-                <Hotels hotels={getHotelData.results}/>
+                <div className="w-160">
+                    <p className="text-4xl font-bold my-2 mx-2">
+                        Search for hotels
+                    </p>
+                    <div className="flex flex-col items-center">
+                        <SearchBar/>
+                        <Hotels hotels={getHotelData.results}/>
+                    </div>
+                </div>
             </div>
         </div>
     }
