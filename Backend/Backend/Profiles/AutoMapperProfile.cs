@@ -27,7 +27,6 @@ namespace Backend.Profiles
             var baseUri = "http://localhost:8088";
             var directoryPath = "./images";
             var files = Directory.GetFiles(directoryPath, hotelId + "_*.jpg").ToList();
-
             var allImageFilePaths = files.Select(file => Path.Combine(baseUri, file)).ToList();
 
             return allImageFilePaths;

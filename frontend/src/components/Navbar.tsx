@@ -6,7 +6,7 @@ const Navbar = () => {
 
     return (
         <div className="h-16 bg-custom-blue-700 flex px-8 justify-center drop-shadow-lg">
-            <div className="flex items-center w-160">
+            <div className="flex items-center w-256">
                 <h1 className="text-3xl font-bold text-white-900 w-full">
                     Hotel<span className="text-teal-700">finder</span>
                 </h1>

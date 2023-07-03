@@ -7,7 +7,8 @@ A full-stack application built with React and ASP.NET Core API that allows users
   <img src="./res/main-page.png" alt="Main page">
 </div>
 
-Image sources: [Unsplash](https://unsplash.com/)
+Images: [Unsplash](https://unsplash.com/)
+Icons: [Heroicons](https://heroicons.com/)
 
 ## Features
 - User authorization using OAuth
@@ -18,7 +19,6 @@ Image sources: [Unsplash](https://unsplash.com/)
 - Pagination
 
 ## Technologies Used
-
 ### Backend
 - ASP.NET Core 7
 - C#

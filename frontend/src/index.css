@@ -10,6 +10,6 @@
     }
 
     button {
-        @apply bg-teal-700 rounded-2xl text-white p-3 hover:bg-teal-500;
+        @apply bg-teal-700 rounded-2xl text-white py-3 px-8 hover:bg-teal-600 drop-shadow-sm;
     }
 }

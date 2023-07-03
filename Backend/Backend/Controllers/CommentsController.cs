@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace Backend.Controllers
 {

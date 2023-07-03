@@ -38,7 +38,7 @@ export const HomePage = () => {
         return <div className="custom-blue-900 h-screen">
             <Navbar/>
             <div className="flex flex-col items-center">
-                <div className="w-160">
+                <div className="w-256">
                     <p className="text-5xl font-bold my-4 mx-2">
                         Search for hotels
                     </p>
