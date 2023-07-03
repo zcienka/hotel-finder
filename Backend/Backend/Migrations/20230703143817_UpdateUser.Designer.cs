@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230703143817_UpdateUser")]
+    partial class UpdateUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,9 +73,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RoomsNumber")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Stars")
                         .HasColumnType("integer");
 
@@ -86,10 +86,10 @@ namespace Backend.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("CheckInDate")
+                    b.Property<DateTime>("CheckInDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CheckOutDate")
+                    b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("HotelId")

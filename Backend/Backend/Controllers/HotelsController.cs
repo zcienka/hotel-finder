@@ -20,45 +20,77 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResult<HotelResponse>>> GetHotels([FromQuery] PagingQuery query,
-            [FromQuery] string city = null)
+        public async Task<ActionResult<ApiResult<HotelResponse>>> GetHotels(
+            [FromQuery] PagingQuery query,
+            [FromQuery] string? city,
+            [FromQuery] DateTimeOffset? checkInDate,
+            [FromQuery] DateTimeOffset? checkOutDate,
+            [FromQuery] int? roomsNumber)
         {
             if (_context.Hotels.ToList().Count == 0)
             {
                 return NotFound("No hotels found");
             }
 
-            if (!int.TryParse(query.Limit, out int limitInt)
-                || !int.TryParse(query.Offset, out int offsetInt))
+            if (!int.TryParse(query.Limit, out int limitInt) ||
+                !int.TryParse(query.Offset, out int offsetInt))
             {
                 return NotFound();
             }
 
             var hotels = await _context.Hotels.ToListAsync();
+            List<Hotel> searchResults = hotels;
 
-            if (string.IsNullOrEmpty(city))
+            if (string.IsNullOrEmpty(city) && roomsNumber == null &&
+                checkInDate != null && checkOutDate != null)
             {
-                var hotelResponses = hotels.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
+                var response = hotels.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
 
                 return Ok(await ApiResult<HotelResponse>.CreateAsync(
-                    hotelResponses,
+                    response,
                     offsetInt,
                     limitInt,
                     "/hotels"
                 ));
             }
-            else
-            {
-                var searchResult = hotels.Where(x => x.City.ToLower().Contains(city.ToLower())).ToList();
-                var hotelResponses = searchResult.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
 
-                return Ok(await ApiResult<HotelResponse>.CreateAsync(
-                    hotelResponses,
-                    offsetInt,
-                    limitInt,
-                    "/hotels"
-                ));
+            if (!string.IsNullOrEmpty(city))
+            {
+                searchResults.AddRange(searchResults.Where(hotel => hotel.City.ToLower().Contains(city.ToLower()))
+                    .ToList());
             }
+
+            if (roomsNumber != null)
+            {
+                searchResults.AddRange(searchResults.Where(hotel => hotel.RoomsNumber == roomsNumber).ToList());
+            }
+
+            if (checkInDate != null && checkOutDate != null)
+            {
+                var hotelsWithFreeRooms = from hotel in searchResults
+                    join room in _context.Rooms on hotel.Id equals room.HotelId
+                    where !_context.Reservations.Any(reservation =>
+                        reservation.HotelId == hotel.Id &&
+                        reservation.RoomId == room.Id &&
+                        (
+                            (reservation.CheckInDate <= checkInDate && reservation.CheckOutDate >= checkInDate) ||
+                            (reservation.CheckInDate <= checkOutDate && reservation.CheckOutDate >= checkOutDate) ||
+                            (reservation.CheckInDate >= checkInDate && reservation.CheckOutDate <= checkOutDate)
+                        ))
+
+                    select hotel;
+
+                searchResults.AddRange(hotelsWithFreeRooms);
+            }
+
+            var searchResponse = searchResults.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
+
+            return Ok(await ApiResult<HotelResponse>.CreateAsync(
+                searchResponse,
+                offsetInt,
+                limitInt,
+                "/hotels"
+            ));
         }
 
         [HttpGet("{id}")]
@@ -112,7 +144,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> PostHotel(HotelRequest hotelRequest)
         {
             var hotel = _mapper.Map<Hotel>(hotelRequest);
@@ -136,7 +168,7 @@ namespace Backend.Controllers
             }
 
             var comments = _context.Comments.Where(comment => comment.HotelId == id);
-            
+
             if (comments.Any())
             {
                 _context.Comments.RemoveRange(comments);
@@ -162,7 +194,6 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        [Authorize]
         private bool HotelExists(string id)
         {
             return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();

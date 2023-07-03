@@ -4,7 +4,7 @@ using Backend.Models;
 
 namespace Backend.Models
 {
-    public class ApplicationDbContext : IdentityDbContext<User> 
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext()
         {

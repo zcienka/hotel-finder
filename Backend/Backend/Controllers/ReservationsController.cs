@@ -20,7 +20,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<ApiResult<ReservationDto>>> GetReservations([FromQuery] PagingQuery query)
         {
             if (_context.Reservations.ToList().Count == 0)
@@ -138,11 +138,12 @@ namespace Backend.Controllers
                 return NotFound("Hotel not found");
             }
 
-            var room = _context.Rooms.FirstOrDefault(h => h.HotelId == reservationDto.HotelId);
+
+            var room = _context.Rooms.FirstOrDefault(r => r.HotelId == reservationDto.HotelId && r.Id == reservationDto.RoomId);
 
             if (room == null || room.HotelId != reservationDto.HotelId)
             {
-                return NotFound("Room not found");
+                return NotFound("Room with that id not found");
             }
 
             var reservations =  _context.Reservations.ToList();

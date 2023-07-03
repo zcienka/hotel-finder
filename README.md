@@ -1,6 +1,6 @@
 # Hotel Finder
 
-A full-stack application built with React and ASP.NET Core API that allows users to reserve hotels in a given city.
+A full-stack application built with React and ASP.NET Core Web API that allows users to reserve hotels in a given city.
 
 ## Screenshots
 <div style="text-align: center;">
@@ -39,4 +39,11 @@ Dummy data is AI generated
 - TypeScript
 - Tailwind CSS
 - RTK Query
+
+## Todo
+- [ ] Add admin panel
+- [ ] Finish user profile page
+- [ ] Finish booking a room page
+- [ ] Finish searching for hotels
+- [ ] Make user interface responsive
 
