@@ -38,52 +38,32 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            var hotels = await _context.Hotels.ToListAsync();
-            List<Hotel> searchResults = hotels;
-
-            if (string.IsNullOrEmpty(city) && roomsNumber == null &&
-                checkInDate != null && checkOutDate != null)
-            {
-                var response = hotels.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
-
-                return Ok(await ApiResult<HotelResponse>.CreateAsync(
-                    response,
-                    offsetInt,
-                    limitInt,
-                    "/hotels"
-                ));
-            }
+            var hotels = _context.Hotels.AsQueryable();
 
             if (!string.IsNullOrEmpty(city))
             {
-                searchResults.AddRange(searchResults.Where(hotel => hotel.City.ToLower().Contains(city.ToLower()))
-                    .ToList());
-            }
-
-            if (roomsNumber != null)
-            {
-                searchResults.AddRange(searchResults.Where(hotel => hotel.RoomsNumber == roomsNumber).ToList());
+                hotels = hotels.Where(hotel => hotel.City.ToLower().Contains(city.ToLower()));
             }
 
             if (checkInDate != null && checkOutDate != null)
             {
-                var hotelsWithFreeRooms = from hotel in searchResults
-                    join room in _context.Rooms on hotel.Id equals room.HotelId
-                    where !_context.Reservations.Any(reservation =>
-                        reservation.HotelId == hotel.Id &&
-                        reservation.RoomId == room.Id &&
-                        (
-                            (reservation.CheckInDate <= checkInDate && reservation.CheckOutDate >= checkInDate) ||
-                            (reservation.CheckInDate <= checkOutDate && reservation.CheckOutDate >= checkOutDate) ||
-                            (reservation.CheckInDate >= checkInDate && reservation.CheckOutDate <= checkOutDate)
-                        ))
+                var hotelsWithFreeRooms = (from hotel in hotels
+                        join room in _context.Rooms on hotel.Id equals room.HotelId
+                        where !_context.Reservations.Any(reservation =>
+                            reservation.HotelId == hotel.Id &&
+                            reservation.RoomId == room.Id &&
+                            (
+                                (reservation.CheckInDate <= checkInDate && reservation.CheckOutDate >= checkInDate) ||
+                                (reservation.CheckInDate <= checkOutDate && reservation.CheckOutDate >= checkOutDate) ||
+                                (reservation.CheckInDate >= checkInDate && reservation.CheckOutDate <= checkOutDate)
+                            ))
+                        select hotel)
+                    .Distinct();
 
-                    select hotel;
-
-                searchResults.AddRange(hotelsWithFreeRooms);
+                hotels = hotelsWithFreeRooms;
             }
 
-            var searchResponse = searchResults.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
+            var searchResponse = hotels.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
 
             return Ok(await ApiResult<HotelResponse>.CreateAsync(
                 searchResponse,
