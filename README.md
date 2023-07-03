@@ -7,8 +7,15 @@ A full-stack application built with React and ASP.NET Core API that allows users
   <img src="./res/main-page.png" alt="Main page">
 </div>
 
+<div style="text-align: center;">
+  <img src="./res/detail-page.png" alt="Main page">
+</div>
+
 Images: [Unsplash](https://unsplash.com/)
-Icons: [Heroicons](https://heroicons.com/)
+
+Icons: [Heroicons](https://heroicons.com/) and [Google Material Icons](https://fonts.google.com/icons)
+
+Dummy data is AI generated
 
 ## Features
 - User authorization using OAuth
@@ -16,6 +23,7 @@ Icons: [Heroicons](https://heroicons.com/)
 - Viewing detailed hotel information
 - Making hotel reservations
 - Managing user profile and booking history
+- Adding comments to hotels
 - Pagination
 
 ## Technologies Used

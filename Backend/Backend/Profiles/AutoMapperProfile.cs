@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using Backend.Models;
 
 namespace Backend.Profiles

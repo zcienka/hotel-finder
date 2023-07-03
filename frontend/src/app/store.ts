@@ -1,15 +1,17 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {hotelApi} from "../services/hotelApi"
-import {authApi} from "../services/authApi"
 import {setupListeners} from "@reduxjs/toolkit/query"
+import {commentsApi} from "../services/commentsApi";
 
 const store = configureStore({
     reducer: {
         [hotelApi.reducerPath]: hotelApi.reducer,
-        [authApi.reducerPath]: authApi.reducer,
+        [commentsApi.reducerPath]: commentsApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(hotelApi.middleware, authApi.middleware)
+        getDefaultMiddleware().concat(
+            hotelApi.middleware,
+            commentsApi.middleware)
 
 })
 

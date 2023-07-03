@@ -10,7 +10,7 @@ namespace Backend.Models
         public required DateTime CheckOutDate { get; set; }
         public required string HotelId { get; set; }
         public required string RoomId { get; set; }
-        public required string UserId { get; set; }
+        public required string UserEmail { get; set; }
 
     }
 }

@@ -47,7 +47,7 @@ namespace Backend.Controllers
 
         [HttpGet("user/{id}")]
         [Authorize]
-        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, string userId)
+        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, string userEmail)
         {
             if (_context.Reservations.ToList().Count == 0)
             {
@@ -60,7 +60,7 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            var reservations = _context.Reservations.Where(r => r.UserId == userId).ToList();
+            var reservations = _context.Reservations.Where(r => r.UserEmail == userEmail).ToList();
             var reservationDtos = reservations.Select(r => _mapper.Map<ReservationDto>(r)).ToList();
 
             return Ok(await ApiResult<ReservationDto>.CreateAsync(

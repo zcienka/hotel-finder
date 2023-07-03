@@ -5,6 +5,7 @@ import {useGetSingleHotelQuery} from "../services/hotelApi"
 import Loading from "../components/Loading"
 import {useAuth0} from "@auth0/auth0-react"
 import {v4 as uuid4} from "uuid"
+import {Comments} from "../components/Comments";
 
 export const HotelDetailPage = () => {
     const {id} = useParams()
@@ -31,12 +32,10 @@ export const HotelDetailPage = () => {
         isFetching: isGetSingleHotelFetching,
         isSuccess: isGetSingleHotelSuccess,
         isError: isGetSingleHotelError,
-    } = useGetSingleHotelQuery(
-        {
+    } = useGetSingleHotelQuery({
             accessToken,
             hotelId,
-        },
-        {
+        }, {
             skip: accessToken === "" || hotelId === "",
         }
     )
@@ -51,6 +50,7 @@ export const HotelDetailPage = () => {
         return <Loading/>
     } else {
         const hotel = getSingleHotelData
+
         return (
             <>
                 <Navbar/>
@@ -112,9 +112,9 @@ export const HotelDetailPage = () => {
                                     {hotel.phoneNumber}
                                 </p>
                                 <p className="text-gray-400">{hotel.description}</p>
-
                             </div>
                         </div>
+                        <Comments hotelId={hotelId} accessToken={accessToken}/>
                     </div>
                 </div>
             </>

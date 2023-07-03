@@ -4,27 +4,19 @@ import {Comment} from "../utils/Comment"
 import {ApiList} from "../utils/ApiList";
 
 export const commentsApi = createApi({
-    reducerPath: "CommentApi",
+    reducerPath: "commentsApi",
     baseQuery: baseQuery,
     endpoints: (builder) => ({
-        getComments: builder.query<ApiList<Comment>, string>({
-            query: (accessToken: string) => ({
-                url: "/comments",
+        getComments: builder.query<ApiList<Comment>, {accessToken: string, hotelId: string}>({
+            query: ({accessToken, hotelId}) => ({
+                url: `/comments/hotel/${hotelId}`,
                 method: "GET",
                 headers: {authorization: `Bearer ${accessToken}`},
             }),
-        }),
-        getSingleComment: builder.query<Comment, { accessToken: string, commentId: string }>({
-            query: ({accessToken, commentId}) => ({
-                url: `/comments/${commentId}`,
-                method: "GET",
-                headers: {authorization: `Bearer ${accessToken}`},
-            }),
-        }),
+        })
     })
 })
 
 export const {
     useGetCommentsQuery,
-    useGetSingleCommentQuery
 } = commentsApi
