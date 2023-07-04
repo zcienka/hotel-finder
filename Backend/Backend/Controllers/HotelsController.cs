@@ -48,7 +48,7 @@ namespace Backend.Controllers
                     select hotel;
             }
 
-            if (!string.IsNullOrEmpty(city))
+            if (city != null)
             {
                 hotels = hotels.Where(hotel => hotel.City.ToLower().Contains(city.ToLower()));
             }

@@ -28,7 +28,7 @@ Dummy data is AI generated
 
 ## Technologies Used
 ### Backend
-- ASP.NET Core 7
+- ASP .NET Core 7
 - C#
 - Entity Framework Core
 - xUnit
@@ -46,4 +46,27 @@ Dummy data is AI generated
 - [ ] Finish booking a room page
 - [ ] Finish searching for hotels
 - [ ] Make user interface responsive
+
+## Setup
+### Backend
+1. Open the project folder in a terminal
+2. Create a `.env` file based on the provided example:
+```
+CONNECTION_STRING=IntegratedSecurity=true;Pooling=true;Server=db;Database=findhotel;Port=5432;User Id=postgres;Password=
+PASSWORD=
+AUTH0_AUTHORITY=
+AUTH0_AUDIENCE=
+```
+3. Run `docker-compose up --build` to build and run the project
+### Frontend
+1. Open the project folder in a terminal
+2. Create a `.env` file based on the provided example:
+```
+REACT_APP_AUTH0_DOMAIN=
+REACT_APP_AUTH0_CLIENT_ID=
+REACT_APP_AUTH0_AUDIENCE=http://localhost:3000
+REACT_APP_AUTH0_REDIRECT_URI=http://localhost:3000
+```
+2. Run `npm install` to install dependencies
+3. Run `npm start` to start the development server
 
