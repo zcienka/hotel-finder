@@ -14,6 +14,8 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS final-env
 WORKDIR /app
 COPY --from=build-env /app/out .
 
+ENV ASPNETCORE_ENVIRONMENT=Development
+
 COPY images ./images/
 
 ENTRYPOINT ["dotnet", "Backend.dll"] 

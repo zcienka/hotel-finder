@@ -22,23 +22,14 @@ namespace Backend.Tests.Systems.Controllers
         {
             // Arrange
             var hotel = DataGenerator.GenerateHotel();
+            var userEmail = "example@example.com";
             var hotels = new List<Hotel> { hotel }.AsQueryable();
             string hotelId = hotel.Id;
 
             var comments = new List<Comment>
             {
-                new Comment
-                {
-                    Description = "",
-                    UserId = "1",
-                    HotelId = hotelId
-                },
-                new Comment
-                {
-                    Description = "",
-                    UserId = "1",
-                    HotelId = hotelId
-                }
+                DataGenerator.GenerateComment(userEmail, hotelId),
+                DataGenerator.GenerateComment(userEmail, hotelId),
             }.AsQueryable();
 
             var mockContext = new Mock<ApplicationDbContext>();

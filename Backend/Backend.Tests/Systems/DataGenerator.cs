@@ -33,14 +33,15 @@ namespace Backend.Tests.Systems
 
             return roomFaker.Generate();
         }
-        public static Room GenerateRoom(string hotelId)
+        public static Room GenerateRoom(string hotelId, string roomId)
         {
             var roomFaker = new Faker<Room>()
                 .RuleFor(r => r.Capacity, f => f.Random.Int(1, 10))
                 .RuleFor(r => r.Name, f => f.Lorem.Sentence())
                 .RuleFor(r => r.Description, f => f.Lorem.Sentence())
                 .RuleFor(r => r.Price, f => f.Random.Int(50, 500))
-                .RuleFor(r => r.HotelId, hotelId);
+                .RuleFor(r => r.HotelId, hotelId)
+                .RuleFor(r => r.Id, roomId);
 
             return roomFaker.Generate();
         }
@@ -66,30 +67,30 @@ namespace Backend.Tests.Systems
                 .RuleFor(r => r.CheckOutDate, f => f.Date.Future())
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, f => roomId)
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserEmail, f => f.Random.Int(1, 100).ToString())
                 .Generate();
 
             return reservationDto;
         }
 
-        public static Reservation GenerateReservation(string hotelId, string roomId)
+        public static Reservation GenerateReservation(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime)
         {
             var reservation = new Faker<Reservation>()
-                .RuleFor(r => r.CheckInDate, f => f.Date.Future())
-                .RuleFor(r => r.CheckOutDate, f => f.Date.Future())
+                .RuleFor(r => r.CheckInDate, checkInTime)
+                .RuleFor(r => r.CheckOutDate, checkOutTime)
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, roomId)
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserEmail, f => f.Random.Int(1, 100).ToString())
                 .Generate();
 
             return reservation;
         }
 
-        public static Comment GenerateComment(string userId, string hotelId)
+        public static Comment GenerateComment(string userEmail, string hotelId)
         {
             var commentFaker = new Faker<Comment>()
                 .RuleFor(c => c.Description, f => f.Lorem.Sentence())
-                .RuleFor(c => c.UserId, f => userId)
+                .RuleFor(c => c.UserEmail, f => userEmail)
                 .RuleFor(c => c.HotelId, f => hotelId);
 
             return commentFaker.Generate();

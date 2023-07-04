@@ -128,7 +128,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationDto reservationDto)
         {
             var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationDto.HotelId);
@@ -137,7 +137,6 @@ namespace Backend.Controllers
             {
                 return NotFound("Hotel not found");
             }
-
 
             var room = _context.Rooms.FirstOrDefault(r => r.HotelId == reservationDto.HotelId && r.Id == reservationDto.RoomId);
 

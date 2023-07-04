@@ -86,14 +86,14 @@ public class TestHotelController
             DataGenerator.GenerateComment("userId", hotelId)
         }.AsQueryable();
 
-        var room = DataGenerator.GenerateRoom(hotelId);
+        string roomId = "1";
+        var room = DataGenerator.GenerateRoom(hotelId, roomId);
         var rooms = new List<Room> { room }.AsQueryable();
-        string roomId = room.Id;
 
         var reservations = new List<Reservation>()
         {
-            DataGenerator.GenerateReservation(hotelId, roomId),
-            DataGenerator.GenerateReservation(hotelId, roomId)
+            DataGenerator.GenerateReservation(hotelId, roomId, new DateTime(2023, 6, 6), new DateTime(2023, 6, 8)),
+            DataGenerator.GenerateReservation(hotelId, roomId, new DateTime(2023, 6, 9), new DateTime(2023, 6, 10))
         }.AsQueryable();
 
         mockHotelSet.SetupIQueryable(hotels);
@@ -134,13 +134,14 @@ public class TestHotelController
         var hotels = new List<Hotel> { hotel1, hotel2 }.AsQueryable();
         string hotel1Id = hotel1.Id;
         string hotel2Id = hotel2.Id;
+        string roomId = "1";
 
         var comments = new List<Comment>().AsQueryable();
         var reservations = new List<Reservation>().AsQueryable();
         var rooms = new List<Room>()
         {
-            DataGenerator.GenerateRoom(hotel1Id),
-            DataGenerator.GenerateRoom(hotel2Id)
+            DataGenerator.GenerateRoom(hotel1Id, roomId),
+            DataGenerator.GenerateRoom(hotel2Id, roomId)
         }.AsQueryable();
 
         mockHotelSet.SetupIQueryable(hotels);

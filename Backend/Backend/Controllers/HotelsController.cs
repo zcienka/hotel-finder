@@ -25,7 +25,7 @@ namespace Backend.Controllers
             [FromQuery] string? city,
             [FromQuery] DateTimeOffset? checkInDate,
             [FromQuery] DateTimeOffset? checkOutDate,
-            [FromQuery] int? roomsNumber)
+            [FromQuery] int? roomCount)
         {
             if (_context.Hotels.ToList().Count == 0)
             {
@@ -39,6 +39,14 @@ namespace Backend.Controllers
             }
 
             var hotels = _context.Hotels.AsQueryable();
+
+            if (roomCount != null)
+            {
+                hotels = from hotel in hotels
+                    join room in _context.Rooms on hotel.Id equals room.HotelId into hotelRooms
+                    where hotelRooms.Count() >= roomCount
+                    select hotel;
+            }
 
             if (!string.IsNullOrEmpty(city))
             {

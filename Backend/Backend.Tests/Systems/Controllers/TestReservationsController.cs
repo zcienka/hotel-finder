@@ -82,7 +82,7 @@ namespace Backend.Tests.Systems.Controllers
             // Assert
             Assert.IsType<NotFoundObjectResult>(result.Result);
             var notFoundResult = (NotFoundObjectResult)result.Result;
-            Assert.Equal("Room not found", notFoundResult.Value);
+            Assert.Equal("Room with that id not found", notFoundResult.Value);
         }
 
 
@@ -92,8 +92,8 @@ namespace Backend.Tests.Systems.Controllers
             // Arrange
             var hotel = DataGenerator.GenerateHotel();
             string hotelId = hotel.Id;
-            var room = DataGenerator.GenerateRoom(hotelId);
-            string roomId = room.Id;
+            string roomId = "1";
+            var room = DataGenerator.GenerateRoom(hotelId, roomId);
 
             var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId);
 
@@ -103,18 +103,20 @@ namespace Backend.Tests.Systems.Controllers
             var mockHotelSet = new Mock<DbSet<Hotel>>();
             var mockRoomSet = new Mock<DbSet<Room>>();
 
+            DateTime checkInDate = new DateTime(2023, 6, 6);
+            DateTime checkOutDate = new DateTime(2023, 6, 8);
 
             var hotels = new List<Hotel> { hotel }.AsQueryable();
             var reservations = new List<Reservation>()
             {
-                DataGenerator.GenerateReservation(hotelId, roomId),
-                DataGenerator.GenerateReservation(hotelId, roomId)
+                DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate),
+                DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate)
             }.AsQueryable();
             var rooms = new List<Room>
             {
-                DataGenerator.GenerateRoom(hotelId),
-                DataGenerator.GenerateRoom(hotelId),
-                DataGenerator.GenerateRoom(hotelId)
+                DataGenerator.GenerateRoom(hotelId, roomId),
+                DataGenerator.GenerateRoom(hotelId, roomId),
+                DataGenerator.GenerateRoom(hotelId, roomId)
             }.AsQueryable();
 
             mockReservationSet.SetupIQueryable(reservations);
@@ -140,26 +142,22 @@ namespace Backend.Tests.Systems.Controllers
             // Arrange
             var hotel = DataGenerator.GenerateHotel();
             string hotelId = hotel.Id;
-            var room = DataGenerator.GenerateRoom(hotelId);
-            string roomId = room.Id;
+            string roomId = "1";
+            var room = DataGenerator.GenerateRoom(hotelId, roomId);
+
+            DateTime checkInDate = new DateTime(2023, 6, 6);
+            DateTime checkOutDate = new DateTime(2023, 6, 8);
 
             var reservationDto = new ReservationDto
             {
                 HotelId = hotelId,
-                UserId = "1",
+                UserEmail = "1",
                 RoomId = roomId,
                 CheckInDate = new DateTime(2023, 6, 1),
                 CheckOutDate = new DateTime(2023, 6, 5)
             };
 
-            var existingReservation = new Reservation
-            {
-                HotelId = hotelId,
-                UserId = "1",
-                RoomId = roomId,
-                CheckInDate = new DateTime(2023, 6, 6),
-                CheckOutDate = new DateTime(2023, 6, 8)
-            };
+            var existingReservation = DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate);
 
             var mockContext = new Mock<ApplicationDbContext>();
 
@@ -194,26 +192,21 @@ namespace Backend.Tests.Systems.Controllers
             // Arrange
             var hotel = DataGenerator.GenerateHotel();
             string hotelId = hotel.Id;
-            var room = DataGenerator.GenerateRoom(hotelId);
-            string roomId = room.Id;
+            string roomId = "1";
+            var room = DataGenerator.GenerateRoom(hotelId, roomId);
+            DateTime checkInDate = new DateTime(2023, 6, 6);
+            DateTime checkOutDate = new DateTime(2023, 6, 8);
 
             var reservationDto = new ReservationDto
             {
                 HotelId = hotelId,
-                UserId = "1",
+                UserEmail = "1",
                 RoomId = roomId,
-                CheckInDate = new DateTime(2023, 6, 1),
-                CheckOutDate = new DateTime(2023, 6, 5)
+                CheckInDate = new DateTime(2023, 6, 7),
+                CheckOutDate = new DateTime(2023, 6, 10)
             };
 
-            var existingReservation = new Reservation
-            {
-                HotelId = hotelId,
-                UserId = "1",
-                RoomId = roomId,
-                CheckInDate = new DateTime(2023, 6, 4),
-                CheckOutDate = new DateTime(2023, 6, 8)
-            };
+            var existingReservation = DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate);
 
             var mockContext = new Mock<ApplicationDbContext>();
 

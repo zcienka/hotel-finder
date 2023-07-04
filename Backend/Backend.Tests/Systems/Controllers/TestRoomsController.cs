@@ -56,12 +56,13 @@ namespace Backend.Tests.Controllers
             string hotelId = hotel.Id;
             var hotels = new List<Hotel> { hotel }
                 .AsQueryable();
+            string roomId = "1";
 
             var rooms = new List<Room>
             {
-              DataGenerator.GenerateRoom(hotelId),
-              DataGenerator.GenerateRoom(hotelId),
-              DataGenerator.GenerateRoom(hotelId),
+              DataGenerator.GenerateRoom(hotelId, roomId),
+              DataGenerator.GenerateRoom(hotelId, roomId),
+              DataGenerator.GenerateRoom(hotelId, roomId),
             };
 
             var mockContext = new Mock<ApplicationDbContext>();
@@ -133,12 +134,14 @@ namespace Backend.Tests.Controllers
             // Arrange
             var hotel = DataGenerator.GenerateHotel();
             string hotelId = hotel.Id;
+            string roomId = "1";
 
-            var room = DataGenerator.GenerateRoom(hotelId);
+            var room = DataGenerator.GenerateRoom(hotelId, roomId);
 
-            string roomId = room.Id;
+            DateTime checkInDate = new DateTime(2023, 6, 6);
+            DateTime checkOutDate = new DateTime(2023, 6, 8);
 
-            var reservation = DataGenerator.GenerateReservation(hotelId, roomId);
+            var reservation = DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate);
 
             string reservationId = reservation.Id;
 
