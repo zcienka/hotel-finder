@@ -3,8 +3,12 @@ import {useAuth0} from "@auth0/auth0-react"
 import {useNavigate} from "react-router-dom"
 
 const Navbar = () => {
-    const {user, isAuthenticated} = useAuth0()
+    const {user, isAuthenticated, loginWithRedirect} = useAuth0()
     const navigate = useNavigate()
+
+    const loginUser = async () => {
+        await loginWithRedirect()
+    }
 
     return (
         <div className="h-16 bg-custom-blue-700 flex px-8 justify-center drop-shadow-lg">
@@ -19,7 +23,9 @@ const Navbar = () => {
                                 <p className="text-gray-300 text-xs">{user.email}</p>
                             </div>
                         </div>
-                        : <p className="text-white text-lg font-semibold">Please log in</p>
+                        : <button className="text-white text-lg font-semibold" onClick={() => loginUser()}>
+                            Please log in
+                        </button>
                     }
             </div>
         </div>

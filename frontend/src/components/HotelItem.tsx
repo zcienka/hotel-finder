@@ -1,9 +1,9 @@
-import React from "react";
-import {Hotel} from "../utils/Hotel";
-import {useNavigate} from "react-router-dom";
+import React from "react"
+import {Hotel} from "../utils/Hotel"
+import {useNavigate} from "react-router-dom"
 
 interface Props {
-    hotel: Hotel;
+    hotel: Hotel
 }
 
 export const HotelItem: React.FC<Props> = ({hotel}) => {
@@ -21,5 +21,5 @@ export const HotelItem: React.FC<Props> = ({hotel}) => {
                 </p>
             </div>
         </div>
-    );
-};
+    )
+}

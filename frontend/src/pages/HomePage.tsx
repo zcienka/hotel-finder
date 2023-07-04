@@ -1,32 +1,38 @@
-import SearchBar from "../components/SearchBar";
-import Navbar from "../components/Navbar";
-import {useAuth0} from "@auth0/auth0-react";
-import {useEffect, useState} from "react";
-import {useGetHotelsQuery} from "../services/hotelApi";
-import Loading from "../components/Loading";
-import {Hotels} from "../components/Hotels";
+import SearchBar from "../components/SearchBar"
+import Navbar from "../components/Navbar"
+import {useAuth0} from "@auth0/auth0-react"
+import {useEffect, useState} from "react"
+import {useGetHotelsQuery} from "../services/hotelApi"
+import Loading from "../components/Loading"
+import {Hotels} from "../components/Hotels"
 
 export const HomePage = () => {
     const {getAccessTokenSilently, loginWithRedirect} = useAuth0()
-    const [accessToken, setAccessToken] = useState<string | ''>('')
+    const [accessToken, setAccessToken] = useState<string | "">("")
+
+    const [searchValue, setSearchValue] = useState("")
+    const [cityValue, setCityValue] = useState("")
+    const [roomValue, setRoomValue] = useState("")
+    const [checkInDate, setCheckInDate] = useState("")
+    const [checkOutDate, setCheckOutDate] = useState("")
 
     const {
         data: getHotelData,
         isFetching: isGetHotelFetching,
         isSuccess: isGetHotelSuccess,
         isError: isGetHotelError,
-    } = useGetHotelsQuery(accessToken, {
-        skip: accessToken === ''
-    })
+    } = useGetHotelsQuery()
 
     const getAccessToken = async () => {
         try {
-            const token = await getAccessTokenSilently();
+            const token = await getAccessTokenSilently()
             setAccessToken(token)
         } catch (e: any) {
-            throw e;
+            throw e
         }
     }
+
+    console.log({searchValue})
 
     useEffect(() => {
         getAccessToken()
@@ -43,7 +49,18 @@ export const HomePage = () => {
                         Search for hotels
                     </p>
                     <div className="flex flex-col items-center">
-                        <SearchBar/>
+                        <SearchBar
+                            searchValue={searchValue}
+                            setSearchValue={setSearchValue}
+                            cityValue={cityValue}
+                            setCityValue={setCityValue}
+                            roomValue={roomValue}
+                            setRoomValue={setRoomValue}
+                            checkInDate={checkInDate}
+                            setCheckInDate={setCheckInDate}
+                            checkOutDate={checkOutDate}
+                            setCheckOutDate={setCheckOutDate}
+                        />
                         <Hotels hotels={getHotelData.results}/>
                     </div>
                 </div>
