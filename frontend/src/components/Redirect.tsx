@@ -11,4 +11,4 @@ export const Redirect = ({component}: any) => {
         ),
     })
     return <Component/>
-};
+}

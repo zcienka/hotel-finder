@@ -6,6 +6,7 @@ export const SearchResults = () => {
                 Search for hotels
             </p>
             <div className="flex flex-col items-center">
+
             </div>
         </div>
     </div>

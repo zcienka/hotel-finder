@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using Backend.Dtos;
 
 namespace Backend.Controllers
 {
@@ -20,7 +21,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        // [Authorize]
+        [Authorize]
         public async Task<ActionResult<ApiResult<ReservationDto>>> GetReservations([FromQuery] PagingQuery query)
         {
             if (_context.Reservations.ToList().Count == 0)

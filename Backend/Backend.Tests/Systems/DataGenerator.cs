@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Dtos;
+using Backend.Models;
 using Bogus;
 
 namespace Backend.Tests.Systems
@@ -60,7 +61,7 @@ namespace Backend.Tests.Systems
         }
 
 
-        public static ReservationDto GenerateReservationDto(string hotelId, string roomId)
+        public static ReservationDto GenerateReservationDto(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime)
         {
             var reservationDto = new Faker<ReservationDto>()
                 .RuleFor(r => r.CheckInDate, f => f.Date.Future())

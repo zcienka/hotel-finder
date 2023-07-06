@@ -40,7 +40,7 @@ namespace Backend.Tests.Controllers
             var roomsController = new RoomsController(mockContext.Object, _mapper);
 
             // Act
-            var result = await roomsController.GetRoomsInHotel(hotelId);
+            var result = await roomsController.GetAvailableRoomsInHotel(hotelId);
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(result.Result);
@@ -56,13 +56,17 @@ namespace Backend.Tests.Controllers
             string hotelId = hotel.Id;
             var hotels = new List<Hotel> { hotel }
                 .AsQueryable();
-            string roomId = "1";
 
             var rooms = new List<Room>
             {
-              DataGenerator.GenerateRoom(hotelId, roomId),
-              DataGenerator.GenerateRoom(hotelId, roomId),
-              DataGenerator.GenerateRoom(hotelId, roomId),
+                DataGenerator.GenerateRoom(hotelId, "1"),
+                DataGenerator.GenerateRoom(hotelId, "2"),
+                DataGenerator.GenerateRoom(hotelId, "3"),
+            };
+
+            var reservations = new List<Reservation>
+            {
+                DataGenerator.GenerateReservation(hotelId, "1", DateTime.Now, DateTime.MaxValue)
             };
 
             var mockContext = new Mock<ApplicationDbContext>();
@@ -75,19 +79,20 @@ namespace Backend.Tests.Controllers
             mockRoomSet.SetupIQueryable(rooms.AsQueryable());
             mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
 
+            var mockReservationSet = new Mock<DbSet<Reservation>>();
+            mockReservationSet.SetupIQueryable(reservations.AsQueryable());
+            mockContext.SetupGet(m => m.Reservations).Returns(mockReservationSet.Object);
+
             var roomsController = new RoomsController(mockContext.Object, _mapper);
 
             // Act
-            var result = await roomsController.GetRoomsInHotel(hotelId);
+            var result = await roomsController.GetAvailableRoomsInHotel(hotelId);
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
             var okResult = (OkObjectResult)result.Result;
             var returnedRooms = (List<Room>)okResult.Value;
-            Assert.Equal(3, returnedRooms.Count);
-            Assert.Equal(rooms[0].Id, returnedRooms[0].Id);
-            Assert.Equal(rooms[1].Id, returnedRooms[1].Id);
-            Assert.Equal(rooms[2].Id, returnedRooms[2].Id);
+            Assert.Equal(2, returnedRooms.Count);
         }
 
         [Fact]
@@ -98,14 +103,8 @@ namespace Backend.Tests.Controllers
             string hotelId = hotel.Id;
 
             var hotels = new List<Hotel> { hotel }.AsQueryable();
-            var roomDto = new RoomDto
-            {
-                Capacity = 2,
-                Name = "",
-                Description = "",
-                Price = 100,
-                HotelId = hotelId
-            };
+            string roomId = "1";
+            var roomDto = DataGenerator.GenerateRoomDto(hotelId);
 
             var rooms = new List<Room>().AsQueryable();
 

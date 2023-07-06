@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
+using Backend.Dtos;
 
 namespace Backend.Controllers
 {
@@ -22,7 +23,6 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResult<Room>>> GetRooms([FromQuery] PagingQuery query)
         {
-
             if (_context.Rooms.ToList().Count == 0)
             {
                 return NotFound("No rooms found");
@@ -34,7 +34,7 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            var rooms =  _context.Rooms.ToList();
+            var rooms = _context.Rooms.ToList();
 
             return await ApiResult<Room>.CreateAsync(
                 rooms,
@@ -45,8 +45,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet("hotel/{id}")]
-        public async Task<ActionResult<List<Room>>> GetRoomsInHotel(string id)
-        {   
+        public async Task<ActionResult<ApiResult<RoomDto>>> GetAvailableRoomsInHotel(string id,
+            [FromQuery] PagingQuery query)
+        {
             var hotel = _context.Hotels.FirstOrDefault(h => h.Id == id);
 
             if (hotel == null)
@@ -54,21 +55,43 @@ namespace Backend.Controllers
                 return NotFound("Hotel with given id does not exist");
             }
 
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
             if (_context.Rooms.ToList().Count == 0)
             {
                 return NotFound("No rooms found");
             }
 
-            var rooms = _context.Rooms
-                .Where(r => r.HotelId == id)
+            var reservedRooms = _context.Reservations
+                .Where(r => r.HotelId == id &&
+                            r.CheckInDate <= DateTime.Now &&
+                            r.CheckOutDate >= DateTime.Now)
+                .Select(r => r.RoomId)
                 .ToList();
-            
+
+            var rooms = _context.Rooms
+                .Where(r => !reservedRooms.Contains(r.Id) &&
+                            r.HotelId == id)
+                .ToList();
+
+
             if (rooms.Count == 0)
             {
-                return NotFound("No rooms registered in a given hotel");
+                return NotFound("No available rooms in the given hotel");
             }
 
-            return Ok(rooms.ToList());
+            var roomDtos = rooms.Select(room => _mapper.Map<RoomDto>(room)).ToList();
+
+            return await ApiResult<RoomDto>.CreateAsync(
+                roomDtos,
+                offsetInt,
+                limitInt,
+                "/rooms"
+            );
         }
 
         [HttpGet("{id}")]

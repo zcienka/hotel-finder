@@ -24,7 +24,7 @@ namespace Backend.Tests.Systems.Controllers
             var hotel = DataGenerator.GenerateHotel();
             string hotelId = hotel.Id;
 
-            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, "roomId");
+            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, "roomId", DateTime.MinValue, DateTime.MaxValue);
 
             var mockContext = new Mock<ApplicationDbContext>();
 
@@ -58,7 +58,7 @@ namespace Backend.Tests.Systems.Controllers
             var hotel = DataGenerator.GenerateHotel();
             string hotelId = hotel.Id;
 
-            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, "roomId");
+            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, "roomId", DateTime.MinValue, DateTime.MaxValue);
 
             var mockContext = new Mock<ApplicationDbContext>();
 
@@ -95,7 +95,7 @@ namespace Backend.Tests.Systems.Controllers
             string roomId = "1";
             var room = DataGenerator.GenerateRoom(hotelId, roomId);
 
-            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId);
+            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId, DateTime.MinValue, DateTime.MaxValue);
 
             var mockContext = new Mock<ApplicationDbContext>();
 
@@ -148,14 +148,7 @@ namespace Backend.Tests.Systems.Controllers
             DateTime checkInDate = new DateTime(2023, 6, 6);
             DateTime checkOutDate = new DateTime(2023, 6, 8);
 
-            var reservationDto = new ReservationDto
-            {
-                HotelId = hotelId,
-                UserEmail = "1",
-                RoomId = roomId,
-                CheckInDate = new DateTime(2023, 6, 1),
-                CheckOutDate = new DateTime(2023, 6, 5)
-            };
+            var reservation = DataGenerator.GenerateReservationDto(hotelId, roomId, checkInDate, checkOutDate);
 
             var existingReservation = DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate);
 
@@ -180,7 +173,7 @@ namespace Backend.Tests.Systems.Controllers
             var reservationController = new ReservationsController(mockContext.Object, _mapper);
 
             // Act
-            var result = await reservationController.PostReservation(reservationDto);
+            var result = await reservationController.PostReservation(reservation);
 
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -197,14 +190,7 @@ namespace Backend.Tests.Systems.Controllers
             DateTime checkInDate = new DateTime(2023, 6, 6);
             DateTime checkOutDate = new DateTime(2023, 6, 8);
 
-            var reservationDto = new ReservationDto
-            {
-                HotelId = hotelId,
-                UserEmail = "1",
-                RoomId = roomId,
-                CheckInDate = new DateTime(2023, 6, 7),
-                CheckOutDate = new DateTime(2023, 6, 10)
-            };
+            var reservationDto = DataGenerator.GenerateReservationDto(hotelId, roomId, checkInDate, checkOutDate);
 
             var existingReservation = DataGenerator.GenerateReservation(hotelId, roomId, checkInDate, checkOutDate);
 

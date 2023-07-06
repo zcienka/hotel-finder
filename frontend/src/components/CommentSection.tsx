@@ -1,22 +1,21 @@
 import React, {useState} from "react"
 import {v4 as uuid4} from "uuid"
 import {useGetCommentsQuery} from "../services/commentsApi"
-import {CommentItem} from "./CommentItem"
-import Loading from "./Loading";
+import {SingleComment} from "./SingleComment"
 
 interface Props {
     hotelId: string,
     accessToken: string
 }
 
-export const Comments: React.FC<Props> = ({hotelId, accessToken}) => {
+export const CommentSection: React.FC<Props> = ({hotelId, accessToken}) => {
     const {
         data: getCommentData,
         isFetching: isGetCommentFetching,
         isSuccess: isGetCommentSuccess,
         isError: isGetCommentError,
     } = useGetCommentsQuery({accessToken, hotelId}, {
-        skip: accessToken === ''
+        skip: accessToken === ""
     })
 
     if (isGetCommentFetching) {
@@ -28,7 +27,7 @@ export const Comments: React.FC<Props> = ({hotelId, accessToken}) => {
 
         const allComments = comments.map((comment) => (
             <div key={uuid4()}>
-                <CommentItem comment={comment}/>
+                <SingleComment comment={comment}/>
             </div>
         ))
 

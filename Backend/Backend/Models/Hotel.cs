@@ -10,6 +10,7 @@ namespace Backend.Models
         public required string Address { get; set; }
         public required string City { get; set; }
         public required string PhoneNumber { get; set; }
+        public required string Category { get; set; }
         public int Stars { get; set; } = 0;
     }
 }

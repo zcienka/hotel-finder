@@ -1,4 +1,4 @@
-﻿namespace Backend.Models
+﻿namespace Backend.Dtos
 {
     public class CommentDto
     {

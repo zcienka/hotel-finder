@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Backend.Dtos;
 using Backend.Models;
 
 namespace Backend.Profiles
@@ -14,7 +15,7 @@ namespace Backend.Profiles
             CreateMap<Comment, CommentDto>();
             CreateMap<CommentDto, Comment>();
 
-            CreateMap<Room, RoomDto>();
+            CreateMap<Room, RoomDto>().ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetRoomImages(src.HotelId)));
             CreateMap<RoomDto, Room>();
 
             CreateMap<Reservation, ReservationDto>();
@@ -26,9 +27,19 @@ namespace Backend.Profiles
             var baseUri = "http://localhost:8088";
             var directoryPath = "./images";
             var files = Directory.GetFiles(directoryPath, hotelId + "_*.jpg").ToList();
-            var allImageFilePaths = files.Select(file => Path.Combine(baseUri, file)).ToList();
+            var imageFilePaths = files.Select(file => Path.Combine(baseUri, file)).ToList();
 
-            return allImageFilePaths;
+            return imageFilePaths;
+        }
+
+        private List<string> GetRoomImages(string hotelId)
+        {
+            var baseUri = "http://localhost:8088";
+            var directoryPath = "./images";
+            var files = Directory.GetFiles(directoryPath, hotelId + "_room" + "_*.jpg").ToList();
+            var imageFilePaths = files.Select(file => Path.Combine(baseUri, file)).ToList();
+
+            return imageFilePaths;
         }
     }
 }
