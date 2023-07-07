@@ -1,7 +1,9 @@
 import {createApi} from "@reduxjs/toolkit/query/react"
-import baseQuery from "../utils/baseQuery"
+import baseQuery from "../utils/BaseQuery"
 import {Hotel} from "../utils/Hotel"
-import {ApiList} from "../utils/ApiList";
+import {ApiList} from "../utils/ApiList"
+import {Room} from "../utils/Room"
+import {SearchQuery} from "../utils/SearchQuery"
 
 export const hotelApi = createApi({
     reducerPath: "hotelApi",
@@ -13,17 +15,47 @@ export const hotelApi = createApi({
                 method: "GET",
             }),
         }),
-
         getSingleHotel: builder.query<Hotel, { hotelId: string }>({
             query: ({hotelId}) => ({
                 url: `/hotels/${hotelId}`,
                 method: "GET",
             }),
         }),
+        searchHotels: builder.query<ApiList<Hotel>, SearchQuery>({
+            query: (body: SearchQuery) => {
+                let url = `/hotels?limit=10`;
+
+                if (body.name) {
+                    url += `&name=${body.name}`;
+                }
+
+                if (body.city) {
+                    url += `&city=${body.city}`;
+                }
+
+                if (body.roomCount) {
+                    url += `&roomCount=${body.roomCount}`;
+                }
+
+                if (body.checkInDate) {
+                    url += `&checkInDate=${body.checkInDate}`;
+                }
+
+                if (body.checkOutDate) {
+                    url += `&checkOutDate=${body.checkOutDate}`;
+                }
+
+                return {
+                    url: url,
+                    method: "GET",
+                }
+            },
+        }),
     })
 })
 
 export const {
     useGetHotelsQuery,
-    useGetSingleHotelQuery
+    useGetSingleHotelQuery,
+    useSearchHotelsQuery,
 } = hotelApi

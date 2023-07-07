@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
-using Microsoft.IdentityModel.Tokens;
 using Backend.Dtos;
 
 namespace Backend.Controllers

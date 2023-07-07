@@ -22,11 +22,12 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResult<HotelResponse>>> GetHotels(
             [FromQuery] PagingQuery query,
+            [FromQuery] string? name,
             [FromQuery] string? city,
             [FromQuery] DateTimeOffset? checkInDate,
             [FromQuery] DateTimeOffset? checkOutDate,
             [FromQuery] int? roomCount)
-        {
+        {   
             if (_context.Hotels.ToList().Count == 0)
             {
                 return NotFound("No hotels found");

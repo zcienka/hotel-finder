@@ -1,7 +1,7 @@
 import {useParams} from "react-router-dom"
 import Navbar from "../components/Navbar"
 import {useEffect, useState} from "react"
-import {useGetSingleHotelQuery} from "../services/hotelApi"
+import {useGetSingleHotelQuery, useSearchHotelsQuery} from "../services/HotelApi"
 import Loading from "../components/Loading"
 import {useAuth0} from "@auth0/auth0-react"
 import {v4 as uuid4} from "uuid"
@@ -10,8 +10,8 @@ import {ReactComponent as PlusIcon} from "../icons/plusIcon.svg"
 import {ReactComponent as LeftArrowIcon} from "../icons/leftArrow.svg"
 import {ReactComponent as RightArrowIcon} from "../icons/rightArrow.svg"
 import {ReactComponent as XMark} from "../icons/xMark.svg"
-import {AvailableRooms} from "../components/AvailableRooms";
-import {useGetRoomsInHotelQuery} from "../services/roomApi";
+import {AvailableRooms} from "../components/AvailableRooms"
+import {useGetRoomsInHotelQuery} from "../services/RoomApi"
 
 export const HotelDetailPage = () => {
     const {id} = useParams()
@@ -19,7 +19,6 @@ export const HotelDetailPage = () => {
     const {getAccessTokenSilently} = useAuth0()
     const [selectedImage, setSelectedImage] = useState("")
     const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-
     const [hotelId, setHotelId] = useState<string>("")
 
     const getAccessToken = async () => {
@@ -58,6 +57,8 @@ export const HotelDetailPage = () => {
             skip: hotelId === "",
         }
     )
+
+
 
     useEffect(() => {
         if (id !== undefined) {

@@ -1,5 +1,5 @@
 import {createApi} from "@reduxjs/toolkit/query/react"
-import baseQuery from "../utils/baseQuery"
+import baseQuery from "../utils/BaseQuery"
 import {Comment} from "../utils/Comment"
 import {ApiList} from "../utils/ApiList";
 

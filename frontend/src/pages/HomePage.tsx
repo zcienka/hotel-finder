@@ -2,9 +2,11 @@ import SearchBar from "../components/SearchBar"
 import Navbar from "../components/Navbar"
 import {useAuth0} from "@auth0/auth0-react"
 import {useEffect, useState} from "react"
-import {useGetHotelsQuery} from "../services/hotelApi"
+import {useGetHotelsQuery, useSearchHotelsQuery} from "../services/HotelApi"
 import Loading from "../components/Loading"
 import {Hotels} from "../components/Hotels"
+import {SearchQuery} from "../utils/SearchQuery";
+import {SearchResults} from "./SearchResults";
 
 export const HomePage = () => {
     const {getAccessTokenSilently, loginWithRedirect} = useAuth0()
@@ -15,6 +17,7 @@ export const HomePage = () => {
     const [roomValue, setRoomValue] = useState("")
     const [checkInDate, setCheckInDate] = useState("")
     const [checkOutDate, setCheckOutDate] = useState("")
+    const [isSearchHotel, setIsSearchHotel] = useState(false)
 
     const {
         data: getHotelData,
@@ -22,6 +25,23 @@ export const HomePage = () => {
         isSuccess: isGetHotelSuccess,
         isError: isGetHotelError,
     } = useGetHotelsQuery()
+
+    const {
+        data: getSearchHotelsData,
+        isFetching: isSearchHotelsFetching,
+        isSuccess: isSearchHotelsSuccess,
+        isError: isSearchHotelsError,
+    } = useSearchHotelsQuery(
+        {
+            name: searchValue,
+            city: cityValue,
+            roomCount: parseInt(roomValue),
+            checkInDate: checkInDate,
+            checkOutDate: checkOutDate,
+        } as SearchQuery, {
+            skip: !isSearchHotel,
+        }
+    )
 
     const getAccessToken = async () => {
         try {
@@ -60,8 +80,11 @@ export const HomePage = () => {
                             setCheckInDate={setCheckInDate}
                             checkOutDate={checkOutDate}
                             setCheckOutDate={setCheckOutDate}
+                            setIsSearchHotel={setIsSearchHotel}
                         />
-                        <Hotels hotels={getHotelData.results}/>
+                        {getSearchHotelsData ?
+                            <Hotels hotels={getSearchHotelsData.results}/> :
+                            <Hotels hotels={getHotelData.results}/>}
                     </div>
                 </div>
             </div>

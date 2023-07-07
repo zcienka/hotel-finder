@@ -1,8 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit'
-import {hotelApi} from "../services/hotelApi"
+import {hotelApi} from "../services/HotelApi"
 import {setupListeners} from "@reduxjs/toolkit/query"
-import {commentsApi} from "../services/commentsApi";
-import {roomApi} from "../services/roomApi";
+import {commentsApi} from "../services/CommentsApi";
+import {roomApi} from "../services/RoomApi";
 
 const store = configureStore({
     reducer: {

@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import {v4 as uuid4} from "uuid"
-import {useGetCommentsQuery} from "../services/commentsApi"
+import {useGetCommentsQuery} from "../services/CommentsApi"
 import {SingleComment} from "./SingleComment"
 
 interface Props {

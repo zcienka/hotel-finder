@@ -1,5 +1,5 @@
 import {createApi} from "@reduxjs/toolkit/query/react"
-import baseQuery from "../utils/baseQuery"
+import baseQuery from "../utils/BaseQuery"
 import {ApiList} from "../utils/ApiList"
 import {Room} from "../utils/Room"
 
@@ -13,6 +13,7 @@ export const roomApi = createApi({
                 method: "GET",
             }),
         }),
+
     })
 })
 
