@@ -16,10 +16,11 @@ import {useGetRoomsInHotelQuery} from "../services/RoomApi"
 export const HotelDetailPage = () => {
     const {id} = useParams()
     const [accessToken, setAccessToken] = useState<string | "">("")
-    const {getAccessTokenSilently} = useAuth0()
+    const {getAccessTokenSilently, user} = useAuth0()
     const [selectedImage, setSelectedImage] = useState("")
     const [selectedImageIndex, setSelectedImageIndex] = useState(0)
     const [hotelId, setHotelId] = useState<string>("")
+
 
     const getAccessToken = async () => {
         try {
@@ -57,8 +58,6 @@ export const HotelDetailPage = () => {
             skip: hotelId === "",
         }
     )
-
-
 
     useEffect(() => {
         if (id !== undefined) {
@@ -133,7 +132,7 @@ export const HotelDetailPage = () => {
                         </div>
                     </div>
                     <AvailableRooms rooms={rooms}/>
-                    <CommentSection hotelId={hotelId} accessToken={accessToken}/>
+                    <CommentSection hotelId={hotelId} accessToken={accessToken} email={user?.email}/>
                 </div>
             </div>
             {selectedImage && (

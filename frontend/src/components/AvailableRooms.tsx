@@ -11,7 +11,9 @@ export const AvailableRooms: React.FC<Props> = ({rooms}) => {
     const [roomPreview, setShowRoomPreview] = useState<Room | undefined>(undefined)
 
     const allRooms = rooms.map((room) => (
-        <RoomPreview room={room}/>
+        <div className="flex" key={uuid4()} onClick={() => setShowRoomPreview(() => room)}>
+            <RoomPreview room={room}/>
+        </div>
     ))
 
     return <div className="">

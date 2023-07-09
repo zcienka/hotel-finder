@@ -41,6 +41,11 @@ namespace Backend.Controllers
 
             var hotels = _context.Hotels.AsQueryable();
 
+            if (name != null)
+            {
+                hotels = hotels.Where(hotel => hotel.Name.ToLower().Contains(name.ToLower()));
+            }
+
             if (roomCount != null)
             {
                 hotels = from hotel in hotels

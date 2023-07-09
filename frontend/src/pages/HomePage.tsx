@@ -5,11 +5,10 @@ import {useEffect, useState} from "react"
 import {useGetHotelsQuery, useSearchHotelsQuery} from "../services/HotelApi"
 import Loading from "../components/Loading"
 import {Hotels} from "../components/Hotels"
-import {SearchQuery} from "../utils/SearchQuery";
-import {SearchResults} from "./SearchResults";
+import {SearchQuery} from "../utils/SearchQuery"
 
 export const HomePage = () => {
-    const {getAccessTokenSilently, loginWithRedirect} = useAuth0()
+    const {getAccessTokenSilently, isAuthenticated, user} = useAuth0()
     const [accessToken, setAccessToken] = useState<string | "">("")
 
     const [searchValue, setSearchValue] = useState("")
@@ -45,14 +44,14 @@ export const HomePage = () => {
 
     const getAccessToken = async () => {
         try {
-            const token = await getAccessTokenSilently()
-            setAccessToken(token)
+            if (isAuthenticated) {
+                const token = await getAccessTokenSilently()
+                setAccessToken(token)
+            }
         } catch (e: any) {
             throw e
         }
     }
-
-    console.log({searchValue})
 
     useEffect(() => {
         getAccessToken()

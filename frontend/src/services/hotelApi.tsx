@@ -2,7 +2,6 @@ import {createApi} from "@reduxjs/toolkit/query/react"
 import baseQuery from "../utils/BaseQuery"
 import {Hotel} from "../utils/Hotel"
 import {ApiList} from "../utils/ApiList"
-import {Room} from "../utils/Room"
 import {SearchQuery} from "../utils/SearchQuery"
 
 export const hotelApi = createApi({
