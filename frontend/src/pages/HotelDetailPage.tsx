@@ -1,7 +1,7 @@
 import {useParams} from "react-router-dom"
 import Navbar from "../components/Navbar"
 import {useEffect, useState} from "react"
-import {useGetSingleHotelQuery, useSearchHotelsQuery} from "../services/HotelApi"
+import {useGetSingleHotelQuery} from "../services/HotelApi"
 import Loading from "../components/Loading"
 import {useAuth0} from "@auth0/auth0-react"
 import {v4 as uuid4} from "uuid"
@@ -21,7 +21,6 @@ export const HotelDetailPage = () => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0)
     const [hotelId, setHotelId] = useState<string>("")
 
-
     const getAccessToken = async () => {
         try {
             const token = await getAccessTokenSilently()
@@ -40,9 +39,7 @@ export const HotelDetailPage = () => {
         isFetching: isGetSingleHotelFetching,
         isSuccess: isGetSingleHotelSuccess,
         isError: isGetSingleHotelError,
-    } = useGetSingleHotelQuery({
-            hotelId,
-        }, {
+    } = useGetSingleHotelQuery({hotelId}, {
             skip: hotelId === "",
         }
     )
@@ -52,9 +49,7 @@ export const HotelDetailPage = () => {
         isFetching: isGetRoomsFetching,
         isSuccess: isGetRoomsSuccess,
         isError: isGetRoomsError,
-    } = useGetRoomsInHotelQuery({
-            hotelId,
-        }, {
+    } = useGetRoomsInHotelQuery({hotelId}, {
             skip: hotelId === "",
         }
     )

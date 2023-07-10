@@ -24,7 +24,7 @@ export const CommentSection: React.FC<Props> = ({hotelId, accessToken, email}) =
 
     const [addComment] = useAddCommentMutation()
 
-    const commentHotel = async (comment: string) => {
+    const handleCommentHotel = async () => {
         if (email !== undefined) {
             const fullComment: CommentRequest = {
                 userEmail: email,
@@ -57,8 +57,8 @@ export const CommentSection: React.FC<Props> = ({hotelId, accessToken, email}) =
                 <div className="flex flex-row">
                     <input className="w-full py-2 px-4 my-2 bg-custom-blue-700 drop-shadow-lg rounded-2xl"
                            placeholder="Add a comment"
-                           onChange={(e) => setComment(() => e.target.value)}/>
-                    <button className="my-2 ml-2" onClick={() => commentHotel(comment)}>Comment</button>
+                           onChange={(e)     => setComment(() => e.target.value)}/>
+                    <button className="my-2 ml-2" onClick={() => handleCommentHotel()}>Comment</button>
                 </div>}
             {allComments}
         </div>

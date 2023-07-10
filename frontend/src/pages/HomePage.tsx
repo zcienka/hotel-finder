@@ -37,7 +37,7 @@ export const HomePage = () => {
             roomCount: parseInt(roomValue),
             checkInDate: checkInDate,
             checkOutDate: checkOutDate,
-        } as SearchQuery, {
+        }, {
             skip: !isSearchHotel,
         }
     )

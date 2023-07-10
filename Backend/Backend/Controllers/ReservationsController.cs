@@ -91,6 +91,14 @@ namespace Backend.Controllers
             return reservation;
         }
 
+        // [HttpPost]
+        // [Authorize]
+        // public async Task<ActionResult<Reservation>> BookRoom(Room room)
+        // {
+        //     
+        //     return Ok("Room has been successfully booked");
+        // }
+
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutReservation(string id, Reservation reservation)
