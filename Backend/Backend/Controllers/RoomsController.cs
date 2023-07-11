@@ -94,7 +94,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Room>> GetRoom(int id)
+        public async Task<ActionResult<RoomDto>> GetRoom(string id)
         {
             var room = await _context.Rooms.FindAsync(id);
 
@@ -103,7 +103,9 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            return room;
+            var roomDto = _mapper.Map<RoomDto>(room);
+
+            return roomDto;
         }
 
         [HttpPut("{id}")]

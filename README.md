@@ -11,6 +11,10 @@ A full-stack application built with React and ASP.NET Core Web API that allows u
   <img src="./res/detail-page.png" alt="Main page">
 </div>
 
+<div style="text-align: center;">
+  <img src="./res/room-detail-page.png" alt="Main page">
+</div>
+
 Images: [Unsplash](https://unsplash.com/)
 
 Icons: [Heroicons](https://heroicons.com/) and [Google Material Icons](https://fonts.google.com/icons)

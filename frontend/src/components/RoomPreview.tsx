@@ -20,8 +20,8 @@ export const RoomPreview: React.FC<Props> = ({room}) => {
                     Book Now
                 </button>
             </div>
-            <div className="flex flex-row items-center ">
-                <div className="h-5 w-5 mr-2 ">
+            <div className="flex flex-row items-center">
+                <div className="h-5 w-5 mr-2">
                     <PersonIcon/>
                 </div>
                 <p className="text-gray-400 font-semibold">{room.capacity}</p>
