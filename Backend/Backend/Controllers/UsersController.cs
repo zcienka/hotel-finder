@@ -91,6 +91,7 @@ namespace Backend.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Email }, user);
         }
 
+
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteUser(string id)

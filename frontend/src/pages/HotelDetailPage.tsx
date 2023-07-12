@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom"
 import Navbar from "../components/Navbar"
-import {useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {useGetSingleHotelQuery} from "../services/HotelApi"
 import Loading from "../components/Loading"
 import {useAuth0} from "@auth0/auth0-react"
@@ -12,6 +12,7 @@ import {ReactComponent as RightArrowIcon} from "../icons/rightArrow.svg"
 import {ReactComponent as XMark} from "../icons/xMark.svg"
 import {AvailableRooms} from "../components/AvailableRooms"
 import {useGetRoomsInHotelQuery} from "../services/RoomApi"
+import {Helmet} from "react-helmet";
 
 export const HotelDetailPage = () => {
     const {id} = useParams()
@@ -80,6 +81,9 @@ export const HotelDetailPage = () => {
 
         return <>
             <Navbar/>
+            <Helmet>
+                <title>{hotel.name}</title>
+            </Helmet>
             <div className="flex justify-center">
                 <div className="w-256 py-4">
                     <div className="bg-custom-blue-700 shadow-lg rounded-2xl overflow-hidden">

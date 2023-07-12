@@ -46,7 +46,7 @@ namespace Backend.Controllers
             ));
         }
 
-        [HttpGet("user/{id}")]
+        [HttpGet("user/{userEmail}")]
         [Authorize]
         public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, string userEmail)
         {
@@ -90,14 +90,6 @@ namespace Backend.Controllers
 
             return reservation;
         }
-
-        // [HttpPost]
-        // [Authorize]
-        // public async Task<ActionResult<Reservation>> BookRoom(Room room)
-        // {
-        //     
-        //     return Ok("Room has been successfully booked");
-        // }
 
         [HttpPut("{id}")]
         [Authorize]

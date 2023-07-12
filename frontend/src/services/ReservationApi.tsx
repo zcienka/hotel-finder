@@ -8,14 +8,15 @@ export const reservationApi = createApi({
     baseQuery: baseQuery,
     tagTypes: ["Reservation"],
     endpoints: (builder) => ({
-        getReservationsByUser: builder.query<ApiList<Reservation>, { hotelId: string }>({
-            query: ({hotelId}) => ({
-                url: `/reservations/hotel/${hotelId}`,
+        getReservationsByUser: builder.query<ApiList<Reservation>, { accessToken: string, userEmail: string }>({
+            query: (body) => ({
+                url: `/reservations/user/${body.userEmail}`,
                 method: "GET",
+                headers: {authorization: `Bearer ${body.accessToken}`},
             }),
             providesTags: ["Reservation"],
         }),
-        createReservation: builder.mutation<Reservation, {reservation: ReservationRequest, accessToken: string}>({
+        createReservation: builder.mutation<Reservation, { reservation: ReservationRequest, accessToken: string }>({
             query: (body) => ({
                 url: "/reservations",
                 method: "POST",
