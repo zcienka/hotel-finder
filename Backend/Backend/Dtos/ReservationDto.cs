@@ -1,4 +1,6 @@
-﻿namespace Backend.Dtos
+﻿using Backend.Models;
+
+namespace Backend.Dtos
 {
     public class ReservationDto
     {
@@ -7,5 +9,7 @@
         public required string HotelId { get; set; }
         public required string RoomId { get; set; }
         public required string UserEmail { get; set; }
+        public required string Image { get; set;}
+        public required Hotel Hotel { get; set;}
     }
 }

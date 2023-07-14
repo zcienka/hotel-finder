@@ -1,4 +1,6 @@
-﻿namespace Backend.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Backend.Models
 {
     public class Reservation
     {
@@ -9,5 +11,7 @@
         public required string RoomId { get; set; }
         public required string UserEmail { get; set; }
 
+        [ForeignKey("HotelId")] 
+        public Hotel Hotel { get; set; }
     }
 }

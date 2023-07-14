@@ -18,7 +18,8 @@ namespace Backend.Profiles
             CreateMap<Room, RoomDto>().ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetRoomImages(src.HotelId)));
             CreateMap<RoomDto, Room>();
 
-            CreateMap<Reservation, ReservationDto>();
+            CreateMap<Reservation, ReservationDto>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetRoomImages(src.HotelId)));
             CreateMap<ReservationDto, Reservation>();
         }
 
@@ -41,5 +42,7 @@ namespace Backend.Profiles
 
             return imageFilePaths;
         }
+
+  
     }
 }

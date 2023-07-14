@@ -61,8 +61,14 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            var reservations = _context.Reservations.Where(r => r.UserEmail == userEmail).ToList();
-            var reservationDtos = reservations.Select(r => _mapper.Map<ReservationDto>(r)).ToList();
+            var reservations = _context.Reservations.Where(r => r.UserEmail == userEmail)
+                .Include(r => r.Hotel).ToList();
+            var reservationDtos = reservations.Select(r =>
+            {
+                var reservationDto = _mapper.Map<ReservationDto>(r);
+                reservationDto.Hotel = r.Hotel;
+                return reservationDto;
+            }).ToList();
 
             return Ok(await ApiResult<ReservationDto>.CreateAsync(
                 reservationDtos,
@@ -145,6 +151,11 @@ namespace Backend.Controllers
             {
                 return NotFound("Room with that id not found");
             }
+
+            if (reservationDto.CheckOutDate <= reservationDto.CheckInDate)
+{
+    return BadRequest("Check-out date must be later than the check-in date. Please select a valid check-out date.");
+}
 
             var reservations =  _context.Reservations.ToList();
 

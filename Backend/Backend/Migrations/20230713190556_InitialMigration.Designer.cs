@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230703162500_AddRoomsNumberToHotel")]
-    partial class AddRoomsNumberToHotel
+    [Migration("20230713190556_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,12 +48,30 @@ namespace Backend.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Backend.Models.CustomUser", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("LikedHotels")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Email");
+
+                    b.ToTable("CustomUsers");
+                });
+
             modelBuilder.Entity("Backend.Models.Hotel", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
                     b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -73,9 +91,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RoomsNumber")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Stars")
                         .HasColumnType("integer");
 
@@ -89,10 +104,10 @@ namespace Backend.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CheckInDate")
+                    b.Property<DateTimeOffset>("CheckInDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CheckOutDate")
+                    b.Property<DateTimeOffset>("CheckOutDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("HotelId")
@@ -138,20 +153,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("Backend.Models.User", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
-                    b.Property<List<string>>("LikedHotels")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.HasKey("Email");
-
-                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,7 +12,7 @@ import {ReactComponent as RightArrowIcon} from "../icons/rightArrow.svg"
 import {ReactComponent as XMark} from "../icons/xMark.svg"
 import {AvailableRooms} from "../components/AvailableRooms"
 import {useGetRoomsInHotelQuery} from "../services/RoomApi"
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet"
 
 export const HotelDetailPage = () => {
     const {id} = useParams()

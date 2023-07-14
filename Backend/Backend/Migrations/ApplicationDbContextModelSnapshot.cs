@@ -45,6 +45,20 @@ namespace Backend.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Backend.Models.CustomUser", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("LikedHotels")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Email");
+
+                    b.ToTable("CustomUsers");
+                });
+
             modelBuilder.Entity("Backend.Models.Hotel", b =>
                 {
                     b.Property<string>("Id")
@@ -136,20 +150,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("Backend.Models.User", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
-                    b.Property<List<string>>("LikedHotels")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.HasKey("Email");
-
-                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

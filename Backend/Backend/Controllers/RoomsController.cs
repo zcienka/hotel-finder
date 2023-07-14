@@ -45,7 +45,7 @@ namespace Backend.Controllers
 
         [HttpGet("hotel/{id}")]
         public async Task<ActionResult<ApiResult<RoomDto>>> GetAvailableRoomsInHotel(string id,
-            [FromQuery] PagingQuery query)
+            [FromQuery] PagingQuery query = null)
         {
             var hotel = _context.Hotels.FirstOrDefault(h => h.Id == id);
 

@@ -1,6 +1,5 @@
 import SearchBar from "../components/SearchBar"
 import Navbar from "../components/Navbar"
-import {useAuth0} from "@auth0/auth0-react"
 import React, {useState} from "react"
 import {useGetHotelsQuery, useSearchHotelsQuery} from "../services/HotelApi"
 import Loading from "../components/Loading"

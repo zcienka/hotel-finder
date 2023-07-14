@@ -18,16 +18,16 @@ namespace Backend.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<CustomUser>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.CustomUsers.ToListAsync();
         }
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<User>> GetUser(string id)
+        public async Task<ActionResult<CustomUser>> GetUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.CustomUsers.FindAsync(id);
 
             if (user == null)
             {
@@ -39,7 +39,7 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutUser(string id, User user)
+        public async Task<IActionResult> PutUser(string id, CustomUser user)
         {
             if (id != user.Email)
             {
@@ -69,9 +69,9 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<CustomUser>> PostUser(CustomUser user)
         {
-            _context.Users.Add(user);
+            _context.CustomUsers.Add(user);
             try
             {
                 await _context.SaveChangesAsync();
@@ -96,18 +96,18 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            if (_context.Users == null)
+            if (_context.CustomUsers == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.CustomUsers.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.CustomUsers.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -115,7 +115,7 @@ namespace Backend.Controllers
 
         private bool UserExists(string id)
         {
-            return (_context.Users?.Any(e => e.Email == id)).GetValueOrDefault();
+            return (_context.CustomUsers?.Any(e => e.Email == id)).GetValueOrDefault();
         }
     }
 }
