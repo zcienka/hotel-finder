@@ -83,6 +83,27 @@ namespace Backend.Controllers
             ));
         }
 
+        [HttpGet("user/{userEmail}")]
+        public async Task<ActionResult<ApiResult<CommentDto>>> GetCommentsByUser(string userEmail, [FromQuery] PagingQuery query)
+        {
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var comments = _context.Comments.Where(q => q.UserEmail == userEmail).ToList();
+
+            var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
+
+            return Ok(await ApiResult<CommentDto>.CreateAsync(
+                commentDtos,
+                offsetInt,
+                limitInt,
+                "/comments/user"
+            ));
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComment(string id, Comment comment)
         {

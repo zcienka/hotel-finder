@@ -12,6 +12,7 @@ export const HomePage = () => {
     const [roomValue, setRoomValue] = useState("")
     const [checkInDate, setCheckInDate] = useState("")
     const [checkOutDate, setCheckOutDate] = useState("")
+    const [category, setCategory] = useState("")
     const [isSearchHotel, setIsSearchHotel] = useState(false)
 
     const {
@@ -27,6 +28,7 @@ export const HomePage = () => {
             roomCount: parseInt(roomValue),
             checkInDate: checkInDate,
             checkOutDate: checkOutDate,
+            category: category,
         }, {
             skip: !isSearchHotel,
         }
@@ -47,16 +49,12 @@ export const HomePage = () => {
                     </p>
                     <div className="flex flex-col items-center">
                         <SearchBar
-                            searchValue={searchValue}
                             setSearchValue={setSearchValue}
-                            cityValue={cityValue}
                             setCityValue={setCityValue}
-                            roomValue={roomValue}
                             setRoomValue={setRoomValue}
-                            checkInDate={checkInDate}
                             setCheckInDate={setCheckInDate}
-                            checkOutDate={checkOutDate}
                             setCheckOutDate={setCheckOutDate}
+                            setCategory={setCategory}
                             setIsSearchHotel={setIsSearchHotel}
                         />
                         {getSearchHotelsData ?

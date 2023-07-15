@@ -4,6 +4,7 @@ using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using Backend.Dtos;
+using Backend.Requests;
 
 namespace Backend.Controllers
 {
@@ -36,7 +37,8 @@ namespace Backend.Controllers
             }
 
             var reservations = await _context.Reservations.ToListAsync();
-            var reservationsDtos = reservations.Select(reservation => _mapper.Map<ReservationDto>(reservation)).ToList();
+            var reservationsDtos =
+                reservations.Select(reservation => _mapper.Map<ReservationDto>(reservation)).ToList();
 
             return Ok(await ApiResult<ReservationDto>.CreateAsync(
                 reservationsDtos,
@@ -48,7 +50,8 @@ namespace Backend.Controllers
 
         [HttpGet("user/{userEmail}")]
         [Authorize]
-        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query, string userEmail)
+        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query,
+            string userEmail)
         {
             if (_context.Reservations.ToList().Count == 0)
             {
@@ -57,7 +60,7 @@ namespace Backend.Controllers
 
             if (!int.TryParse(query.Limit, out int limitInt)
                 || !int.TryParse(query.Offset, out int offsetInt))
-            {   
+            {
                 return NotFound();
             }
 
@@ -136,39 +139,41 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Reservation>> PostReservation(ReservationDto reservationDto)
+        public async Task<ActionResult<Reservation>> PostReservation(ReservationRequest reservationRequest)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationDto.HotelId);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationRequest.HotelId);
 
             if (hotel == null)
             {
                 return NotFound("Hotel not found");
             }
 
-            var room = _context.Rooms.FirstOrDefault(r => r.HotelId == reservationDto.HotelId && r.Id == reservationDto.RoomId);
+            var room = _context.Rooms.FirstOrDefault(r =>
+                r.HotelId == reservationRequest.HotelId && r.Id == reservationRequest.RoomId);
 
-            if (room == null || room.HotelId != reservationDto.HotelId)
+            if (room == null || room.HotelId != reservationRequest.HotelId)
             {
                 return NotFound("Room with that id not found");
             }
 
-            if (reservationDto.CheckOutDate <= reservationDto.CheckInDate)
-{
-    return BadRequest("Check-out date must be later than the check-in date. Please select a valid check-out date.");
-}
+            if (reservationRequest.CheckOutDate <= reservationRequest.CheckInDate)
+            {
+                return BadRequest(
+                    "Check-out date must be later than the check-in date.");
+            }
 
-            var reservations =  _context.Reservations.ToList();
+            var reservations = _context.Reservations.ToList();
 
             bool isReservationConflict = reservations.Any(r =>
-                r.RoomId == reservationDto.RoomId && r.HotelId == reservationDto.HotelId &&
-                !(reservationDto.CheckOutDate <= r.CheckInDate || reservationDto.CheckInDate >= r.CheckOutDate)
+                r.RoomId == reservationRequest.RoomId && r.HotelId == reservationRequest.HotelId &&
+                !(reservationRequest.CheckOutDate <= r.CheckInDate || reservationRequest.CheckInDate >= r.CheckOutDate)
             );
             if (isReservationConflict)
             {
                 return BadRequest("Reservation conflicts with existing reservations");
             }
 
-            var reservation = _mapper.Map<Reservation>(reservationDto);
+            var reservation = _mapper.Map<Reservation>(reservationRequest);
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 

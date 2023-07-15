@@ -44,6 +44,10 @@ export const hotelApi = createApi({
                     url += `&checkOutDate=${body.checkOutDate}`;
                 }
 
+                if (body.category !== "default" && body.category !== "") {
+                    url += `&category=${body.category}`;
+                }
+
                 return {
                     url: url,
                     method: "GET",

@@ -8,11 +8,15 @@ A full-stack application built with React and ASP.NET Core Web API that allows u
 </div>
 
 <div style="text-align: center;">
-  <img src="./res/detail-page.png" alt="Main page">
+  <img src="./res/detail-page.png" alt="Hotel detail page">
 </div>
 
 <div style="text-align: center;">
-  <img src="./res/room-detail-page.png" alt="Main page">
+  <img src="./res/room-detail-page.png" alt="Room detail page">
+</div>
+
+<div style="text-align: center;">
+  <img src="./res/user-details.png" alt="User detail page">
 </div>
 
 Images: [Unsplash](https://unsplash.com/)

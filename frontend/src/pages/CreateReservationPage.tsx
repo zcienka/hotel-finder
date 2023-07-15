@@ -10,6 +10,7 @@ import {useCreateReservationMutation} from "../services/ReservationApi"
 import {useAuth0} from "@auth0/auth0-react"
 import {toast, Toaster} from "react-hot-toast"
 import {WarningToast} from "../components/WarningToast"
+import {SuccessToast} from "../components/SuccessToast"
 
 export const CreateReservationPage = () => {
     const {hotelId, id} = useParams()
@@ -44,23 +45,24 @@ export const CreateReservationPage = () => {
 
     const {
         data: getSingleRoomData,
-    } = useGetSingleRoomQuery({roomId},
-        {
-            skip: roomId === "",
-        })
+    } = useGetSingleRoomQuery({roomId}, {skip: roomId === ""})
 
     useEffect(() => {
         getAccessToken()
     }, [getAccessToken])
 
-    const [createReservation] = useCreateReservationMutation()
+    const [createReservation, {
+        isSuccess: isCreateReservationSuccess,
+        isError: isCreateReservationError,
+        error: createReservationError
+    }] = useCreateReservationMutation()
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault()
 
         if (reservation.checkInDate !== "" && reservation.checkOutDate !== "") {
             createReservation({reservation, accessToken})
-            navigate("/")
+
         } else {
             toast.custom((t) => (
                 <WarningToast t={t} message="Please fill in all the fields"/>
@@ -70,6 +72,28 @@ export const CreateReservationPage = () => {
             })
         }
     }
+
+    useEffect(() => {
+        if (isCreateReservationSuccess) {
+            toast.custom((t) => (
+                <SuccessToast t={t} message="Reservation successfully created"/>
+            ), {
+                id: "success-toast",
+                duration: 5000,
+            })
+            navigate("/")
+        } else {
+            if (createReservationError !== undefined) {
+                    const errorMessage: string = (createReservationError as any).data || "An error occurred while creating the reservation"
+                    toast.custom((t) => (
+                        <WarningToast t={t} message={errorMessage}/>
+                    ), {
+                        id: "warning-toast",
+                        duration: 5000,
+                    })
+            }
+        }
+    }, [createReservationError, isCreateReservationSuccess, navigate])
 
     useEffect(() => {
         if (id !== undefined) {

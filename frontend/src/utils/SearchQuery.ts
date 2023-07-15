@@ -4,4 +4,5 @@ export type SearchQuery = {
     checkInDate: string,
     checkOutDate: string,
     roomCount: number,
+    category: string,
 }

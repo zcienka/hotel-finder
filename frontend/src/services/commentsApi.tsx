@@ -6,7 +6,7 @@ import {ApiList} from "../utils/ApiList";
 export const commentsApi = createApi({
     reducerPath: "commentsApi",
     baseQuery: baseQuery,
-    tagTypes: ["Comments"],
+    tagTypes: ["Comments", "UserComments"],
     endpoints: (builder) => ({
         getComments: builder.query<ApiList<Comment>, {accessToken: string, hotelId: string}>({
             query: ({accessToken, hotelId}) => ({
@@ -15,6 +15,14 @@ export const commentsApi = createApi({
                 headers: {authorization: `Bearer ${accessToken}`},
             }),
             providesTags: ["Comments"],
+        }),
+        getCommentsByUser: builder.query<ApiList<Comment>, {accessToken: string, userEmail: string}>({
+            query: ({accessToken, userEmail}) => ({
+                url: `/comments/user/${userEmail}`,
+                method: "GET",
+                headers: {authorization: `Bearer ${accessToken}`},
+            }),
+            providesTags: ["UserComments"],
         }),
         addComment: builder.mutation<Comment, {comment: CommentRequest, accessToken: string}>({
             query: (body) => ({
@@ -31,4 +39,5 @@ export const commentsApi = createApi({
 export const {
     useGetCommentsQuery,
     useAddCommentMutation,
+    useGetCommentsByUserQuery,
 } = commentsApi

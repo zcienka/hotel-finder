@@ -10,7 +10,7 @@ export const WarningToast = ({t, message}: Props) => {
     return <div
         className={`${
             t.visible  ? "animate-enter" : "animate-leave"
-        } bg-custom-blue-700 px-4 rounded-xl py-4 flex`}
+        } bg-custom-blue-700 px-4 rounded-xl py-4 flex w-128`}
     >
         <div
             className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-200 bg-red-500 rounded-lg">

@@ -10,7 +10,7 @@ interface Props {
 export const RoomPreview: React.FC<Props> = ({room}) => {
     const navigate = useNavigate()
 
-    return <div className="w-96 bg-custom-blue-700 rounded-2xl shadow-md overflow-hidden mr-2 mt-2">
+    return <div className="w-96 bg-custom-blue-700 rounded-2xl shadow-lg overflow-hidden mr-2 mt-2">
         <img className="w-full h-56 object-cover" src={room.image[0]} alt="Room Image"/>
 
         <div className="p-4 flex flex-col">

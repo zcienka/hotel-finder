@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using Backend.Requests;
 
 namespace Backend.Controllers
 {
@@ -26,7 +27,8 @@ namespace Backend.Controllers
             [FromQuery] string? city,
             [FromQuery] DateTimeOffset? checkInDate,
             [FromQuery] DateTimeOffset? checkOutDate,
-            [FromQuery] int? roomCount)
+            [FromQuery] int? roomCount,
+            [FromQuery] string? category)
         {   
             if (_context.Hotels.ToList().Count == 0)
             {
@@ -44,6 +46,11 @@ namespace Backend.Controllers
             if (name != null)
             {
                 hotels = hotels.Where(hotel => hotel.Name.ToLower().Contains(name.ToLower()));
+            }
+
+            if (category != null)
+            {
+                hotels = hotels.Where(hotel => hotel.Category.ToLower().Contains(category.ToLower()));
             }
 
             if (roomCount != null)

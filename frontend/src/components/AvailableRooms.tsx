@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 import {Room} from "../utils/Room"
 import {v4 as uuid4} from "uuid"
 import {RoomPreview} from "./RoomPreview"
@@ -8,10 +8,8 @@ interface Props {
 }
 
 export const AvailableRooms: React.FC<Props> = ({rooms}) => {
-    const [roomPreview, setShowRoomPreview] = useState<Room | undefined>(undefined)
-
     const allRooms = rooms.map((room) => (
-        <div className="flex" key={uuid4()} onClick={() => setShowRoomPreview(() => room)}>
+        <div className="flex" key={uuid4()}>
             <RoomPreview room={room}/>
         </div>
     ))

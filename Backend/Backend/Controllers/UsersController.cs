@@ -96,11 +96,6 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            if (_context.CustomUsers == null)
-            {
-                return NotFound();
-            }
-
             var user = await _context.CustomUsers.FindAsync(id);
             if (user == null)
             {
