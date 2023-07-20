@@ -65,7 +65,7 @@ PASSWORD=
 AUTH0_AUTHORITY=
 AUTH0_AUDIENCE=
 ```
-3. Run `docker-compose up --build` to build and run the project
+3. Run `docker-compose up` to build and run the project
 ### Frontend
 1. Open the project folder in a terminal
 2. Create a `.env` file based on the provided example:
