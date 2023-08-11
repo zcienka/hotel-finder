@@ -22,7 +22,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        // [Authorize]
         public async Task<IEnumerable<User>> GetUsers()
         {
             return await _userRepository.GetAll();
@@ -71,7 +71,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<User>> PostUser(User user)
         {
             try
@@ -115,31 +115,49 @@ namespace Backend.Controllers
             return _userRepository.Exists(id);
         }
 
-        // [HttpGet("user/{userEmail}")]
-        // [Authorize]
-        // public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query,
-        //     string userEmail)
-        // {
-        //     if (!int.TryParse(query.Limit, out int limitInt)
-        //         || !int.TryParse(query.Offset, out int offsetInt))
-        //     {
-        //         return NotFound();
-        //     }
-        //
-        //
-        //     var reservationDtos = reservations.Select(r =>
-        //     {
-        //         var reservationDto = _mapper.Map<ReservationDto>(r);
-        //         reservationDto.Hotel = r.Hotel;
-        //         return reservationDto;
-        //     }).ToList();
-        //
-        //     return Ok(await ApiResult<ReservationDto>.CreateAsync(
-        //         reservationDtos,
-        //         offsetInt,
-        //         limitInt,
-        //         "/user"
-        //     ));
-        // }
+        [HttpGet("{userId}/reservations")]
+        [Authorize]
+        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query,
+            string userId)
+        {
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var reservations = _userRepository.GetReservations(userId);
+
+            var reservationDtos = reservations.Select(r => _mapper.Map<ReservationDto>(r)).ToList();
+
+            return Ok(await ApiResult<ReservationDto>.CreateAsync(
+                reservationDtos,
+                offsetInt,
+                limitInt,
+                "/user"
+            ));
+        }
+
+        
+        [HttpGet("{userId}/comments")]
+        public async Task<ActionResult<ApiResult<CommentDto>>> GetCommentsByUser(string userId, [FromQuery] PagingQuery query)
+        {
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+        
+            var comments = _userRepository.GetComments(userId);
+
+            var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
+        
+            return Ok(await ApiResult<CommentDto>.CreateAsync(
+                commentDtos,
+                offsetInt,
+                limitInt,
+                "/comments"
+            ));
+        }
     }
 }

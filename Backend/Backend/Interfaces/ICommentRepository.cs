@@ -11,5 +11,6 @@ namespace Backend.Interfaces
         Task<bool> Save();
         Task<bool> Update(Comment comment);
         bool Exists(string id);
+        bool HotelExists(string id);
     }
 }

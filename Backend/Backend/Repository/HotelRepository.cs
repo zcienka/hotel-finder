@@ -108,5 +108,10 @@ namespace Backend.Repository
         {
             return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        public List<Comment> GetComments(string hotelId)
+        {
+            return _context.Comments.Where(q => q.HotelId == hotelId).ToList();
+        }
     }
 }

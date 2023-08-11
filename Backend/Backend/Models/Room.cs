@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Backend.Models
 {
@@ -13,6 +14,7 @@ namespace Backend.Models
 
         [ForeignKey("HotelId")]
         public virtual Hotel Hotel { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }

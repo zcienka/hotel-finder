@@ -55,10 +55,19 @@ namespace Backend.Repository
             return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public  List<Reservation> GetUserReservations()
+        public  List<Reservation> GetReservations(string userId)
         {
-            return  _context.Users
-                .SelectMany(r => r.Reservations)
+            return _context.Users
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.Reservations)
+                .ToList();
+        }
+
+        public List<Comment> GetComments(string userId)
+        {
+            return _context.Users
+                .Where(u => u.Id == userId)
+                .SelectMany(r => r.Comments)
                 .ToList();
         }
     }

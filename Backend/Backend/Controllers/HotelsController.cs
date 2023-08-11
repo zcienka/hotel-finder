@@ -5,6 +5,7 @@ using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Backend.Requests;
 using Backend.Data;
+using Backend.Dtos;
 using Backend.Interfaces;
 using Backend.Responses;
 
@@ -96,14 +97,14 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> PostHotel(HotelRequest hotelRequest)
         {
             var hotel = _mapper.Map<Hotel>(hotelRequest);
 
             await _hotelRepository.Add(hotel);
 
-            return CreatedAtAction(nameof(GetHotel), new { id = hotel.Id }, hotel);
+            return CreatedAtAction(nameof(GetHotel), new { id = hotel.Id }, hotelRequest);
         }
 
         [HttpDelete("{id}")]
@@ -125,6 +126,27 @@ namespace Backend.Controllers
         private bool HotelExists(string id)
         {
             return _hotelRepository.Exists(id);
+        }
+
+
+        [HttpGet("{hotelId}/comments")]
+        public async Task<ActionResult<ApiResult<CommentDto>>> GetCommentsByHotel(string hotelId, [FromQuery] PagingQuery query)
+        {
+            if (!int.TryParse(query.Limit, out int limitInt)
+                || !int.TryParse(query.Offset, out int offsetInt))
+            {
+                return NotFound();
+            }
+
+            var comments = _hotelRepository.GetComments(hotelId);
+            var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
+
+            return Ok(await ApiResult<CommentDto>.CreateAsync(
+                commentDtos,
+                offsetInt,
+                limitInt,
+                "/comments/hotel"
+            ));
         }
     }
 }

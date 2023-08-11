@@ -1,6 +1,7 @@
 ﻿using Backend.Data;
 using Backend.Interfaces;
 using Backend.Models;
+using Backend.Requests;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repository
@@ -53,6 +54,17 @@ namespace Backend.Repository
         public bool Exists(string id)
         {
             return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public bool HotelExists(string id)
+        {
+            return (_context.Reservations?.Any(e => e.HotelId == id)).GetValueOrDefault();
+        }
+
+        public Room FindRoomInHotel(string hotelId, string roomId)
+        {
+            return _context.Rooms.FirstOrDefault(r =>
+                r.HotelId == hotelId && r.Id == roomId);
         }
     }
 }

@@ -7,6 +7,7 @@ using Backend.Data;
 using Backend.Interfaces;
 using Bogus.DataSets;
 using System.Drawing.Drawing2D;
+using Backend.Requests;
 
 namespace Backend.Controllers
 {
@@ -121,19 +122,20 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Room>> PostRoom(RoomDto roomDto)
+        public async Task<ActionResult<Room>> PostRoom(RoomRequest roomRequest)
         {
-            var hotelExists = _roomRepository.HotelExists(roomDto.HotelId);
+            var hotelExists = _roomRepository.HotelExists(roomRequest.HotelId);
 
             if (!hotelExists)
             {
                 return NotFound("Hotel not found");
             }
 
-            var room = _mapper.Map<Room>(roomDto);
+            var room = _mapper.Map<Room>(roomRequest);
             await _roomRepository.Add(room);
+            var roomResponse = _mapper.Map<RoomRequest>(room);
 
-            return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
+            return CreatedAtAction(nameof(GetRoom), roomResponse);
         }
 
         [HttpDelete("{id}")]

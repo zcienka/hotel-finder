@@ -11,6 +11,7 @@ namespace Backend.Interfaces
         Task<bool> Save();
         Task<bool> Update(User user);
         bool Exists(string id);
-        List<Reservation> GetUserReservations();
+        List<Reservation> GetReservations(string userId);
+        List<Comment> GetComments(string userId);
     }
 }

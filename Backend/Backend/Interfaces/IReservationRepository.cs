@@ -11,5 +11,7 @@ namespace Backend.Interfaces
         Task<bool> Save();
         Task<bool> Update(Reservation reservation);
         bool Exists(string id);
+        bool HotelExists(string id);
+        Room FindRoomInHotel(string hotelId, string roomId);
     }
 }

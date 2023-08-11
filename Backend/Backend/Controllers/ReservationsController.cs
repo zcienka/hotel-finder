@@ -48,12 +48,10 @@ namespace Backend.Controllers
         }
 
 
-
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Reservation>> GetReservation(string id)
         {
-
             var reservation = await _reservationRepository.GetByIdAsync(id);
 
             if (reservation == null)
@@ -73,12 +71,12 @@ namespace Backend.Controllers
                 return BadRequest();
             }
 
-            // var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(reservation.RoomId));
+            var hotelExists = _reservationRepository.HotelExists(reservation.HotelId);
 
-            // if (hotel == null)
-            // {
-            //     return NotFound("Hotel not found");
-            // }
+            if (!hotelExists)
+            {
+                return NotFound("Hotel not found");
+            }
 
             try
             {
@@ -100,23 +98,22 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationRequest reservationRequest)
         {
-            // var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationRequest.HotelId);
+            var hotelExists = _reservationRepository.HotelExists(reservationRequest.HotelId);
 
-            // if (hotel == null)
-            // {
-                // return NotFound("Hotel not found");
-            // }
+            if (!hotelExists)
+            {
+                return NotFound("Hotel not found");
+            }
 
-            // var room = _context.Rooms.FirstOrDefault(r =>
-                // r.HotelId == reservationRequest.HotelId && r.Id == reservationRequest.RoomId);
+            var room = _reservationRepository.FindRoomInHotel(reservationRequest.HotelId, reservationRequest.RoomId);
 
-            // if (room == null || room.HotelId != reservationRequest.HotelId)
-            // {
-                // return NotFound("Room with that id not found");
-            // }
+            if (room == null)
+            {
+                return NotFound("Room with that id not found");
+            }
 
             if (reservationRequest.CheckOutDate <= reservationRequest.CheckInDate)
             {
@@ -138,7 +135,7 @@ namespace Backend.Controllers
             var reservation = _mapper.Map<Reservation>(reservationRequest);
             await _reservationRepository.Add(reservation);
 
-            return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservation);
+            return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservationRequest);
         }
 
         [HttpDelete("{id}")]

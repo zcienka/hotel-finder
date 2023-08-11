@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Requests;
 using Backend.Responses;
 
 namespace Backend.Profiles
@@ -12,16 +13,21 @@ namespace Backend.Profiles
             CreateMap<Hotel, HotelResponse>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetHotelImages(src.Id)));
             CreateMap<HotelResponse, Hotel>();
+            CreateMap<HotelRequest, Hotel>();
 
             CreateMap<Comment, CommentDto>();
             CreateMap<CommentDto, Comment>();
 
             CreateMap<Room, RoomDto>().ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetRoomImages(src.HotelId)));
             CreateMap<RoomDto, Room>();
+            CreateMap<RoomRequest, Room>();
+
 
             CreateMap<Reservation, ReservationDto>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => GetRoomImages(src.HotelId)));
             CreateMap<ReservationDto, Reservation>();
+
+            CreateMap<ReservationRequest, Reservation>();
         }
 
         private List<string> GetHotelImages(string hotelId)
