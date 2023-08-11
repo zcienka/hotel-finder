@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
 using Backend.Dtos;
+using Backend.Data;
+using Backend.Interfaces;
+using Bogus.DataSets;
+using System.Drawing.Drawing2D;
 
 namespace Backend.Controllers
 {
@@ -10,33 +14,28 @@ namespace Backend.Controllers
     [ApiController]
     public class RoomsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRoomRepository _roomRepository;
         private readonly IMapper _mapper;
 
-        public RoomsController(ApplicationDbContext context, IMapper mapper)
+        public RoomsController(IRoomRepository roomRepository, IMapper mapper)
         {
-            _context = context;
+            _roomRepository = roomRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResult<Room>>> GetRooms([FromQuery] PagingQuery query)
         {
-            if (_context.Rooms.ToList().Count == 0)
-            {
-                return NotFound("No rooms found");
-            }
-
             if (!int.TryParse(query.Limit, out int limitInt)
                 || !int.TryParse(query.Offset, out int offsetInt))
             {
                 return NotFound();
             }
 
-            var rooms = _context.Rooms.ToList();
+            var rooms = await _roomRepository.GetAll();
 
             return await ApiResult<Room>.CreateAsync(
-                rooms,
+                rooms.ToList(),
                 offsetInt,
                 limitInt,
                 "/rooms"
@@ -47,9 +46,9 @@ namespace Backend.Controllers
         public async Task<ActionResult<ApiResult<RoomDto>>> GetAvailableRoomsInHotel(string id,
             [FromQuery] PagingQuery query = null)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == id);
+            var hotelExists = _roomRepository.HotelExists(id);
 
-            if (hotel == null)
+            if (!hotelExists)
             {
                 return NotFound("Hotel with given id does not exist");
             }
@@ -60,28 +59,7 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            if (_context.Rooms.ToList().Count == 0)
-            {
-                return NotFound("No rooms found");
-            }
-
-            var reservedRooms = _context.Reservations
-                .Where(r => r.HotelId == id &&
-                            r.CheckInDate <= DateTime.Now &&
-                            r.CheckOutDate >= DateTime.Now)
-                .Select(r => r.RoomId)
-                .ToList();
-
-            var rooms = _context.Rooms
-                .Where(r => !reservedRooms.Contains(r.Id) &&
-                            r.HotelId == id)
-                .ToList();
-
-
-            if (rooms.Count == 0)
-            {
-                return NotFound("No available rooms in the given hotel");
-            }
+            List<Room> rooms = _roomRepository.GetAvailableRoomsById(id);
 
             var roomDtos = rooms.Select(room => _mapper.Map<RoomDto>(room)).ToList();
 
@@ -96,7 +74,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RoomDto>> GetRoom(string id)
         {
-            var room = await _context.Rooms.FindAsync(id);
+            var room = await _roomRepository.GetByIdAsync(id);
 
             if (room == null)
             {
@@ -116,18 +94,16 @@ namespace Backend.Controllers
                 return BadRequest();
             }
 
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(room.HotelId));
+            var hotelExists = _roomRepository.HotelExists(id);
 
-            if (hotel == null)
+            if (!hotelExists)
             {
                 return NotFound("Hotel not found");
             }
 
-            _context.Entry(room).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _roomRepository.Update(room);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -147,16 +123,15 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Room>> PostRoom(RoomDto roomDto)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(roomDto.HotelId));
+            var hotelExists = _roomRepository.HotelExists(roomDto.HotelId);
 
-            if (hotel == null)
+            if (!hotelExists)
             {
                 return NotFound("Hotel not found");
             }
 
             var room = _mapper.Map<Room>(roomDto);
-            _context.Rooms.Add(room);
-            await _context.SaveChangesAsync();
+            await _roomRepository.Add(room);
 
             return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
         }
@@ -164,30 +139,21 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRoom(string id)
         {
-            var room = _context.Rooms.FirstOrDefault(room => room.Id.Equals(id));
+            var room = await _roomRepository.GetByIdAsync(id);
 
             if (room == null)
             {
                 return NotFound();
             }
 
-            _context.Rooms.Remove(room);
-
-            var reservation = _context.Reservations.FirstOrDefault(h => h.RoomId.Equals(id));
-
-            if (reservation != null)
-            {
-                _context.Reservations.Remove(reservation);
-            }
-
-            await _context.SaveChangesAsync();
+            await _roomRepository.Delete(room);
 
             return NoContent();
         }
 
         private bool RoomExists(string id)
         {
-            return (_context.Rooms?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _roomRepository.Exists(id);
         }
     }
 }

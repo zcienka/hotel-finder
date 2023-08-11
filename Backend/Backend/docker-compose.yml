@@ -9,6 +9,7 @@ services:
     depends_on:
       - "db"
     image: hotelfinder
+    command: ["seeddata"]
     ports:
       - "8088:80"
     container_name: hotelfinder

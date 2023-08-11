@@ -9,9 +9,13 @@ namespace Backend.Models
         public required DateTimeOffset CheckOutDate { get; set; }
         public required string HotelId { get; set; }
         public required string RoomId { get; set; }
-        public required string UserEmail { get; set; }
+        public required string UserId { get; set; }
 
-        [ForeignKey("HotelId")] 
-        public Hotel Hotel { get; set; }
+        [ForeignKey("HotelId")]
+        public virtual Hotel Hotel { get; set; }
+        [ForeignKey("RoomId")]
+        public virtual Room Room { get; set; }
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
     }
 }

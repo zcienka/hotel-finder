@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend.Controllers;
+using Backend.Data;
 using Backend.Models;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Responses;
 
 namespace Backend.Profiles
 {

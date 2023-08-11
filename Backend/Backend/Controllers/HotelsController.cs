@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Backend.Requests;
+using Backend.Data;
+using Backend.Interfaces;
+using Backend.Responses;
 
 namespace Backend.Controllers
 {
@@ -11,12 +14,12 @@ namespace Backend.Controllers
     [ApiController]
     public class HotelsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IHotelRepository _hotelRepository;
         private readonly IMapper _mapper;
 
-        public HotelsController(ApplicationDbContext context, IMapper mapper)
+        public HotelsController(IHotelRepository hotelRepository, IMapper mapper)
         {
-            _context = context;
+            _hotelRepository = hotelRepository;
             _mapper = mapper;
         }
 
@@ -30,59 +33,14 @@ namespace Backend.Controllers
             [FromQuery] int? roomCount,
             [FromQuery] string? category)
         {   
-            if (_context.Hotels.ToList().Count == 0)
-            {
-                return NotFound("No hotels found");
-            }
-
             if (!int.TryParse(query.Limit, out int limitInt) ||
                 !int.TryParse(query.Offset, out int offsetInt))
             {
                 return NotFound();
             }
 
-            var hotels = _context.Hotels.AsQueryable();
-
-            if (name != null)
-            {
-                hotels = hotels.Where(hotel => hotel.Name.ToLower().Contains(name.ToLower()));
-            }
-
-            if (category != null)
-            {
-                hotels = hotels.Where(hotel => hotel.Category.ToLower().Contains(category.ToLower()));
-            }
-
-            if (roomCount != null)
-            {
-                hotels = from hotel in hotels
-                    join room in _context.Rooms on hotel.Id equals room.HotelId into hotelRooms
-                    where hotelRooms.Count() >= roomCount
-                    select hotel;
-            }
-
-            if (city != null)
-            {
-                hotels = hotels.Where(hotel => hotel.City.ToLower().Contains(city.ToLower()));
-            }
-
-            if (checkInDate != null && checkOutDate != null)
-            {
-                var hotelsWithFreeRooms = (from hotel in hotels
-                        join room in _context.Rooms on hotel.Id equals room.HotelId
-                        where !_context.Reservations.Any(reservation =>
-                            reservation.HotelId == hotel.Id &&
-                            reservation.RoomId == room.Id &&
-                            (
-                                (reservation.CheckInDate <= checkInDate && reservation.CheckOutDate >= checkInDate) ||
-                                (reservation.CheckInDate <= checkOutDate && reservation.CheckOutDate >= checkOutDate) ||
-                                (reservation.CheckInDate >= checkInDate && reservation.CheckOutDate <= checkOutDate)
-                            ))
-                        select hotel)
-                    .Distinct();
-
-                hotels = hotelsWithFreeRooms;
-            }
+            var hotels = _hotelRepository.GetSearchResults(
+                name, city, checkInDate, checkOutDate, roomCount, category);
 
             var searchResponse = hotels.Select(hotel => _mapper.Map<HotelResponse>(hotel)).ToList();
 
@@ -97,12 +55,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<HotelResponse>> GetHotel(string id)
         {
-            if (_context.Hotels.ToList().Count == 0)
-            {
-                return NotFound("No hotels found");
-            }
-
-            var hotel = await _context.Hotels.FindAsync(id);
+            var hotel = await _hotelRepository.GetByIdAsync(id);
 
             if (hotel == null)
             {
@@ -123,11 +76,9 @@ namespace Backend.Controllers
                 return BadRequest("Hotel with a given id does not exist.");
             }
 
-            _context.Entry(hotel).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _hotelRepository.Update(hotel);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -150,9 +101,7 @@ namespace Backend.Controllers
         {
             var hotel = _mapper.Map<Hotel>(hotelRequest);
 
-            _context.Hotels.Add(hotel);
-
-            await _context.SaveChangesAsync();
+            await _hotelRepository.Add(hotel);
 
             return CreatedAtAction(nameof(GetHotel), new { id = hotel.Id }, hotel);
         }
@@ -161,43 +110,21 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteHotel(string id)
         {
-            var hotel = _context.Hotels.FirstOrDefault(hotel => hotel.Id == id);
+            var hotel = await _hotelRepository.GetByIdAsync(id);
 
             if (hotel == null)
             {
                 return NotFound("Hotel with a given id does not exist.");
             }
 
-            var comments = _context.Comments.Where(comment => comment.HotelId == id);
-
-            if (comments.Any())
-            {
-                _context.Comments.RemoveRange(comments);
-            }
-
-            var reservations = _context.Reservations.Where(reservation => reservation.HotelId == id);
-
-            if (reservations.Any())
-            {
-                _context.Reservations.RemoveRange(reservations);
-            }
-
-            var rooms = _context.Rooms.Where(room => room.HotelId == id);
-
-            if (rooms.Any())
-            {
-                _context.Rooms.RemoveRange(rooms);
-            }
-
-            _context.Hotels.Remove(hotel);
-            await _context.SaveChangesAsync();
+            await _hotelRepository.Delete(hotel);
 
             return NoContent();
         }
 
         private bool HotelExists(string id)
         {
-            return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _hotelRepository.Exists(id);
         }
     }
 }

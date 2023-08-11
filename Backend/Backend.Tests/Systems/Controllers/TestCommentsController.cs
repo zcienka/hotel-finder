@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend.Controllers;
+using Backend.Data;
 using Backend.Dtos;
 using Backend.Models;
 using FakeItEasy;

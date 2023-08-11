@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using Backend.Dtos;
 using Backend.Requests;
+using Backend.Data;
+using Backend.Interfaces;
+using Bogus.DataSets;
+using System.Drawing.Drawing2D;
 
 namespace Backend.Controllers
 {
@@ -12,12 +16,12 @@ namespace Backend.Controllers
     [ApiController]
     public class ReservationsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IReservationRepository _reservationRepository;
         private readonly IMapper _mapper;
 
-        public ReservationsController(ApplicationDbContext context, IMapper mapper)
+        public ReservationsController(IReservationRepository reservationRepository, IMapper mapper)
         {
-            _context = context;
+            _reservationRepository = reservationRepository;
             _mapper = mapper;
         }
 
@@ -25,18 +29,13 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<ActionResult<ApiResult<ReservationDto>>> GetReservations([FromQuery] PagingQuery query)
         {
-            if (_context.Reservations.ToList().Count == 0)
-            {
-                return NotFound("No reservations found");
-            }
-
             if (!int.TryParse(query.Limit, out int limitInt)
                 || !int.TryParse(query.Offset, out int offsetInt))
             {
                 return NotFound();
             }
 
-            var reservations = await _context.Reservations.ToListAsync();
+            var reservations = await _reservationRepository.GetAll();
             var reservationsDtos =
                 reservations.Select(reservation => _mapper.Map<ReservationDto>(reservation)).ToList();
 
@@ -48,49 +47,14 @@ namespace Backend.Controllers
             ));
         }
 
-        [HttpGet("user/{userEmail}")]
-        [Authorize]
-        public async Task<ActionResult<ApiResult<ReservationDto>>> GetUserReservations([FromQuery] PagingQuery query,
-            string userEmail)
-        {
-            if (_context.Reservations.ToList().Count == 0)
-            {
-                return NotFound("No reservations found");
-            }
 
-            if (!int.TryParse(query.Limit, out int limitInt)
-                || !int.TryParse(query.Offset, out int offsetInt))
-            {
-                return NotFound();
-            }
-
-            var reservations = _context.Reservations.Where(r => r.UserEmail == userEmail)
-                .Include(r => r.Hotel).ToList();
-            var reservationDtos = reservations.Select(r =>
-            {
-                var reservationDto = _mapper.Map<ReservationDto>(r);
-                reservationDto.Hotel = r.Hotel;
-                return reservationDto;
-            }).ToList();
-
-            return Ok(await ApiResult<ReservationDto>.CreateAsync(
-                reservationDtos,
-                offsetInt,
-                limitInt,
-                "/user"
-            ));
-        }
 
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Reservation>> GetReservation(string id)
         {
-            if (_context.Reservations.ToList().Count == 0)
-            {
-                return NotFound("No reservations found");
-            }
 
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _reservationRepository.GetByIdAsync(id);
 
             if (reservation == null)
             {
@@ -109,18 +73,16 @@ namespace Backend.Controllers
                 return BadRequest();
             }
 
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(reservation.RoomId));
+            // var hotel = _context.Hotels.FirstOrDefault(h => h.Id.Equals(reservation.RoomId));
 
-            if (hotel == null)
-            {
-                return NotFound("Hotel not found");
-            }
-
-            _context.Entry(reservation).State = EntityState.Modified;
+            // if (hotel == null)
+            // {
+            //     return NotFound("Hotel not found");
+            // }
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _reservationRepository.Update(reservation);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -141,20 +103,20 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationRequest reservationRequest)
         {
-            var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationRequest.HotelId);
+            // var hotel = _context.Hotels.FirstOrDefault(h => h.Id == reservationRequest.HotelId);
 
-            if (hotel == null)
-            {
-                return NotFound("Hotel not found");
-            }
+            // if (hotel == null)
+            // {
+                // return NotFound("Hotel not found");
+            // }
 
-            var room = _context.Rooms.FirstOrDefault(r =>
-                r.HotelId == reservationRequest.HotelId && r.Id == reservationRequest.RoomId);
+            // var room = _context.Rooms.FirstOrDefault(r =>
+                // r.HotelId == reservationRequest.HotelId && r.Id == reservationRequest.RoomId);
 
-            if (room == null || room.HotelId != reservationRequest.HotelId)
-            {
-                return NotFound("Room with that id not found");
-            }
+            // if (room == null || room.HotelId != reservationRequest.HotelId)
+            // {
+                // return NotFound("Room with that id not found");
+            // }
 
             if (reservationRequest.CheckOutDate <= reservationRequest.CheckInDate)
             {
@@ -162,7 +124,7 @@ namespace Backend.Controllers
                     "Check-out date must be later than the check-in date.");
             }
 
-            var reservations = _context.Reservations.ToList();
+            var reservations = await _reservationRepository.GetAll();
 
             bool isReservationConflict = reservations.Any(r =>
                 r.RoomId == reservationRequest.RoomId && r.HotelId == reservationRequest.HotelId &&
@@ -174,8 +136,7 @@ namespace Backend.Controllers
             }
 
             var reservation = _mapper.Map<Reservation>(reservationRequest);
-            _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
+            await _reservationRepository.Add(reservation);
 
             return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservation);
         }
@@ -184,28 +145,21 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteReservation(string id)
         {
-            if (_context.Reservations.ToList().Count == 0)
-            {
-                return NotFound("No reservations found");
-            }
-
-            var reservation = _context.Reservations.FirstOrDefault(reservation => reservation.Id.Equals(id));
+            var reservation = await _reservationRepository.GetByIdAsync(id);
 
             if (reservation == null)
             {
                 return NotFound();
             }
 
-            _context.Reservations.Remove(reservation);
-
-            await _context.SaveChangesAsync();
+            await _reservationRepository.Delete(reservation);
 
             return NoContent();
         }
 
         private bool ReservationExists(string id)
         {
-            return (_context.Reservations?.Any(e => e.Id.Equals(id))).GetValueOrDefault();
+            return _reservationRepository.Exists(id);
         }
     }
 }

@@ -12,5 +12,9 @@ namespace Backend.Models
         public required string PhoneNumber { get; set; }
         public required string Category { get; set; }
         public int Stars { get; set; } = 0;
+
+        public virtual ICollection<Room> Rooms { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }

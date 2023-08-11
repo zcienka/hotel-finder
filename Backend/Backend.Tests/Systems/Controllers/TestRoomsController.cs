@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using Backend.Tests.Systems;
 using FakeItEasy;
+using Backend.Data;
 
 namespace Backend.Tests.Controllers
 {

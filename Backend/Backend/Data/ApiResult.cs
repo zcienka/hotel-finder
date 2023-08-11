@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Models
+namespace Backend.Data
 {
     public class ApiResult<T>
     {
