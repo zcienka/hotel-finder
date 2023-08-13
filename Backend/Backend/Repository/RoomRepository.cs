@@ -8,10 +8,12 @@ namespace Backend.Repository
     public class RoomRepository : IRoomRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly IReservationRepository _reservationRepository;
 
-        public RoomRepository(ApplicationDbContext context)
+        public RoomRepository(ApplicationDbContext context, IReservationRepository reservationRepository)
         {
             _context = context;
+            _reservationRepository = reservationRepository;
         }
 
         public async Task<IEnumerable<Room>> GetAll()
@@ -27,15 +29,12 @@ namespace Backend.Repository
 
         public List<Room> GetAvailableRoomsById(string id)
         {
-            var reservedRooms = _context.Reservations
-                .Where(r => r.HotelId == id &&
-                            r.CheckInDate <= DateTime.Now &&
-                            r.CheckOutDate >= DateTime.Now)
+            var reservedRoomIds = _reservationRepository.GetReservationsForHotel(id)
                 .Select(r => r.RoomId)
                 .ToList();
 
             var rooms = _context.Rooms
-                .Where(r => !reservedRooms.Contains(r.Id) &&
+                .Where(r => !reservedRoomIds.Contains(r.Id) &&
                             r.HotelId == id)
                 .ToList();
             return rooms;

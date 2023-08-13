@@ -1,5 +1,6 @@
 ﻿using Backend.Dtos;
 using Backend.Models;
+using Backend.Requests;
 using Bogus;
 
 namespace Backend.Tests.Systems
@@ -26,6 +27,18 @@ namespace Backend.Tests.Systems
         public static RoomDto GenerateRoomDto(string hotelId)
         {
             var roomFaker = new Faker<RoomDto>()
+                .RuleFor(r => r.Capacity, f => f.Random.Int(1, 10))
+                .RuleFor(r => r.Name, f => f.Company.CompanyName())
+                .RuleFor(r => r.Description, f => f.Lorem.Sentence())
+                .RuleFor(r => r.Price, f => f.Random.Int(50, 500))
+                .RuleFor(r => r.HotelId, hotelId);
+
+            return roomFaker.Generate();
+        }
+
+        public static RoomRequest GenerateRoomRequest(string hotelId)
+        {
+            var roomFaker = new Faker<RoomRequest>()
                 .RuleFor(r => r.Capacity, f => f.Random.Int(1, 10))
                 .RuleFor(r => r.Name, f => f.Company.CompanyName())
                 .RuleFor(r => r.Description, f => f.Lorem.Sentence())
@@ -68,10 +81,24 @@ namespace Backend.Tests.Systems
                 .RuleFor(r => r.CheckOutDate, f => f.Date.Future())
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, f => roomId)
-                .RuleFor(r => r.UserEmail, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
                 .Generate();
 
             return reservationDto;
+        }
+
+
+        public static ReservationRequest GenerateReservationRequest(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime)
+        {
+            var reservationRequest = new Faker<ReservationRequest>()
+                .RuleFor(r => r.CheckInDate, f => checkInTime)
+                .RuleFor(r => r.CheckOutDate, f => checkOutTime)
+                .RuleFor(r => r.HotelId, f => hotelId)
+                .RuleFor(r => r.RoomId, f => roomId)
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
+                .Generate();
+
+            return reservationRequest;
         }
 
         public static Reservation GenerateReservation(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime)
@@ -81,7 +108,7 @@ namespace Backend.Tests.Systems
                 .RuleFor(r => r.CheckOutDate, checkOutTime)
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, roomId)
-                .RuleFor(r => r.UserEmail, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
                 .Generate();
 
             return reservation;
@@ -91,7 +118,7 @@ namespace Backend.Tests.Systems
         {
             var commentFaker = new Faker<Comment>()
                 .RuleFor(c => c.Description, f => f.Lorem.Sentence())
-                .RuleFor(c => c.UserEmail, f => userEmail)
+                .RuleFor(c => c.UserId, f => userEmail)
                 .RuleFor(c => c.HotelId, f => hotelId);
 
             return commentFaker.Generate();

@@ -61,10 +61,18 @@ namespace Backend.Repository
             return (_context.Reservations?.Any(e => e.HotelId == id)).GetValueOrDefault();
         }
 
-        public Room FindRoomInHotel(string hotelId, string roomId)
+        public bool IsRoomInHotel(string hotelId, string roomId)
         {
-            return _context.Rooms.FirstOrDefault(r =>
+            return _context.Rooms.Any(r =>
                 r.HotelId == hotelId && r.Id == roomId);
+        }
+
+        public List<Reservation> GetReservationsForHotel(string hotelId)
+        {
+            return _context.Reservations
+                .Where(r => r.HotelId == hotelId &&
+                            r.CheckInDate <= DateTime.Now &&
+                            r.CheckOutDate >= DateTime.Now).ToList();
         }
     }
 }

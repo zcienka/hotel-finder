@@ -108,9 +108,9 @@ namespace Backend.Controllers
                 return NotFound("Hotel not found");
             }
 
-            var room = _reservationRepository.FindRoomInHotel(reservationRequest.HotelId, reservationRequest.RoomId);
+            var isRoomInHotel = _reservationRepository.IsRoomInHotel(reservationRequest.HotelId, reservationRequest.RoomId);
 
-            if (room == null)
+            if (!isRoomInHotel)
             {
                 return NotFound("Room with that id not found");
             }
@@ -125,8 +125,8 @@ namespace Backend.Controllers
 
             bool isReservationConflict = reservations.Any(r =>
                 r.RoomId == reservationRequest.RoomId && r.HotelId == reservationRequest.HotelId &&
-                !(reservationRequest.CheckOutDate <= r.CheckInDate || reservationRequest.CheckInDate >= r.CheckOutDate)
-            );
+                !(reservationRequest.CheckOutDate <= r.CheckInDate || reservationRequest.CheckInDate >= r.CheckOutDate));
+
             if (isReservationConflict)
             {
                 return BadRequest("Reservation conflicts with existing reservations");

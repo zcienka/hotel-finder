@@ -14,7 +14,6 @@ namespace Backend.Models
 
         [ForeignKey("HotelId")]
         public virtual Hotel Hotel { get; set; }
-        [JsonIgnore]
         public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }
