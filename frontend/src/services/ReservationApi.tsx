@@ -8,9 +8,9 @@ export const reservationApi = createApi({
     baseQuery: baseQuery,
     tagTypes: ["Reservation"],
     endpoints: (builder) => ({
-        getReservationsByUser: builder.query<ApiList<Reservation>, { accessToken: string, userEmail: string }>({
+        getReservationsByUser: builder.query<ApiList<Reservation>, { accessToken: string, userId: string }>({
             query: (body) => ({
-                url: `/reservations/user/${body.userEmail}`,
+                url: `/reservations/user/${body.userId}`,
                 method: "GET",
                 headers: {authorization: `Bearer ${body.accessToken}`},
             }),

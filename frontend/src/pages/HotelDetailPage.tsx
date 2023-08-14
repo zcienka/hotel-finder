@@ -17,15 +17,18 @@ import {Helmet} from "react-helmet"
 export const HotelDetailPage = () => {
     const {id} = useParams()
     const [accessToken, setAccessToken] = useState<string | "">("")
-    const {getAccessTokenSilently, user} = useAuth0()
+    const {getAccessTokenSilently, user, isAuthenticated} = useAuth0()
     const [selectedImage, setSelectedImage] = useState("")
     const [selectedImageIndex, setSelectedImageIndex] = useState(0)
     const [hotelId, setHotelId] = useState<string>("")
 
     const getAccessToken = async () => {
         try {
-            const token = await getAccessTokenSilently()
-            setAccessToken(token)
+            if (isAuthenticated) {
+                const token = await getAccessTokenSilently()
+                setAccessToken(token)
+            }
+
         } catch (e: any) {
             throw e
         }
@@ -37,9 +40,6 @@ export const HotelDetailPage = () => {
 
     const {
         data: getSingleHotelData,
-        isFetching: isGetSingleHotelFetching,
-        isSuccess: isGetSingleHotelSuccess,
-        isError: isGetSingleHotelError,
     } = useGetSingleHotelQuery({hotelId}, {
             skip: hotelId === "",
         }
@@ -47,9 +47,6 @@ export const HotelDetailPage = () => {
 
     const {
         data: getRoomsData,
-        isFetching: isGetRoomsFetching,
-        isSuccess: isGetRoomsSuccess,
-        isError: isGetRoomsError,
     } = useGetRoomsInHotelQuery({hotelId}, {
             skip: hotelId === "",
         }
@@ -106,7 +103,10 @@ export const HotelDetailPage = () => {
                                 ))}
                                 {hotel.image.length > 1 && (
                                     <div
-                                        className="flex items-center justify-center w-full h-32 bg-gray-800 text-white">
+                                        className="flex items-center justify-center w-full h-32 bg-gray-800 text-white cursor-pointer"
+                                        onClick={() => {setSelectedImage(hotel.image[4])
+                                            setSelectedImageIndex(4)}}
+                                    >
                                         <div className="h-6">
                                             <PlusIcon/>
                                         </div>
@@ -131,7 +131,7 @@ export const HotelDetailPage = () => {
                         </div>
                     </div>
                     <AvailableRooms rooms={rooms}/>
-                    <CommentSection hotelId={hotelId} accessToken={accessToken} email={user?.email}/>
+                    <CommentSection hotelId={hotelId} accessToken={accessToken} userId={user?.email}/>
                 </div>
             </div>
             {selectedImage && (

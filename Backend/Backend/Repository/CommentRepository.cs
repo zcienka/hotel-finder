@@ -59,6 +59,5 @@ namespace Backend.Repository
         {
             return (_context.Comments?.Any(e => e.HotelId == id)).GetValueOrDefault();
         }
-
     }
 }

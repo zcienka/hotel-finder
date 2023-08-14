@@ -9,7 +9,7 @@ interface Props {
 export const SingleComment: React.FC<Props> = ({comment}) => {
     return <div className="flex items-center w-full bg-custom-blue-700 rounded-2xl my-2 drop-shadow-lg p-4">
         <div className="text-gray-400 overflow-hidden max-h-24">
-            <p className="text-gray-200">{comment.userEmail}</p>
+            <p className="text-gray-200">{comment.userId}</p>
             <p>{comment.description}</p>
         </div>
     </div>

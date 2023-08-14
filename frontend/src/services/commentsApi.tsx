@@ -8,17 +8,16 @@ export const commentsApi = createApi({
     baseQuery: baseQuery,
     tagTypes: ["Comments", "UserComments"],
     endpoints: (builder) => ({
-        getComments: builder.query<ApiList<Comment>, {accessToken: string, hotelId: string}>({
-            query: ({accessToken, hotelId}) => ({
-                url: `/comments/hotel/${hotelId}`,
+        getComments: builder.query<ApiList<Comment>, {hotelId: string}>({
+            query: ({hotelId}) => ({
+                url: `/hotels/${hotelId}/comments`,
                 method: "GET",
-                headers: {authorization: `Bearer ${accessToken}`},
             }),
             providesTags: ["Comments"],
         }),
-        getCommentsByUser: builder.query<ApiList<Comment>, {accessToken: string, userEmail: string}>({
-            query: ({accessToken, userEmail}) => ({
-                url: `/comments/user/${userEmail}`,
+        getCommentsByUser: builder.query<ApiList<Comment>, {accessToken: string, userId: string}>({
+            query: ({accessToken, userId}) => ({
+                url: `/comments/user/${userId}`,
                 method: "GET",
                 headers: {authorization: `Bearer ${accessToken}`},
             }),

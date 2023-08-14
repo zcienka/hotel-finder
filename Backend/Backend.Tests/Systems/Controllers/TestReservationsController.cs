@@ -34,11 +34,13 @@ namespace Backend.Tests.Systems.Controllers
 
             var mockReservationRepository = new Mock<IReservationRepository>();
 
+
             mockReservationRepository
                 .Setup(repo => repo.HotelExists(hotelId))
                 .Returns(true);
 
             var reservationsController = new ReservationsController(mockReservationRepository.Object, _mapper);
+
             // Act
             var result = await reservationsController.PostReservation(reservationRequest);
 

@@ -15,21 +15,20 @@ namespace Backend.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Hotel>> GetAll()
+        public IQueryable<Hotel> GetAll()
         {
-            return await _context.Hotels
-                .OrderByDescending(o => o.Id)
-                .ToListAsync();
+            return _context.Hotels
+                .OrderByDescending(o => o.Id);
         }
 
-        public IEnumerable<Hotel> GetSearchResults(string? name, 
+        public IQueryable<Hotel> GetSearchResults(string? name, 
             string? city, 
             DateTimeOffset? checkInDate,
             DateTimeOffset? checkOutDate,
             int? roomCount,
             string? category)
         {
-            var hotels = _context.Hotels.AsQueryable();
+            var hotels = _context.Hotels.ToList().AsQueryable();
 
             if (name != null)
             {

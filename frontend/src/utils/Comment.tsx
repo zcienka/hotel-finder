@@ -1,12 +1,12 @@
 export type Comment = {
     id: string,
     description: string,
-    userEmail: string,
+    userId: string,
     hotelId: string,
 }
 
 export type CommentRequest = {
     description: string,
-    userEmail: string,
+    userId: string,
     hotelId: string,
 }

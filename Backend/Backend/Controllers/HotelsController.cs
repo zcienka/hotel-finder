@@ -145,7 +145,7 @@ namespace Backend.Controllers
                 commentDtos,
                 offsetInt,
                 limitInt,
-                "/comments/hotel"
+                "/hotel"
             ));
         }
     }

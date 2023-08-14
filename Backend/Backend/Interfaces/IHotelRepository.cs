@@ -4,9 +4,8 @@ namespace Backend.Interfaces
 {
     public interface IHotelRepository
     {
-        Task<IEnumerable<Hotel>> GetAll();
-
-        IEnumerable<Hotel> GetSearchResults(string? name,
+        IQueryable<Hotel> GetAll();
+        IQueryable<Hotel> GetSearchResults(string? name,
             string? city,
             DateTimeOffset? checkInDate,
             DateTimeOffset? checkOutDate,

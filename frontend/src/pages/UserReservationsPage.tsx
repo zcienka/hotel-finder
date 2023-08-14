@@ -13,7 +13,7 @@ import {Comment} from "../utils/Comment"
 export const UserReservationsPage = () => {
     const {user, isAuthenticated, getAccessTokenSilently} = useAuth0()
     const [accessToken, setAccessToken] = useState("")
-    const [userEmail, setUserEmail] = useState("")
+    const [userId, setuserId] = useState("")
 
     const navigate = useNavigate()
 
@@ -22,7 +22,7 @@ export const UserReservationsPage = () => {
             const token = await getAccessTokenSilently()
             setAccessToken(token)
             if (user?.email !== undefined) {
-                setUserEmail(user.email)
+                setuserId(user.email)
             }
         }
     }
@@ -33,14 +33,14 @@ export const UserReservationsPage = () => {
 
     const {
         data: getCommentsByUser,
-    } = useGetCommentsByUserQuery({accessToken, userEmail}, {skip: userEmail === ""})
+    } = useGetCommentsByUserQuery({accessToken, userId}, {skip: userId === ""})
 
     const {
         data: getReservationsByUser,
         isError: isGetReservationsByUserError,
-    } = useGetReservationsByUserQuery({accessToken, userEmail},
+    } = useGetReservationsByUserQuery({accessToken, userId},
         {
-            skip: userEmail === "" || accessToken === ""
+            skip: userId === "" || accessToken === ""
         })
 
     if (!isAuthenticated) {
@@ -69,7 +69,7 @@ export const UserReservationsPage = () => {
         const userCommentsList = userComments.map((comment: Comment) => {
             return <div key={uuid4()} className="w-256 bg-custom-blue-700 rounded-xl my-2 shadow-lg p-4">
                 <p className="text-2xl font-bold mb-2">{comment.description}</p>
-                <p className="text-gray-400 font-semibold">{comment.userEmail}</p>
+                <p className="text-gray-400 font-semibold">{comment.userId}</p>
             </div>
         })
 
