@@ -73,6 +73,20 @@ namespace Backend.Tests.Systems
             return hotelFaker.Generate();
         }
 
+        public static HotelRequest GenerateHotelRequest(string hotelId)
+        {
+            var hotelFaker = new Faker<HotelRequest>()
+                .RuleFor(h => h.Name, f => f.Company.CompanyName())
+                .RuleFor(h => h.Id, hotelId)
+                .RuleFor(h => h.Description, f => f.Lorem.Sentence())
+                .RuleFor(h => h.Address, f => f.Address.StreetAddress())
+                .RuleFor(h => h.City, f => f.Address.City())
+                .RuleFor(h => h.PhoneNumber, f => f.Phone.PhoneNumber())
+                .RuleFor(h => h.Stars, f => f.Random.Int(1, 5));
+
+            return hotelFaker.Generate();
+        }
+
 
         public static ReservationDto GenerateReservationDto(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime)
         {

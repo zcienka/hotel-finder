@@ -8,7 +8,6 @@ using Backend.Tests.Systems;
 using FakeItEasy;
 using Backend.Data;
 using Backend.Interfaces;
-using Backend.Dtos;
 using Backend.Repository;
 
 namespace Backend.Tests.Controllers

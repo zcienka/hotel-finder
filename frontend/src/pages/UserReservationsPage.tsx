@@ -69,7 +69,7 @@ export const UserReservationsPage = () => {
         const userCommentsList = userComments.map((comment: Comment) => {
             return <div key={uuid4()} className="w-256 bg-custom-blue-700 rounded-xl my-2 shadow-lg p-4">
                 <p className="text-2xl font-bold mb-2">{comment.description}</p>
-                <p className="text-gray-400 font-semibold">{comment.userId}</p>
+                <p className="text-gray-400 font-semibold">{comment.userEmail}</p>
             </div>
         })
 

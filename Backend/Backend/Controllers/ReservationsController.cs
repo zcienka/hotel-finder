@@ -11,8 +11,7 @@ using Bogus.DataSets;
 using System.Drawing.Drawing2D;
 using Backend.Repository;
 
-namespace Backend.Controllers
-{
+namespace Backend.Controllers;
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase

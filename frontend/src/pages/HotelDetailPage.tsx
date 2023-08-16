@@ -131,7 +131,7 @@ export const HotelDetailPage = () => {
                         </div>
                     </div>
                     <AvailableRooms rooms={rooms}/>
-                    <CommentSection hotelId={hotelId} accessToken={accessToken} userId={user?.email}/>
+                    <CommentSection hotelId={hotelId} accessToken={accessToken} userEmail={user?.email}/>
                 </div>
             </div>
             {selectedImage && (

@@ -2,15 +2,15 @@ import React, {useState} from "react"
 import {v4 as uuid4} from "uuid"
 import {useAddCommentMutation, useGetCommentsQuery} from "../services/CommentsApi"
 import {SingleComment} from "./SingleComment"
-import {Comment, CommentRequest} from "../utils/Comment"
+import {CommentRequest} from "../utils/Comment"
 
 interface Props {
     hotelId: string
     accessToken: string
-    userId: string | undefined
+    userEmail: string | undefined
 }
 
-export const CommentSection: React.FC<Props> = ({hotelId, accessToken, userId}) => {
+export const CommentSection: React.FC<Props> = ({hotelId, accessToken, userEmail}) => {
     const [comment, setComment] = useState<string>("")
 
     const {
@@ -21,10 +21,10 @@ export const CommentSection: React.FC<Props> = ({hotelId, accessToken, userId}) 
     const [addComment] = useAddCommentMutation()
 
     const handleCommentHotel = async () => {
-        if (userId !== undefined) {
+        if (userEmail !== undefined) {
             const fullComment: CommentRequest = {
-                userId: userId,
                 hotelId: hotelId,
+                userEmail: userEmail,
                 description: comment,
             }
             await addComment({
@@ -49,7 +49,7 @@ export const CommentSection: React.FC<Props> = ({hotelId, accessToken, userId}) 
 
         return <div className="py-4">
             <h2 className="text-2xl font-bold">Comments</h2>
-            {userId !== undefined &&
+            {userEmail !== undefined &&
                 <div className="flex flex-row">
                     <input className="w-full py-2 px-4 my-2 bg-custom-blue-700 drop-shadow-lg rounded-2xl"
                            placeholder="Add a comment"

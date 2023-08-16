@@ -51,12 +51,6 @@ Dummy data is AI generated
 - Tailwind CSS
 - RTK Query
 
-## Todo
-- [ ] Add admin panel
-- [ ] Finish user profile page
-- [ ] Finish booking a room page
-- [ ] Finish searching for hotels
-- [ ] Make user interface responsive
 
 ## Setup
 ### Backend
