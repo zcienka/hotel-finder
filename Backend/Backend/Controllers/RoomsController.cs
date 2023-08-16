@@ -8,6 +8,7 @@ using Backend.Interfaces;
 using Bogus.DataSets;
 using System.Drawing.Drawing2D;
 using Backend.Requests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
@@ -88,9 +89,10 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRoom(string id, Room room)
+        [Authorize]
+        public async Task<IActionResult> PutRoom(string id, RoomRequest roomRequest)
         {
-            if (id != room.Id)
+            if (id != roomRequest.Id)
             {
                 return BadRequest();
             }
@@ -101,7 +103,8 @@ namespace Backend.Controllers
             {
                 return NotFound("Hotel not found");
             }
-
+            var room = _mapper.Map<Room>(roomRequest);
+            
             try
             {
                 await _roomRepository.Update(room);
@@ -122,6 +125,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Room>> PostRoom(RoomRequest roomRequest)
         {
             var hotelExists = _roomRepository.HotelExists(roomRequest.HotelId);
@@ -139,6 +143,7 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteRoom(string id)
         {
             var room = await _roomRepository.GetByIdAsync(id);

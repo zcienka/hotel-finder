@@ -44,13 +44,13 @@ namespace Backend.Data
             builder.Entity<User>()
                 .HasMany(u => u.Reservations)
                 .WithOne(r => r.User)
-                .HasForeignKey(r => r.UserId)
+                .HasForeignKey(r => r.UserEmail)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<User>()
                 .HasMany(u => u.Comments)
                 .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserId)
+                .HasForeignKey(c => c.UserEmail)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Room>()

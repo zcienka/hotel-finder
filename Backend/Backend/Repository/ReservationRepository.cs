@@ -74,5 +74,10 @@ namespace Backend.Repository
                             r.CheckInDate <= DateTime.Now &&
                             r.CheckOutDate >= DateTime.Now).ToList();
         }
+
+        public bool UserExists(string email)
+        {
+            return (_context.Users?.Any(e => e.Email == email)).GetValueOrDefault();
+        }
     }
 }

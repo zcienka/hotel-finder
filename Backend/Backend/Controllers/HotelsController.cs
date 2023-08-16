@@ -70,12 +70,16 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutHotel(string id, Hotel hotel)
+        public async Task<IActionResult> PutHotel(string id, HotelRequest hotelRequest)
         {
-            if (id.Equals(hotel.Id))
+            var hotelExists = HotelExists(id);
+
+            if (!hotelExists)
             {
-                return BadRequest("Hotel with a given id does not exist.");
+                return NotFound("No hotel with a given id found");
             }
+
+            var hotel = _mapper.Map<Hotel>(hotelRequest);
 
             try
             {
@@ -97,7 +101,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> PostHotel(HotelRequest hotelRequest)
         {
             var hotel = _mapper.Map<Hotel>(hotelRequest);

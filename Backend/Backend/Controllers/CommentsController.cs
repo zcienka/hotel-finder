@@ -55,20 +55,28 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(string id, Comment comment)
+        public async Task<IActionResult> PutComment(string id, CommentDto commentDto)
         {
-            var hotelExists = _commentRepository.HotelExists(comment.HotelId);
+            var hotelExists = _commentRepository.HotelExists(commentDto.HotelId);
 
             if (!hotelExists)
             {
                 return NotFound("Hotel not found");
             }
 
-            if (!id.Equals(comment.Id))
+            if (!id.Equals(commentDto.Id))
             {
-                return BadRequest();
+                return NotFound();
             }
 
+            var userExists = _commentRepository.UserExists(commentDto.UserEmail);
+
+            if (!userExists)
+            {
+                return NotFound("User not found");
+            }
+
+            var comment = _mapper.Map<Comment>(commentDto);
 
             try
             {
@@ -97,6 +105,13 @@ namespace Backend.Controllers
             if (!hotelExists)
             {
                 return NotFound("Hotel not found");
+            }
+
+            var userExists = _commentRepository.UserExists(commentDto.UserEmail);
+
+            if (!userExists)
+            {
+                return NotFound("User not found");
             }
 
             var comment = _mapper.Map<Comment>(commentDto);

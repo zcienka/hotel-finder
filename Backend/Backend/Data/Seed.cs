@@ -20,7 +20,7 @@ namespace Backend.Data
                 {
                     await SeedHotelsAsync(dbContext);
                 }
-                
+
                 if (IsDatabaseEmpty<Comment>(dbContext))
                 {
                     await SeedCommentsAsync(dbContext);
@@ -47,26 +47,26 @@ namespace Backend.Data
         {
             List<User> users = new List<User>
             {
-                new() { Id = "1", Name = "Jan", LastName = "Kowalski", Email = "jan.kowalski@gmail.com" },
-                new() { Id = "2", Name = "Anna", LastName = "Nowak", Email = "anna.nowak@yahoo.com" },
-                new() { Id = "3", Name = "Michał", LastName = "Kowalski", Email = "michal.kowalski@outlook.com" },
-                new() { Id = "4", Name = "Małgorzata", LastName = "Nowak", Email = "malgorzata.nowak@wp.pl" },
-                new() { Id = "5", Name = "Krzysztof", LastName = "Kowalski", Email = "krzysztof.kowalski@onet.pl" },
-                new() { Id = "6", Name = "Barbara", LastName = "Nowak", Email = "barbara.nowak@gmail.com" },
-                new() { Id = "7", Name = "Andrzej", LastName = "Kowalski", Email = "andrzej.kowalski@yahoo.com" },
-                new() { Id = "8", Name = "Elżbieta", LastName = "Nowak", Email = "elzbieta.nowak@outlook.com" },
-                new() { Id = "9", Name = "Piotr", LastName = "Kowalski", Email = "piotr.kowalski@wp.pl" },
-                new() { Id = "10", Name = "Wanda", LastName = "Nowak", Email = "wanda.nowak@onet.pl" },
-                new() { Id = "11", Name = "Jerzy", LastName = "Kowalski", Email = "jerzy.kowalski@gmail.com" },
-                new() { Id = "12", Name = "Halina", LastName = "Nowak", Email = "halina.nowak@yahoo.com" },
-                new() { Id = "13", Name = "Marek", LastName = "Kowalski", Email = "marek.kowalski@outlook.com" },
-                new() { Id = "14", Name = "Krystyna", LastName = "Nowak", Email = "krystyna.nowak@wp.pl" },
-                new() { Id = "15", Name = "Tomasz", LastName = "Kowalski", Email = "tomasz.kowalski@onet.pl" },
-                new() { Id = "16", Name = "Jolanta", LastName = "Nowak", Email = "jolanta.nowak@gmail.com" },
-                new() { Id = "17", Name = "Wojciech", LastName = "Kowalski", Email = "wojciech.kowalski@yahoo.com" },
-                new() { Id = "18", Name = "Danuta", LastName = "Nowak", Email = "danuta.nowak@outlook.com" },
-                new() { Id = "19", Name = "Zbigniew", LastName = "Kowalski", Email = "zbigniew.kowalski@wp.pl" },
-                new() { Id = "20", Name = "Genowefa", LastName = "Nowak", Email = "genowefa.nowak@onet.pl" }
+                new() { Name = "Jan", LastName = "Kowalski", Email = "jan.kowalski@gmail.com" },
+                new() { Name = "Anna", LastName = "Nowak", Email = "anna.nowak@yahoo.com" },
+                new() { Name = "Michał", LastName = "Kowalski", Email = "michal.kowalski@outlook.com" },
+                new() { Name = "Małgorzata", LastName = "Nowak", Email = "malgorzata.nowak@wp.pl" },
+                new() { Name = "Krzysztof", LastName = "Kowalski", Email = "krzysztof.kowalski@onet.pl" },
+                new() { Name = "Barbara", LastName = "Nowak", Email = "barbara.nowak@gmail.com" },
+                new() { Name = "Andrzej", LastName = "Kowalski", Email = "andrzej.kowalski@yahoo.com" },
+                new() { Name = "Elżbieta", LastName = "Nowak", Email = "elzbieta.nowak@outlook.com" },
+                new() { Name = "Piotr", LastName = "Kowalski", Email = "piotr.kowalski@wp.pl" },
+                new() { Name = "Wanda", LastName = "Nowak", Email = "wanda.nowak@onet.pl" },
+                new() { Name = "Jerzy", LastName = "Kowalski", Email = "jerzy.kowalski@gmail.com" },
+                new() { Name = "Halina", LastName = "Nowak", Email = "halina.nowak@yahoo.com" },
+                new() { Name = "Marek", LastName = "Kowalski", Email = "marek.kowalski@outlook.com" },
+                new() { Name = "Krystyna", LastName = "Nowak", Email = "krystyna.nowak@wp.pl" },
+                new() { Name = "Tomasz", LastName = "Kowalski", Email = "tomasz.kowalski@onet.pl" },
+                new() { Name = "Jolanta", LastName = "Nowak", Email = "jolanta.nowak@gmail.com" },
+                new() { Name = "Wojciech", LastName = "Kowalski", Email = "wojciech.kowalski@yahoo.com" },
+                new() { Name = "Danuta", LastName = "Nowak", Email = "danuta.nowak@outlook.com" },
+                new() { Name = "Zbigniew", LastName = "Kowalski", Email = "zbigniew.kowalski@wp.pl" },
+                new() { Name = "Genowefa", LastName = "Nowak", Email = "genowefa.nowak@onet.pl" }
             };
 
             await dbContext.AddRangeAsync(users);
@@ -152,7 +152,7 @@ namespace Backend.Data
                     Id = "1",
                     Description =
                         "Mieliśmy niesamowite doświadczenie w tym hotelu. Personel był niezwykle przyjazny i pomocny, a pokoje przestronne i pięknie urządzone. Lokalizacja była również idealna, z łatwym dostępem do popularnych atrakcji i restauracji. Bardzo polecam!",
-                    UserId = "1",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "1"
                 },
                 new()
@@ -160,7 +160,7 @@ namespace Backend.Data
                     Id = "2",
                     Description =
                         "Nie mogę wystarczająco polecić tego hotelu. Od momentu przybycia zostaliśmy powitani ciepłym uśmiechem i wyjątkową obsługą. Pokój był czysty, wygodny i miał przepiękny widok na miasto. Udogodnienia hotelowe były na najwyższym poziomie, a restauracja serwowała pyszne posiłki. Na pewno tu wrócę!",
-                    UserId = "2",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "1"
                 },
                 new()
@@ -168,7 +168,7 @@ namespace Backend.Data
                     Id = "3",
                     Description =
                         "Podczas pobytu w hotelu napotkaliśmy kilka problemów, pomimo świetnej lokalizacji i ładnych pokoi. Klimatyzacja nie działała poprawnie, a personel wydawał się przytłoczony i nieodpowiednio reagował na nasze uwagi. Szkoda, bo hotel ma potencjał, ale doświadczenie okazało się nieco poniżej oczekiwań.",
-                    UserId = "3",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -176,7 +176,7 @@ namespace Backend.Data
                     Id = "4",
                     Description =
                         "Naprawdę świetnie się bawiliśmy w tym hotelu. Personel zrobił wszystko, aby zapewnić nam komfort i zadowolenie. Pokój był czysty i dobrze wyposażony, a łóżko niezwykle wygodne. Udogodnienia hotelu, takie jak basen i centrum fitness, były również fantastyczne. Nie mogę się doczekać kolejnej wizyty!",
-                    UserId = "4",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -184,7 +184,7 @@ namespace Backend.Data
                     Id = "5",
                     Description =
                         "Ten hotel przekroczył nasze oczekiwania pod każdym względem. Od momentu wejścia do holu zostaliśmy przywitani przez przyjazny personel, który zapewnił wyjątkową obsługę przez cały nasz pobyt. Pokój był przestronny, gustownie urządzony i wyposażony we wszystkie niezbędne udogodnienia. Lokalizacja hotelu była doskonała, z łatwym dostępem do sklepów i restauracji. Gorąco polecam!",
-                    UserId = "5",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "3"
                 },
                 new()
@@ -192,7 +192,7 @@ namespace Backend.Data
                     Id = "6",
                     Description =
                         "Mieliśmy fantastyczny czas w tym hotelu. Pokój był czysty, wygodny i miał zapierający dech w piersiach widok na ocean. Personel hotelu był przyjazny i troskliwy, dbając o to, aby wszystkie nasze potrzeby zostały zaspokojone. Restauracja serwowała dania kuchni zdrowej oraz międzynarodowej. Hotel Spa & Wellness to idealne miejsce dla osób pragnących odzyskać równowagę i w pełni zrelaksować się w otoczeniu pięknej przyrody.",
-                    UserId = "6",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "3"
                 },
                 new()
@@ -200,7 +200,7 @@ namespace Backend.Data
                     Id = "7",
                     Description =
                         "Niestety, mój pobyt w tym hotelu był rozczarowujący. Pokój był nieczyści, a personel był nieuprzejmy i mało pomocny. Niezadowolony z obsługi i ogólnego doświadczenia.",
-                    UserId = "7",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "4"
                 },
                 new()
@@ -208,7 +208,7 @@ namespace Backend.Data
                     Id = "8",
                     Description =
                         "Bardzo miło wspominam pobyt w tym hotelu. Pokój był czysty i wygodny, a personel był przyjazny i profesjonalny. Śniadanie było smaczne i urozmaicone. Lokalizacja hotelu była dogodna, blisko do atrakcji turystycznych. Gorąco polecam!",
-                    UserId = "8",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "4"
                 },
                 new()
@@ -216,7 +216,7 @@ namespace Backend.Data
                     Id = "9",
                     Description =
                         "Ten hotel to prawdziwa perełka. Od momentu przybycia zostaliśmy przywitani z uśmiechem i serdecznością. Pokój był luksusowy, z widokiem na morze i wszystkimi wygodami, których można sobie wymarzyć. Personel był niezwykle pomocny i profesjonalny. Wszystko było doskonałe, od jedzenia w restauracji po udogodnienia w spa. Na pewno wrócimy tu ponownie!",
-                    UserId = "9",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "5"
                 },
                 new()
@@ -224,7 +224,7 @@ namespace Backend.Data
                     Id = "10",
                     Description =
                         "Mój pobyt w tym hotelu był niezapomniany. Wszystko było perfekcyjne, od pokoju, który był przestronny i pięknie urządzony, po obsługę, która była uprzejma i przyjazna. Restauracja serwowała wyśmienite jedzenie, a basen był idealnym miejscem do relaksu. Polecam ten hotel każdemu, kto szuka luksusowego doświadczenia.",
-                    UserId = "10",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "5"
                 },
                 new()
@@ -232,7 +232,7 @@ namespace Backend.Data
                     Id = "11",
                     Description =
                         "Hotel ten przeszedł nasze najśmielsze oczekiwania. Pokój był przepiękny, czysty i oferował piękne widoki na okolicę. Personel był niezwykle uprzejmy i profesjonalny, zawsze gotowy do pomocy. Restauracja w hotelu serwowała pyszne jedzenie, a basen był doskonały do relaksu. Zdecydowanie polecam!",
-                    UserId = "11",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "1"
                 },
                 new()
@@ -240,7 +240,7 @@ namespace Backend.Data
                     Id = "12",
                     Description =
                         "Spędziliśmy niezapomniany weekend w tym hotelu. Wszystko było perfekcyjne - od czystości pokoi po obsługę kelnerską w restauracji. Personel jest wyjątkowo przyjazny i uprzejmy, zawsze starający się spełnić nasze oczekiwania. Lokalizacja hotelu jest również świetna, blisko atrakcji turystycznych. Nie możemy się doczekać powrotu!",
-                    UserId = "12",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "1"
                 },
                 new()
@@ -248,7 +248,7 @@ namespace Backend.Data
                     Id = "13",
                     Description =
                         "Ten hotel to prawdziwa perełka. Pokoje są przestronne, elegancko urządzone i oferują niesamowite widoki na okolicę. Personel jest bardzo profesjonalny i zawsze chętny do pomocy. Restauracja serwuje wyśmienite dania, a spa zapewnia relaks i odprężenie. Gorąco polecam to miejsce!",
-                    UserId = "13",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -256,7 +256,7 @@ namespace Backend.Data
                     Id = "14",
                     Description =
                         "Nasz pobyt w tym hotelu był absolutnie fantastyczny. Pokój był luksusowy, czysty i przestronny, a personel dbał o każdy detal. Restauracja serwowała wyborne jedzenie, a obsługa była bardzo przyjazna. Hotel ma także świetne udogodnienia, w tym basen i siłownię. Na pewno tu wrócimy!",
-                    UserId = "14",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -264,7 +264,7 @@ namespace Backend.Data
                     Id = "15",
                     Description =
                         "To miejsce to prawdziwy raj dla miłośników luksusu. Pokoje są pięknie urządzone, z dbałością o każdy detal. Personel jest wyjątkowo profesjonalny i uprzejmy, a obsługa jest na najwyższym poziomie. Restauracja serwuje wyśmienite dania, a spa oferuje szeroki wybór zabiegów. Nie możemy się doczekać kolejnej wizyty!",
-                    UserId = "15",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -272,7 +272,7 @@ namespace Backend.Data
                     Id = "16",
                     Description =
                         "Spędziliśmy tu romantyczny weekend i było to absolutnie magiczne. Pokój był piękny, z pięknym widokiem i luksusowym wyposażeniem. Personel był niezwykle troskliwy i zawsze gotowy do pomocy. Restauracja serwowała przepyszne dania, a atmosfera była niezwykle romantyczna. To naprawdę niezapomniane miejsce!",
-                    UserId = "16",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -280,7 +280,7 @@ namespace Backend.Data
                     Id = "17",
                     Description =
                         "Ten hotel to doskonały wybór dla każdego podróżującego. Pokoje są czyste, wygodne i oferują wszystko, czego potrzebujesz podczas pobytu. Personel jest niezwykle przyjazny i pomocny, zawsze gotowy odpowiedzieć na pytania i udzielić wskazówek dotyczących zwiedzania okolicy. Gorąco polecam!",
-                    UserId = "17",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "3"
                 },
                 new()
@@ -288,7 +288,7 @@ namespace Backend.Data
                     Id = "18",
                     Description =
                         "Nasz pobyt w tym hotelu był niezwykle udany. Pokój był przestronny, czysty i wygodny, a personel był niezwykle uprzejmy i profesjonalny. Restauracja w hotelu serwowała pyszne jedzenie, a obsługa była bez zarzutu. Polecam to miejsce wszystkim, którzy szukają komfortu i wyjątkowej obsługi.",
-                    UserId = "18",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "3"
                 },
                 new()
@@ -296,7 +296,7 @@ namespace Backend.Data
                     Id = "19",
                     Description =
                         "To miejsce jest prawdziwym klejnotem. Pokoje są gustownie urządzone, wygodne i czyste. Personel jest przyjazny i zawsze stara się spełnić oczekiwania gości. Restauracja serwuje wyborne dania, a spa oferuje doskonałe zabiegi relaksacyjne. To idealne miejsce na wypoczynek!",
-                    UserId = "19",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
                 new()
@@ -304,7 +304,7 @@ namespace Backend.Data
                     Id = "20",
                     Description =
                         "Spędziliśmy tu wspaniałe wakacje. Hotel ma świetną lokalizację i zapewniał nam niesamowity widok na góry. Pokoje są przestronne i czyste, a personel jest przyjazny i pomocny. Restauracja serwuje pyszne posiłki, a dodatkowe udogodnienia, takie jak basen i sauna, sprawiają, że pobyt był jeszcze bardziej relaksujący. Na pewno tu wrócimy!",
-                    UserId = "20",
+                    UserEmail = "halina.nowak@yahoo.com",
                     HotelId = "2"
                 },
             };
@@ -324,7 +324,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(5),
                     HotelId = "1",
                     RoomId = "1",
-                    UserId = "1"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -333,7 +333,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(10),
                     HotelId = "2",
                     RoomId = "2",
-                    UserId = "2"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -342,7 +342,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(15),
                     HotelId = "3",
                     RoomId = "3",
-                    UserId = "3"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -351,7 +351,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(21),
                     HotelId = "4",
                     RoomId = "4",
-                    UserId = "4"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -360,7 +360,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(28),
                     HotelId = "5",
                     RoomId = "5",
-                    UserId = "5"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -369,7 +369,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(8),
                     HotelId = "1",
                     RoomId = "1",
-                    UserId = "6"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -378,7 +378,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(13),
                     HotelId = "2",
                     RoomId = "2",
-                    UserId = "7"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -387,7 +387,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(20),
                     HotelId = "3",
                     RoomId = "3",
-                    UserId = "8"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -396,7 +396,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(27),
                     HotelId = "4",
                     RoomId = "4",
-                    UserId = "9"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -405,7 +405,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(33),
                     HotelId = "5",
                     RoomId = "5",
-                    UserId = "10"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -414,7 +414,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(9),
                     HotelId = "1",
                     RoomId = "1",
-                    UserId = "11"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -423,7 +423,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(14),
                     HotelId = "2",
                     RoomId = "2",
-                    UserId = "12"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -432,7 +432,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(22),
                     HotelId = "3",
                     RoomId = "3",
-                    UserId = "13"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -441,7 +441,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(29),
                     HotelId = "4",
                     RoomId = "4",
-                    UserId = "14"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -450,7 +450,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(10),
                     HotelId = "5",
                     RoomId = "5",
-                    UserId = "15"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -459,7 +459,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(18),
                     HotelId = "1",
                     RoomId = "1",
-                    UserId = "16"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -468,7 +468,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(24),
                     HotelId = "2",
                     RoomId = "2",
-                    UserId = "17"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -477,7 +477,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(31),
                     HotelId = "3",
                     RoomId = "3",
-                    UserId = "18"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -486,7 +486,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(11),
                     HotelId = "4",
                     RoomId = "4",
-                    UserId = "19"
+                    UserEmail = "halina.nowak@yahoo.com",
                 },
                 new()
                 {
@@ -495,7 +495,7 @@ namespace Backend.Data
                     CheckOutDate = DateTimeOffset.Now.AddDays(19),
                     HotelId = "5",
                     RoomId = "5",
-                    UserId = "20"
+                    UserEmail = "halina.nowak@yahoo.com",
                 }
             };
             await dbContext.AddRangeAsync(reservations);

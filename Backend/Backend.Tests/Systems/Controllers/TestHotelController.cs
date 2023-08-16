@@ -25,7 +25,6 @@ public class TestHotelController
         var hotel = DataGenerator.GenerateHotel();
 
         string hotelId = hotel.Id;
-        int userId = 2;
         int commentId = 3;
 
         var mockHotelRepository = new Mock<IHotelRepository>();

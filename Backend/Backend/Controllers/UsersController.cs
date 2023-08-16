@@ -6,6 +6,7 @@ using AutoMapper;
 using Backend.Data;
 using Backend.Dtos;
 using Backend.Interfaces;
+using Backend.Requests;
 
 namespace Backend.Controllers
 {
@@ -71,16 +72,18 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
-        public async Task<ActionResult<User>> PostUser(User user)
+        [Authorize]
+        public async Task<ActionResult<User>> PostUser(UserDto userDto)
         {
+            var user = _mapper.Map<User>(userDto);
+
             try
             {
                 await _userRepository.Add(user);
             }
             catch (DbUpdateException)
             {
-                if (UserExists(user.Email))
+                if (UserExists(userDto.Email))
                 {
                     return Conflict();
                 }
@@ -90,7 +93,7 @@ namespace Backend.Controllers
                 }
             }
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Email }, user);
+            return CreatedAtAction(nameof(GetUser), new { Email = userDto.Email }, userDto);
         }
 
 

@@ -33,14 +33,13 @@ namespace Backend.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false)
+                    LastName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Email);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,7 +70,7 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserEmail = table.Column<string>(type: "text", nullable: false),
                     HotelId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -84,10 +83,10 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Comments_Users_UserEmail",
+                        column: x => x.UserEmail,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "Email",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -100,7 +99,7 @@ namespace Backend.Migrations
                     CheckOutDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     HotelId = table.Column<string>(type: "text", nullable: false),
                     RoomId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    UserEmail = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -118,10 +117,10 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reservations_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Reservations_Users_UserEmail",
+                        column: x => x.UserEmail,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "Email",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -131,9 +130,9 @@ namespace Backend.Migrations
                 column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserId",
+                name: "IX_Comments_UserEmail",
                 table: "Comments",
-                column: "UserId");
+                column: "UserEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_HotelId",
@@ -146,9 +145,9 @@ namespace Backend.Migrations
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_UserId",
+                name: "IX_Reservations_UserEmail",
                 table: "Reservations",
-                column: "UserId");
+                column: "UserEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_HotelId",

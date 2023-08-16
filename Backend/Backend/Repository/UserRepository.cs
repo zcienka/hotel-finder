@@ -17,7 +17,7 @@ namespace Backend.Repository
         public async Task<IEnumerable<User>> GetAll()
         {
             return await _context.Users
-                .OrderByDescending(o => o.Id)
+                .OrderByDescending(o => o.Email)
                 .ToListAsync();
         }
 
@@ -33,9 +33,9 @@ namespace Backend.Repository
             return Save();
         }
 
-        public async Task<User> GetByIdAsync(string id)
+        public async Task<User> GetByIdAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(o => o.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(o => o.Email == email);
         }
 
         public async Task<bool> Save()
@@ -50,23 +50,23 @@ namespace Backend.Repository
             return Save();
         }
 
-        public bool Exists(string id)
+        public bool Exists(string email)
         {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.Email == email)).GetValueOrDefault();
         }
 
-        public  List<Reservation> GetReservations(string userId)
+        public  List<Reservation> GetReservations(string userEmail)
         {
             return _context.Users
-                .Where(u => u.Id == userId)
+                .Where(u => u.Email == userEmail)
                 .SelectMany(u => u.Reservations)
                 .ToList();
         }
 
-        public List<Comment> GetComments(string userId)
+        public List<Comment> GetComments(string userEmail)
         {
             return _context.Users
-                .Where(u => u.Id == userId)
+                .Where(u => u.Email == userEmail)
                 .SelectMany(r => r.Comments)
                 .ToList();
         }

@@ -28,9 +28,9 @@ namespace Backend.Tests.Systems.Services
 
             var reservations = new List<Reservation>
             {
-                new() { Id = "1", HotelId = hotelId, CheckInDate = DateTime.Now.AddDays(-1), CheckOutDate = DateTime.Now.AddDays(1), RoomId = roomId, UserId = "1"},
-                new() { Id = "2", HotelId = hotelId, CheckInDate = DateTime.Now.AddDays(-2), CheckOutDate = DateTime.Now.AddDays(-1), RoomId = roomId, UserId = "1"},
-                new() { Id = "3", HotelId = "2", CheckInDate = DateTime.Now.AddDays(-1), CheckOutDate = DateTime.Now.AddDays(1) , RoomId = roomId, UserId = "1"},
+                new() { Id = "1", HotelId = hotelId, CheckInDate = DateTime.Now.AddDays(-1), CheckOutDate = DateTime.Now.AddDays(1), RoomId = roomId, UserEmail = "1"},
+                new() { Id = "2", HotelId = hotelId, CheckInDate = DateTime.Now.AddDays(-2), CheckOutDate = DateTime.Now.AddDays(-1), RoomId = roomId, UserEmail = "1"},
+                new() { Id = "3", HotelId = "2", CheckInDate = DateTime.Now.AddDays(-1), CheckOutDate = DateTime.Now.AddDays(1) , RoomId = roomId, UserEmail = "1"},
             };
 
             mockReservationSet.SetupIQueryable(reservations.AsQueryable());

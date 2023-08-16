@@ -14,5 +14,6 @@ namespace Backend.Interfaces
         bool HotelExists(string id);
         bool IsRoomInHotel(string hotelId, string roomId);
         List<Reservation> GetReservationsForHotel(string hotelId);
+        bool UserExists(string id);
     }
 }

@@ -81,21 +81,21 @@ namespace Backend.Tests.Systems
                 .RuleFor(r => r.CheckOutDate, f => f.Date.Future())
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, f => roomId)
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserEmail, f => f.Internet.Email())
                 .Generate();
 
             return reservationDto;
         }
 
 
-        public static ReservationRequest GenerateReservationRequest(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime)
+        public static ReservationRequest GenerateReservationRequest(string hotelId, string roomId, DateTime checkInTime, DateTime checkOutTime, string userEmail)
         {
             var reservationRequest = new Faker<ReservationRequest>()
                 .RuleFor(r => r.CheckInDate, f => checkInTime)
                 .RuleFor(r => r.CheckOutDate, f => checkOutTime)
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, f => roomId)
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserEmail, f => userEmail)
                 .Generate();
 
             return reservationRequest;
@@ -108,7 +108,7 @@ namespace Backend.Tests.Systems
                 .RuleFor(r => r.CheckOutDate, checkOutTime)
                 .RuleFor(r => r.HotelId, f => hotelId)
                 .RuleFor(r => r.RoomId, roomId)
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, 100).ToString())
+                .RuleFor(r => r.UserEmail, f => f.Internet.Email())
                 .Generate();
 
             return reservation;
@@ -118,7 +118,18 @@ namespace Backend.Tests.Systems
         {
             var commentFaker = new Faker<Comment>()
                 .RuleFor(c => c.Description, f => f.Lorem.Sentence())
-                .RuleFor(c => c.UserId, f => userEmail)
+                .RuleFor(c => c.UserEmail, f => userEmail)
+                .RuleFor(c => c.HotelId, f => hotelId);
+
+            return commentFaker.Generate();
+        }
+
+        public static CommentDto GenerateCommentDto(string userEmail, string hotelId, string commentId)
+        {
+            var commentFaker = new Faker<CommentDto>()
+                .RuleFor(c => c.Id, f => commentId)
+                .RuleFor(c => c.Description, f => f.Lorem.Sentence())
+                .RuleFor(c => c.UserEmail, f => userEmail)
                 .RuleFor(c => c.HotelId, f => hotelId);
 
             return commentFaker.Generate();

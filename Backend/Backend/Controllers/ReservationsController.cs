@@ -9,6 +9,7 @@ using Backend.Data;
 using Backend.Interfaces;
 using Bogus.DataSets;
 using System.Drawing.Drawing2D;
+using Backend.Repository;
 
 namespace Backend.Controllers
 {
@@ -64,19 +65,29 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutReservation(string id, Reservation reservation)
+        public async Task<IActionResult> PutReservation(string id, ReservationRequest reservationRequest)
         {
-            if (!id.Equals(reservation.Id))
+            if (!id.Equals(reservationRequest.Id))
             {
                 return BadRequest();
             }
 
-            var hotelExists = _reservationRepository.HotelExists(reservation.HotelId);
+            var hotelExists = _reservationRepository.HotelExists(reservationRequest.HotelId);
 
             if (!hotelExists)
             {
                 return NotFound("Hotel not found");
             }
+
+            var userExists = _reservationRepository.UserExists(reservationRequest.UserEmail);
+
+            if (!userExists)
+            {
+                return NotFound("User not found");
+            }
+
+
+            var reservation = _mapper.Map<Reservation>(reservationRequest);
 
             try
             {
@@ -98,7 +109,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationRequest reservationRequest)
         {
             var hotelExists = _reservationRepository.HotelExists(reservationRequest.HotelId);
@@ -119,6 +130,13 @@ namespace Backend.Controllers
             {
                 return BadRequest(
                     "Check-out date must be later than the check-in date.");
+            }
+
+            var userExists = _reservationRepository.UserExists(reservationRequest.UserEmail);
+
+            if (!userExists)
+            {
+                return NotFound("User not found");
             }
 
             var reservations = await _reservationRepository.GetAll();

@@ -28,6 +28,9 @@ namespace Backend.Profiles
             CreateMap<ReservationDto, Reservation>();
 
             CreateMap<ReservationRequest, Reservation>();
+
+            CreateMap<User, UserDto>();
+            CreateMap<UserDto, User>();
         }
 
         private List<string> GetHotelImages(string hotelId)

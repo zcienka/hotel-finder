@@ -1,4 +1,5 @@
 # Hotel Finder
+![workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
 
 A full-stack application built with React and ASP.NET Core Web API that allows users to reserve hotels in a given city.
 
@@ -36,11 +37,13 @@ Dummy data is AI generated
 
 ## Technologies Used
 ### Backend
-- ASP .NET Core 7
+- .NET Core 7
 - C#
 - Entity Framework Core
 - xUnit
+- Moq
 - Docker
+- Serilog
 
 ### Frontend
 - React
