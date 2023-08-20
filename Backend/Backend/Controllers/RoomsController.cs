@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
+using Backend.Core.IConfiguration;
 using Backend.Dtos;
 using Backend.Data;
-using Backend.Interfaces;
 using Backend.Requests;
 using Microsoft.AspNetCore.Authorization;
 
@@ -14,12 +14,12 @@ namespace Backend.Controllers;
 [ApiController]
 public class RoomsController : ControllerBase
 {
-    private readonly IRoomRepository _roomRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public RoomsController(IRoomRepository roomRepository, IMapper mapper)
+    public RoomsController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _roomRepository = roomRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -32,7 +32,7 @@ public class RoomsController : ControllerBase
             return NotFound();
         }
 
-        var rooms = await _roomRepository.GetAll();
+        var rooms = await _unitOfWork.Rooms.GetAll();
 
         return await ApiResult<Room>.CreateAsync(
             rooms.ToList(),
@@ -44,9 +44,9 @@ public class RoomsController : ControllerBase
 
     [HttpGet("hotel/{id}")]
     public async Task<ActionResult<ApiResult<RoomDto>>> GetAvailableRoomsInHotel(string id,
-        [FromQuery] PagingQuery query = null)
+        [FromQuery] PagingQuery query)
     {
-        var hotelExists = _roomRepository.HotelExists(id);
+        var hotelExists = await _unitOfWork.Hotels.Exists(id);
 
         if (!hotelExists)
         {
@@ -59,7 +59,7 @@ public class RoomsController : ControllerBase
             return NotFound();
         }
 
-        List<Room> rooms = _roomRepository.GetAvailableRoomsById(id);
+        IEnumerable<Room> rooms = await _unitOfWork.Rooms.GetAvailableRoomsById(id);
 
         var roomDtos = rooms.Select(room => _mapper.Map<RoomDto>(room)).ToList();
 
@@ -74,13 +74,13 @@ public class RoomsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<RoomDto>> GetRoom(string id)
     {
-        var room = await _roomRepository.GetByIdAsync(id);
-
-        if (room == null)
+        var roomExists = await _unitOfWork.Rooms.Exists(id);
+        if (!roomExists)
         {
             return NotFound();
         }
 
+        var room = _unitOfWork.Rooms.GetById(id);
         var roomDto = _mapper.Map<RoomDto>(room);
 
         return roomDto;
@@ -95,7 +95,7 @@ public class RoomsController : ControllerBase
             return BadRequest();
         }
 
-        var hotelExists = _roomRepository.HotelExists(id);
+        var hotelExists = await _unitOfWork.Hotels.Exists(roomRequest.HotelId);
 
         if (!hotelExists)
         {
@@ -104,20 +104,18 @@ public class RoomsController : ControllerBase
 
         var room = _mapper.Map<Room>(roomRequest);
 
+        if (!await RoomExists(id))
+        {
+            return NotFound();
+        }
+
         try
         {
-            await _roomRepository.Update(room);
+            _unitOfWork.Rooms.Update(room);
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!RoomExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            throw;
         }
 
         return NoContent();
@@ -127,7 +125,7 @@ public class RoomsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Room>> PostRoom(RoomRequest roomRequest)
     {
-        var hotelExists = _roomRepository.HotelExists(roomRequest.HotelId);
+        var hotelExists = await _unitOfWork.Hotels.Exists(roomRequest.HotelId);
 
         if (!hotelExists)
         {
@@ -135,7 +133,7 @@ public class RoomsController : ControllerBase
         }
 
         var room = _mapper.Map<Room>(roomRequest);
-        await _roomRepository.Add(room);
+        await _unitOfWork.Rooms.Add(room);
         var roomResponse = _mapper.Map<RoomRequest>(room);
 
         return CreatedAtAction(nameof(GetRoom), roomResponse);
@@ -145,20 +143,22 @@ public class RoomsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteRoom(string id)
     {
-        var room = await _roomRepository.GetByIdAsync(id);
+        var roomExists = await _unitOfWork.Rooms.Exists(id);
 
-        if (room == null)
+        if (!roomExists)
         {
             return NotFound();
         }
 
-        await _roomRepository.Delete(room);
+        var room = await _unitOfWork.Rooms.GetById(id);
+
+        _unitOfWork.Rooms.Delete(room);
 
         return NoContent();
     }
 
-    private bool RoomExists(string id)
+    private async Task<bool> RoomExists(string id)
     {
-        return _roomRepository.Exists(id);
+        return await _unitOfWork.Rooms.Exists(id);
     }
 }

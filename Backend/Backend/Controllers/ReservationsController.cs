@@ -6,10 +6,7 @@ using AutoMapper;
 using Backend.Dtos;
 using Backend.Requests;
 using Backend.Data;
-using Backend.Interfaces;
-using Bogus.DataSets;
-using System.Drawing.Drawing2D;
-using Backend.Repository;
+using Backend.Core.IConfiguration;
 
 namespace Backend.Controllers;
 
@@ -17,12 +14,12 @@ namespace Backend.Controllers;
 [ApiController]
 public class ReservationsController : ControllerBase
 {
-    private readonly IReservationRepository _reservationRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ReservationsController(IReservationRepository reservationRepository, IMapper mapper)
+    public ReservationsController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _reservationRepository = reservationRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -36,31 +33,35 @@ public class ReservationsController : ControllerBase
             return NotFound();
         }
 
-        var reservations = await _reservationRepository.GetAll();
+        var reservations = await _unitOfWork.Reservations.GetAll();
         var reservationsDtos =
             reservations.Select(reservation => _mapper.Map<ReservationDto>(reservation)).ToList();
 
-        return Ok(await ApiResult<ReservationDto>.CreateAsync(
+        return await ApiResult<ReservationDto>.CreateAsync(
             reservationsDtos,
             offsetInt,
             limitInt,
             "/reservations"
-        ));
+        );
     }
 
 
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<ActionResult<Reservation>> GetReservation(string id)
+    public async Task<ActionResult<ReservationDto>> GetReservation(string id)
     {
-        var reservation = await _reservationRepository.GetByIdAsync(id);
+        var reservationExists = await _unitOfWork.Reservations.Exists(id);
 
-        if (reservation == null)
+
+        if (!reservationExists)
         {
             return NotFound();
         }
 
-        return reservation;
+        var reservation = _unitOfWork.Reservations.GetById(id);
+        var reservationDto = _mapper.Map<ReservationDto>(reservation);
+
+        return reservationDto;
     }
 
     [HttpPut("{id}")]
@@ -72,14 +73,14 @@ public class ReservationsController : ControllerBase
             return BadRequest();
         }
 
-        var hotelExists = _reservationRepository.HotelExists(reservationRequest.HotelId);
+        var hotelExists = await _unitOfWork.Hotels.Exists(reservationRequest.HotelId);
 
         if (!hotelExists)
         {
             return NotFound("Hotel not found");
         }
 
-        var userExists = _reservationRepository.UserExists(reservationRequest.UserEmail);
+        var userExists = await _unitOfWork.Users.Exists(reservationRequest.UserEmail);
 
         if (!userExists)
         {
@@ -91,11 +92,11 @@ public class ReservationsController : ControllerBase
 
         try
         {
-            await _reservationRepository.Update(reservation);
+            _unitOfWork.Reservations.Update(reservation);
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!ReservationExists(id))
+            if (!await ReservationExists(id))
             {
                 return NotFound();
             }
@@ -112,14 +113,15 @@ public class ReservationsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Reservation>> PostReservation(ReservationRequest reservationRequest)
     {
-        var hotelExists = _reservationRepository.HotelExists(reservationRequest.HotelId);
+        var hotelExists = await _unitOfWork.Hotels.Exists(reservationRequest.HotelId);
 
         if (!hotelExists)
         {
             return NotFound("Hotel not found");
         }
 
-        var isRoomInHotel = _reservationRepository.IsRoomInHotel(reservationRequest.HotelId, reservationRequest.RoomId);
+        var isRoomInHotel =
+            _unitOfWork.Reservations.IsRoomInHotel(reservationRequest.HotelId, reservationRequest.RoomId);
 
         if (!isRoomInHotel)
         {
@@ -132,14 +134,14 @@ public class ReservationsController : ControllerBase
                 "Check-out date must be later than the check-in date.");
         }
 
-        var userExists = _reservationRepository.UserExists(reservationRequest.UserEmail);
+        var userExists = await _unitOfWork.Users.Exists(reservationRequest.UserEmail);
 
         if (!userExists)
         {
             return NotFound("User not found");
         }
 
-        var reservations = await _reservationRepository.GetAll();
+        var reservations = await _unitOfWork.Reservations.GetAll();
 
         bool isReservationConflict = reservations.Any(r =>
             r.RoomId == reservationRequest.RoomId && r.HotelId == reservationRequest.HotelId &&
@@ -151,7 +153,7 @@ public class ReservationsController : ControllerBase
         }
 
         var reservation = _mapper.Map<Reservation>(reservationRequest);
-        await _reservationRepository.Add(reservation);
+        await _unitOfWork.Reservations.Add(reservation);
 
         return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservationRequest);
     }
@@ -160,20 +162,20 @@ public class ReservationsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteReservation(string id)
     {
-        var reservation = await _reservationRepository.GetByIdAsync(id);
+        var reservation = await _unitOfWork.Reservations.GetById(id);
 
         if (reservation == null)
         {
             return NotFound();
         }
 
-        await _reservationRepository.Delete(reservation);
+        _unitOfWork.Reservations.Delete(reservation);
 
         return NoContent();
     }
 
-    private bool ReservationExists(string id)
+    private async Task<bool> ReservationExists(string id)
     {
-        return _reservationRepository.Exists(id);
+        return await _unitOfWork.Reservations.Exists(id);
     }
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Backend.Data;
+﻿namespace Backend.Data;
 
 public class ApiResult<T>
 {

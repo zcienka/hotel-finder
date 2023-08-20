@@ -1,7 +1,6 @@
 using System.Security.Claims;
+using Backend.Core.IConfiguration;
 using Backend.Data;
-using Backend.Interfaces;
-using Backend.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -36,11 +35,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IHotelRepository, HotelRepository>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
-builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 

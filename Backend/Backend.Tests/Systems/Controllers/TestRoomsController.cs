@@ -1,129 +1,284 @@
 ﻿using AutoMapper;
 using Backend.Controllers;
+using Backend.Core.IConfiguration;
 using Backend.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Backend.Tests.Systems;
 using FakeItEasy;
 using Backend.Data;
-using Backend.Interfaces;
-using Backend.Repository;
+using Backend.Tests.Systems.Mocks;
+using Microsoft.AspNetCore.Mvc;
+using Backend.Dtos;
+using Backend.Requests;
 
-namespace Backend.Tests.Controllers
+namespace Backend.Tests.Controllers;
+
+public class TestRoomsController
 {
-    public class TestRoomsController
+    private readonly IMapper _mapper;
+
+    public TestRoomsController()
     {
-        private readonly IMapper _mapper;
+        _mapper = A.Fake<IMapper>();
+    }
 
-        public TestRoomsController()
+    [Fact]
+    public async Task GetAvailableRoomsInHotel_ReturnsAvailableRooms()
+    {
+        // Arrange
+        string hotelId = "1";
+
+        var mock = new Mock<IUnitOfWork>();
+
+        var availableRooms = new List<Room>
         {
-            _mapper = A.Fake<IMapper>();
-        }
+            DataGenerator.GenerateRoom(hotelId, "2"),
+            DataGenerator.GenerateRoom(hotelId, "3"),
+        }.AsEnumerable();
 
-        [Fact]
-        public async Task GetAvailableRoomsInHotel_ReturnsAvailableRooms()
+        var roomRepoMock = MockIRoomRepository.GetMock(hotelId, availableRooms);
+        var reservationRepoMock = MockIReservationRepository.GetMock(hotelId);
+        var hotelsRepoMock = MockIHotelRepository.GetMock(hotelId);
+
+        mock.Setup(m => m.Rooms).Returns(() => roomRepoMock.Object);
+        mock.Setup(m => m.Reservations).Returns(() => reservationRepoMock.Object);
+        mock.Setup(m => m.Hotels).Returns(() => hotelsRepoMock.Object);
+        mock.Setup(m => m.CompleteAsync()).Callback(() => { return; });
+
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        // Act
+        var result = await roomsController.GetAvailableRoomsInHotel(hotelId, new PagingQuery());
+
+        // Assert
+        Assert.IsType<ActionResult<ApiResult<RoomDto>>>(result);
+        var apiResult = result.Value.Count;
+        Assert.Equal(2, apiResult);
+    }
+
+    [Fact]
+    public async Task GetAvailableRoomsInHotel_HotelNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        string hotelId = "1";
+        var mock = new Mock<IUnitOfWork>();
+        mock.Setup(uow => uow.Hotels.Exists(hotelId)).ReturnsAsync(false);
+
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        // Act
+        var result = await roomsController.GetAvailableRoomsInHotel(hotelId, new PagingQuery());
+
+        // Assert
+        Assert.IsType<NotFoundObjectResult>(result.Result);
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.Equal("Hotel with given id does not exist", notFoundResult.Value);
+    }
+
+    [Fact]
+    public async Task GetRooms_ValidRequest_ReturnsRooms()
+    {
+        // Arrange
+        var mock = new Mock<IUnitOfWork>();
+        string hotelId = "1";
+        var availableRooms = new List<Room>
         {
-            // Arrange
-            string hotelId = "1";
+            DataGenerator.GenerateRoom(hotelId, "2"),
+            DataGenerator.GenerateRoom(hotelId, "3"),
+        }.AsEnumerable();
 
-            var rooms = new List<Room>
-            {
-                DataGenerator.GenerateRoom(hotelId, "1"),
-                DataGenerator.GenerateRoom(hotelId, "2"),
-                DataGenerator.GenerateRoom(hotelId, "3"),
-            };
+        mock.Setup(uow => uow.Rooms.GetAll()).ReturnsAsync(availableRooms);
+        var roomsController = new RoomsController(mock.Object, _mapper);
 
-            var reservations = new List<Reservation>
-            {
-                DataGenerator.GenerateReservation(hotelId, "1", DateTime.Now, DateTime.MaxValue)
-            };
+        // Act
+        var result = await roomsController.GetRooms(new PagingQuery { Limit = "10", Offset = "0" });
 
-            var mockReservationRepository = new Mock<IReservationRepository>();
-            mockReservationRepository.Setup(repo => repo.GetReservationsForHotel(It.IsAny<string>()))
-                .Returns(reservations);
+        // Assert
+        Assert.IsType<ActionResult<ApiResult<Room>>>(result);
 
-            var mockContext = new Mock<ApplicationDbContext>();
+        var apiResult = result.Value.Count;
+        Assert.Equal(2, apiResult);
+    }
 
-            var mockRoomSet = new Mock<DbSet<Room>>();
-            mockRoomSet.SetupIQueryable(rooms.AsQueryable());
-            mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
+    [Fact]
+    public void GetRoom_RoomNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        string roomId = "1";
+        var mock = new Mock<IUnitOfWork>();
+        mock.Setup(uow => uow.Rooms.Exists(roomId)).ReturnsAsync(false);
+        var roomsController = new RoomsController(mock.Object, _mapper);
 
-            var roomRepository = new RoomRepository(mockContext.Object, mockReservationRepository.Object);
+        // Act
+        var result = roomsController.GetRoom(roomId);
 
-            // Act
-            var result = roomRepository.GetAvailableRoomsById(hotelId);
+        // Assert
+        Assert.IsType<NotFoundResult>(result.Result.Result);
+    }
 
-            // Assert
-            var returnedRooms = result;
-            Assert.Equal(2, returnedRooms.Count);
-        }
+    [Fact]
+    public void GetRoom_RoomFound_ReturnsRoomDto()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+        var room = DataGenerator.GenerateRoom(hotelId, roomId);
 
-        [Fact]
-        public async Task PostRoom_WhenHotelExists_ReturnsCreatedResponse()
-        {
-            // Arrange
-            var hotel = DataGenerator.GenerateHotel();
-            string hotelId = hotel.Id;
-        
-            var hotels = new List<Hotel> { hotel }.AsQueryable();
-            string roomId = "1";
-            var room = DataGenerator.GenerateRoom(hotelId, roomId);
+        var mock = new Mock<IUnitOfWork>();
+        mock.Setup(uow => uow.Rooms.GetById(roomId)).ReturnsAsync(room);
+        mock.Setup(uow => uow.Rooms.Exists(roomId)).ReturnsAsync(true);
+        var roomsController = new RoomsController(mock.Object, _mapper);
 
-            var rooms = new List<Room>
-            {
-                room
-            };
-            var roomRequest = DataGenerator.GenerateRoomRequest(hotelId);
-            var mockReservationRepository = new Mock<IReservationRepository>();
+        // Act
+        var result = roomsController.GetRoom(roomId);
 
-            var mockContext = new Mock<ApplicationDbContext>();
-            var mockRoomSet = new Mock<DbSet<Room>>();
-            mockRoomSet.SetupIQueryable(rooms.AsQueryable());
-            mockContext.SetupGet(m => m.Rooms).Returns(mockRoomSet.Object);
+        // Assert
+        Assert.IsType<ActionResult<RoomDto>>(result.Result);
+        var roomDto = result.Result.Value;
+        Assert.NotNull(roomDto);
+    }
 
-            var mockHotelSet = new Mock<DbSet<Hotel>>();
-            mockHotelSet.SetupIQueryable(hotels);
-            mockContext.SetupGet(m => m.Hotels).Returns(mockHotelSet.Object);
+    [Fact]
+    public async Task PutRoom_ValidUpdate_ReturnsNoContent()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+        var roomRequest = DataGenerator.GenerateRoomRequest(hotelId, roomId);
+        var room = DataGenerator.GenerateRoom(hotelId, roomId);
 
-            var roomRepository = new RoomRepository(mockContext.Object, mockReservationRepository.Object);
-            var roomsController = new RoomsController(roomRepository, _mapper);
+        var mock = new Mock<IUnitOfWork>();
+        mock.Setup(uow => uow.Hotels.Exists(roomRequest.HotelId)).ReturnsAsync(true);
+        mock.Setup(uow => uow.Rooms.Update(room)).Returns(true);
+        mock.Setup(uow => uow.Rooms.Exists(roomId)).ReturnsAsync(true);
+        var roomsController = new RoomsController(mock.Object, _mapper);
 
-            // Act
-            var result = await roomsController.PostRoom(roomRequest);
+        // Act
+        var result = await roomsController.PutRoom(roomId, roomRequest);
 
-            // Assert
-            Assert.IsType<CreatedAtActionResult>(result.Result);
-        }
-        
-        [Fact]
-        public async Task DeleteRoom_WhenRoomExists_DeletesRoom()
-        {
-            // Arrange
-            var hotel = DataGenerator.GenerateHotel();
-            string hotelId = hotel.Id;
-            string roomId = "1";
-        
-            var room = DataGenerator.GenerateRoom(hotelId, roomId);
-        
-            var mockRoomRepository = new Mock<IRoomRepository>();
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+    }
 
-            var mockContext = new Mock<ApplicationDbContext>();
-        
-            var mockReservationSet = new Mock<DbSet<Reservation>>();
-            mockContext.SetupGet(m => m.Reservations).Returns(mockReservationSet.Object);
+    [Fact]
+    public async Task PutRoom_InvalidId_ReturnsBadRequest()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+        var mock = new Mock<IUnitOfWork>();
 
-            mockRoomRepository
-                .Setup(repo => repo.GetByIdAsync(roomId))
-                .ReturnsAsync(room);    
+        var roomRequest = DataGenerator.GenerateRoomRequest(hotelId, roomId);
+        var roomsController = new RoomsController(mock.Object, _mapper);
 
-            var roomsController = new RoomsController(mockRoomRepository.Object, _mapper);
+        // Act
+        var result = await roomsController.PutRoom("2", roomRequest);
 
-            // Act
-            var result = await roomsController.DeleteRoom(roomId);
-        
-            // Assert
-            Assert.IsType<NoContentResult>(result);
-        }
+        // Assert
+        Assert.IsType<BadRequestResult>(result);
+    }
+
+    [Fact]
+    public async Task PutRoom_HotelNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+        var roomRequest = DataGenerator.GenerateRoomRequest(hotelId, roomId);
+        var mock = new Mock<IUnitOfWork>();
+
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        mock.Setup(uow => uow.Hotels.Exists(roomRequest.HotelId)).ReturnsAsync(false);
+
+        // Act
+        var result = await roomsController.PutRoom(roomId, roomRequest);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Hotel not found", notFoundResult.Value);
+    }
+
+
+    [Fact]
+    public async Task PostRoom_ValidRoom_ReturnsCreatedResponse()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+        var roomRequest = DataGenerator.GenerateRoomRequest(hotelId, roomId);
+        var room = DataGenerator.GenerateRoom(hotelId, roomId);
+        var mock = new Mock<IUnitOfWork>();
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        mock.Setup(uow => uow.Hotels.Exists(roomRequest.HotelId)).ReturnsAsync(true);
+        mock.Setup(uow => uow.Rooms.Add(room)).ReturnsAsync(true);
+
+        // Act
+        var result = await roomsController.PostRoom(roomRequest);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        Assert.Equal(nameof(roomsController.GetRoom), createdAtActionResult.ActionName);
+    }
+
+
+    [Fact]
+    public async Task PostRoom_HotelNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+        var roomRequest = DataGenerator.GenerateRoomRequest(hotelId, roomId);
+        var mock = new Mock<IUnitOfWork>();
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        mock.Setup(uow => uow.Hotels.Exists(roomRequest.HotelId)).ReturnsAsync(false);
+
+        // Act
+        var result = await roomsController.PostRoom(roomRequest);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+        Assert.Equal("Hotel not found", notFoundResult.Value);
+    }
+
+    [Fact]
+    public async Task DeleteRoom_RoomFound_ReturnsNoContent()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+
+        var roomEntity = DataGenerator.GenerateRoom(hotelId, roomId);
+        var mock = new Mock<IUnitOfWork>();
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        mock.Setup(uow => uow.Rooms.Exists(roomId)).ReturnsAsync(true);
+
+        // Act
+        var result = await roomsController.DeleteRoom(roomId);
+
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public async Task DeleteRoom_RoomNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        string roomId = "1";
+        string hotelId = "1";
+
+        var mock = new Mock<IUnitOfWork>();
+        var roomsController = new RoomsController(mock.Object, _mapper);
+
+        mock.Setup(uow => uow.Rooms.Exists(roomId)).ReturnsAsync(false);
+
+        // Act
+        var result = await roomsController.DeleteRoom(roomId);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
     }
 }

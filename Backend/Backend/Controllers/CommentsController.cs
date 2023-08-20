@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using AutoMapper;
+using Backend.Core.IConfiguration;
 using Backend.Dtos;
 using Backend.Data;
-using Backend.Interfaces;
 
 namespace Backend.Controllers;
 [Route("api/v1/[controller]")]
@@ -12,11 +12,11 @@ namespace Backend.Controllers;
 public class CommentsController : ControllerBase
 {
     private readonly IMapper _mapper;
-    private readonly ICommentRepository _commentRepository; 
+    private readonly IUnitOfWork _unitOfWork; 
 
-    public CommentsController(ICommentRepository commentRepository, IMapper mapper)
+    public CommentsController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _commentRepository = commentRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -29,68 +29,69 @@ public class CommentsController : ControllerBase
             return NotFound();
         }
 
-        var comments = await _commentRepository.GetAll();
-        var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
+        var comments = await _unitOfWork.Comments.GetAll();
+        var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment));
 
-        return Ok(await ApiResult<CommentDto>.CreateAsync(
-            commentDtos,
+        return await ApiResult<CommentDto>.CreateAsync(
+            commentDtos.ToList(),
             offsetInt,
             limitInt,
             "/comments"
-        ));
+        );
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Comment>> GetComment(string id)
+    public async Task<ActionResult<CommentDto>> GetComment(string id)
     {
-        var comment = await _commentRepository.GetByIdAsync(id);
+        var commentExists = await _unitOfWork.Comments.Exists(id);
 
-        if (comment == null)
+        if (!commentExists)
         {
             return NotFound("No comment with a given id found.");
         }
 
-        return comment;
+        var comment = _unitOfWork.Comments.GetById(id);
+        var commentDto = _mapper.Map<CommentDto>(comment);
+
+        return commentDto;
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutComment(string id, CommentDto commentDto)
     {
-        var hotelExists = _commentRepository.HotelExists(commentDto.HotelId);
+        var hotelExists = await _unitOfWork.Hotels.Exists(commentDto.HotelId);
+
+        if (id != commentDto.Id)
+        {
+            return BadRequest();
+        }
 
         if (!hotelExists)
         {
             return NotFound("Hotel not found");
         }
 
-        if (!id.Equals(commentDto.Id))
-        {
-            return NotFound();
-        }
-
-        var userExists = _commentRepository.UserExists(commentDto.UserEmail);
+        var userExists = await _unitOfWork.Users.Exists(commentDto.UserEmail);
 
         if (!userExists)
         {
             return NotFound("User not found");
         }
 
+        if (!await CommentExists(id))
+        {
+            return NotFound();
+        }
+
         var comment = _mapper.Map<Comment>(commentDto);
 
         try
         {
-            await _commentRepository.Update(comment);
+            _unitOfWork.Comments.Update(comment);
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!CommentExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            throw;
         }
 
         return NoContent();
@@ -99,14 +100,14 @@ public class CommentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Comment>> PostComment(CommentDto commentDto)
     {
-        var hotelExists = _commentRepository.HotelExists(commentDto.HotelId);
+        var hotelExists = await _unitOfWork.Hotels.Exists(commentDto.HotelId);
 
         if (!hotelExists)
         {
             return NotFound("Hotel not found");
         }
 
-        var userExists = _commentRepository.UserExists(commentDto.UserEmail);
+        var userExists = await _unitOfWork.Users.Exists(commentDto.UserEmail);
 
         if (!userExists)
         {
@@ -115,7 +116,7 @@ public class CommentsController : ControllerBase
 
         var comment = _mapper.Map<Comment>(commentDto);
 
-        await _commentRepository.Add(comment);
+        await _unitOfWork.Comments.Add(comment);
 
         return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, commentDto);
     }
@@ -123,20 +124,20 @@ public class CommentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteComment(string id)
     {
-        var comment = await _commentRepository.GetByIdAsync(id);
+        var comment = await _unitOfWork.Comments.GetById(id);
 
         if (comment == null)
         {
             return NotFound();
         }
 
-        await _commentRepository.Delete(comment);
+        _unitOfWork.Comments.Delete(comment);
 
         return NoContent();
     }
 
-    private bool CommentExists(string id)
+    private Task<bool> CommentExists(string id)
     {
-        return _commentRepository.Exists(id);
+        return _unitOfWork.Comments.Exists(id);
     }
 }

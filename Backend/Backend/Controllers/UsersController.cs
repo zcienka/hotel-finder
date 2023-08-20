@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using Backend.Core.IConfiguration;
 using Backend.Data;
 using Backend.Dtos;
-using Backend.Interfaces;
 
 namespace Backend.Controllers;
 
@@ -13,12 +13,12 @@ namespace Backend.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UsersController(IUserRepository userRepository, IMapper mapper)
+    public UsersController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -26,21 +26,24 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IEnumerable<User>> GetUsers()
     {
-        return await _userRepository.GetAll();
+        return await _unitOfWork.Users.GetAll();
     }
 
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<ActionResult<User>> GetUser(string id)
+    public async Task<ActionResult<UserDto>> GetUser(string id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var userExists = await _unitOfWork.Users.Exists(id);
 
-        if (user == null)
+        if (!userExists)
         {
             return NotFound();
         }
 
-        return user;
+        var user = _unitOfWork.Users.GetById(id);
+        var userDto = _mapper.Map<UserDto>(user);
+
+        return userDto;
     }
 
     [HttpPut("{id}")]
@@ -54,11 +57,11 @@ public class UsersController : ControllerBase
 
         try
         {
-            await _userRepository.Update(user);
+            _unitOfWork.Users.Update(user);
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!UserExists(id))
+            if (!await UserExists(id))
             {
                 return NotFound();
             }
@@ -79,11 +82,11 @@ public class UsersController : ControllerBase
 
         try
         {
-            await _userRepository.Add(user);
+            await _unitOfWork.Users.Add(user);
         }
         catch (DbUpdateException)
         {
-            if (UserExists(userDto.Email))
+            if (await UserExists(userDto.Email))
             {
                 return Conflict();
             }
@@ -101,21 +104,21 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteUser(string id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _unitOfWork.Users.GetById(id);
 
         if (user == null)
         {
             return NotFound();
         }
 
-        await _userRepository.Delete(user);
+        _unitOfWork.Users.Delete(user);
 
         return NoContent();
     }
 
-    private bool UserExists(string id)
+    private async Task<bool> UserExists(string id)
     {
-        return _userRepository.Exists(id);
+        return await _unitOfWork.Users.Exists(id);
     }
 
     [HttpGet("{userId}/reservations")]
@@ -129,7 +132,7 @@ public class UsersController : ControllerBase
             return NotFound();
         }
 
-        var reservations = _userRepository.GetReservations(userId);
+        var reservations = _unitOfWork.Users.GetReservations(userId);
 
         var reservationDtos = reservations.Select(r => _mapper.Map<ReservationDto>(r)).ToList();
 
@@ -152,7 +155,7 @@ public class UsersController : ControllerBase
             return NotFound();
         }
 
-        var comments = _userRepository.GetComments(userId);
+        var comments = _unitOfWork.Users.GetComments(userId);
 
         var commentDtos = comments.Select(comment => _mapper.Map<CommentDto>(comment)).ToList();
 
