@@ -59,7 +59,7 @@ public class RoomsController : ControllerBase
             return NotFound();
         }
 
-        IEnumerable<Room> rooms = await _unitOfWork.Rooms.GetAvailableRoomsById(id);
+        IEnumerable<Room> rooms = _unitOfWork.Rooms.GetAvailableRoomsById(id);
 
         var roomDtos = rooms.Select(room => _mapper.Map<RoomDto>(room)).ToList();
 

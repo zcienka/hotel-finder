@@ -18,7 +18,7 @@ internal class MockIRoomRepository
         }.AsEnumerable();
 
         mock.Setup(m => m.GetAll()).ReturnsAsync(() => rooms);
-        mock.Setup(m => m.GetAvailableRoomsById(hotelId)).ReturnsAsync(() => availableRooms);
+        mock.Setup(m => m.GetAvailableRoomsById(hotelId)).Returns(() => availableRooms);
 
         return mock;
     }

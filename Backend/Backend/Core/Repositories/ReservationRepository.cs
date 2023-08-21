@@ -21,12 +21,13 @@ public class ReservationRepository : GenericRepository<Reservation>, IReservatio
     }
 
 
-    public async Task<IEnumerable<Reservation>> GetReservationsForHotel(string hotelId)
+    public IEnumerable<Reservation> GetReservationsForHotel(string hotelId)
     {
-        return await dbSet
+        return _context.Reservations
             .Where(r => r.HotelId == hotelId &&
                         r.CheckInDate <= DateTime.Now &&
-                        r.CheckOutDate >= DateTime.Now).ToListAsync();
+                        r.CheckOutDate >= DateTime.Now)
+            .ToList();
     }
 
     public override async Task<IEnumerable<Reservation>> GetAll()

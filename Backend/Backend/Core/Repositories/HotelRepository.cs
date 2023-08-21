@@ -21,14 +21,14 @@ public class HotelRepository : GenericRepository<Hotel>, IHotelRepository
         int? roomCount,
         string? category)
     {
-        var hotels = dbSet.ToList().AsQueryable();
+        var hotels = _context.Hotels.ToList().AsQueryable();
 
         if (name != null)
         {
             hotels = hotels.Where(hotel => hotel.Name.ToLower().Contains(name.ToLower()));
         }
 
-        if (category != null)
+        if (category != null)   
         {
             hotels = hotels.Where(hotel => hotel.Category.ToLower().Contains(category.ToLower()));
         }

@@ -48,5 +48,5 @@ public class TestReservationsController
         var apiResult = result.Value.Count;
         Assert.Equal(2, apiResult);
     }
- 
+    
 }
